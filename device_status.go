@@ -77,7 +77,7 @@ type MotionSensorDeviceStatus struct {
 }
 
 func GetDeviceStatusResponseParser(response *GetDeviceStatusResponse) ResponseParser {
-	return func(bodyBytes []byte) error {
+	return func(client *Client, bodyBytes []byte) error {
 		err := json.Unmarshal(bodyBytes, response)
 		if err != nil {
 			return err

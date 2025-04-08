@@ -29,12 +29,12 @@ func main() {
 		case *switchbot.BotDevice:
 			device := device.(*switchbot.BotDevice)
 			log.Printf("Bot Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
-		case *switchbot.HubDevice:
-			device := device.(*switchbot.HubDevice)
-			log.Printf("Hub Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
-		case *switchbot.MeterDevice:
-			device := device.(*switchbot.MeterDevice)
-			log.Printf("Meter Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
+
+			commandResponse, err := device.TurnOn()
+			if err != nil {
+				log.Fatalf("Error: %v", err)
+			}
+			log.Printf("StatusCode: %d, Message: %s", commandResponse.StatusCode, commandResponse.Message)
 		}
 	}
 }

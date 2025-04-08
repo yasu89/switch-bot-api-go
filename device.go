@@ -22,12 +22,22 @@ type CommonDevice struct {
 
 type CommonDeviceListItem struct {
 	CommonDevice
+	Client             *Client
 	DeviceName         string `json:"deviceName"`
 	EnableCloudService bool   `json:"enableCloudService"`
 }
 
 type BotDevice struct {
 	CommonDeviceListItem
+}
+
+type CurtainDevice struct {
+	CommonDeviceListItem
+	CurtainDevicesIds []string `json:"curtainDevicesIds"`
+	Calibrate         bool     `json:"calibrate"`
+	Group             bool     `json:"group"`
+	Master            bool     `json:"master"`
+	OpenDirection     string   `json:"openDirection"`
 }
 
 type HubDevice struct {
@@ -54,6 +64,14 @@ type MeterProCo2Device struct {
 	CommonDeviceListItem
 }
 
+type LockDevice struct {
+	CommonDeviceListItem
+	Group          bool     `json:"group"`
+	Master         bool     `json:"master"`
+	GroupName      string   `json:"groupName"`
+	LockDevicesIds []string `json:"lockDevicesIds"`
+}
+
 type MotionSensorDevice struct {
 	CommonDeviceListItem
 }
@@ -63,7 +81,7 @@ type RemoteDevice struct {
 }
 
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
-	return func(bodyBytes []byte) error {
+	return func(client *Client, bodyBytes []byte) error {
 		err := json.Unmarshal(bodyBytes, response)
 		if err != nil {
 			return err
@@ -89,24 +107,40 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			switch deviceType {
 			case "Bot":
 				parsed = &BotDevice{}
+				parsed.(*BotDevice).Client = client
+			case "Curtain", "Curtain3":
+				parsed = &CurtainDevice{}
+				parsed.(*CurtainDevice).Client = client
 			case "Hub", "Hub Plus", "Hub Mini", "Hub 2":
 				parsed = &HubDevice{}
+				parsed.(*HubDevice).Client = client
 			case "Meter":
 				parsed = &MeterDevice{}
+				parsed.(*MeterDevice).Client = client
 			case "MeterPlus":
 				parsed = &MeterPlusDevice{}
+				parsed.(*MeterPlusDevice).Client = client
 			case "WoIOSensor":
 				parsed = &OutdoorMeterDevice{}
+				parsed.(*OutdoorMeterDevice).Client = client
 			case "MeterPro":
 				parsed = &MeterProDevice{}
+				parsed.(*MeterProDevice).Client = client
 			case "MeterPro(CO2)":
 				parsed = &MeterProCo2Device{}
+				parsed.(*MeterProCo2Device).Client = client
+			case "Smart Lock", "Smart Lock Pro":
+				parsed = &LockDevice{}
+				parsed.(*LockDevice).Client = client
 			case "Motion Sensor":
 				parsed = &MotionSensorDevice{}
+				parsed.(*MotionSensorDevice).Client = client
 			case "Remote":
 				parsed = &RemoteDevice{}
+				parsed.(*RemoteDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
+				parsed.(*CommonDeviceListItem).Client = client
 			}
 
 			err = json.Unmarshal(jsonString, parsed)
