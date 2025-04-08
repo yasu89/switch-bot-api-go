@@ -16,19 +16,27 @@ func main() {
 	if !ok {
 		log.Fatal("SWITCH_BOT_SECRET environment variable is required")
 	}
-	deviceId, ok := os.LookupEnv("SWITCH_BOT_DEVICE_ID")
-	if !ok {
-		log.Fatal("SWITCH_BOT_DEVICE_ID environment variable is required")
-	}
 
 	client := switchbot.NewClient(secret, token)
 
-	response, err := client.GetDeviceStatus(deviceId)
+	response, err := client.GetDevices()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 
-	// NOTE: MeterDevice Example
-	meterDeviceStatus := response.Body.(*switchbot.MeterDeviceStatus)
-	log.Printf("Battery: %d%%, Temperature:%0.1f°C, Humidity:%d%%", meterDeviceStatus.Battery, meterDeviceStatus.Temperature, meterDeviceStatus.Humidity)
+	for _, device := range response.Body.DeviceList {
+		switch device.(type) {
+		case *switchbot.BotDevice:
+			device := device.(*switchbot.BotDevice)
+			log.Printf("Bot Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
+
+			statusResponse, err := device.GetStatus()
+			if err != nil {
+				log.Fatalf("Error: %v", err)
+			}
+			log.Printf("StatusCode: %d, Message: %s", statusResponse.StatusCode, statusResponse.Message)
+			botStatus := statusResponse.Body
+			log.Printf("Power: %s, Battery: %d, DeviceMode: %s", botStatus.Power, botStatus.Battery, botStatus.DeviceMode)
+		}
+	}
 }
