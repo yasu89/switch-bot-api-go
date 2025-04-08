@@ -30,13 +30,11 @@ func main() {
 			device := device.(*switchbot.BotDevice)
 			log.Printf("Bot Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
 
-			statusResponse, err := device.GetStatus()
+			commandResponse, err := device.TurnOn()
 			if err != nil {
 				log.Fatalf("Error: %v", err)
 			}
-			log.Printf("StatusCode: %d, Message: %s", statusResponse.StatusCode, statusResponse.Message)
-			botStatus := statusResponse.Body
-			log.Printf("Power: %s, Battery: %d, DeviceMode: %s", botStatus.Power, botStatus.Battery, botStatus.DeviceMode)
+			log.Printf("StatusCode: %d, Message: %s", commandResponse.StatusCode, commandResponse.Message)
 		}
 	}
 }

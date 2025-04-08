@@ -26,6 +26,9 @@ func main() {
 
 	for _, device := range response.Body.DeviceList {
 		switch device.(type) {
+		case *switchbot.BotDevice:
+			device := device.(*switchbot.BotDevice)
+			log.Printf("Bot Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
 		case *switchbot.HubDevice:
 			device := device.(*switchbot.HubDevice)
 			log.Printf("Hub Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)

@@ -2,15 +2,19 @@ package switchbot
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
-type GetDeviceStatusResponse struct {
-	CommonResponse
-	Body interface{} `json:"body"`
+func GetDeviceStatusResponseParser(response interface{}) ResponseParser {
+	return func(client *Client, bodyBytes []byte) error {
+		err := json.Unmarshal(bodyBytes, response)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 }
 
-type BotDeviceStatus struct {
+type BotDeviceStatusBody struct {
 	CommonDevice
 	Power      string `json:"power"`
 	Battery    int    `json:"battery"`
@@ -18,7 +22,43 @@ type BotDeviceStatus struct {
 	DeviceMode string `json:"deviceMode"`
 }
 
-type MeterDeviceStatus struct {
+type BotDeviceStatusResponse struct {
+	CommonResponse
+	Body *BotDeviceStatusBody `json:"body"`
+}
+
+func (device *BotDevice) GetStatus() (*BotDeviceStatusResponse, error) {
+	response := &BotDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type Hub2DeviceStatusBody struct {
+	CommonDevice
+	Temperature float64 `json:"temperature"`
+	LightLevel  int     `json:"lightLevel"`
+	Version     string  `json:"version"`
+	Humidity    int     `json:"humidity"`
+}
+
+type Hub2DeviceStatusResponse struct {
+	CommonResponse
+	Body *Hub2DeviceStatusBody `json:"body"`
+}
+
+func (device *Hub2Device) GetStatus() (*Hub2DeviceStatusResponse, error) {
+	response := &Hub2DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type MeterDeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
 	Version     string  `json:"version"`
@@ -26,31 +66,21 @@ type MeterDeviceStatus struct {
 	Humidity    int     `json:"humidity"`
 }
 
-type MeterPlusDeviceStatus struct {
-	CommonDevice
-	Temperature float64 `json:"temperature"`
-	Version     string  `json:"version"`
-	Battery     int     `json:"battery"`
-	Humidity    int     `json:"humidity"`
+type MeterDeviceStatusResponse struct {
+	CommonResponse
+	Body *MeterDeviceStatusBody `json:"body"`
 }
 
-type OutdoorMeterDeviceStatus struct {
-	CommonDevice
-	Temperature float64 `json:"temperature"`
-	Version     string  `json:"version"`
-	Battery     int     `json:"battery"`
-	Humidity    int     `json:"humidity"`
+func (device *MeterDevice) GetStatus() (*MeterDeviceStatusResponse, error) {
+	response := &MeterDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
-type MeterProDeviceStatus struct {
-	CommonDevice
-	Temperature float64 `json:"temperature"`
-	Version     string  `json:"version"`
-	Battery     int     `json:"battery"`
-	Humidity    int     `json:"humidity"`
-}
-
-type MeterProCo2DeviceStatus struct {
+type MeterProCo2DeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
 	Version     string  `json:"version"`
@@ -59,15 +89,44 @@ type MeterProCo2DeviceStatus struct {
 	CO2         int     `json:"CO2"`
 }
 
-type Hub2DeviceStatus struct {
-	CommonDevice
-	Temperature float64 `json:"temperature"`
-	LightLevel  int     `json:"lightLevel"`
-	Version     string  `json:"version"`
-	Humidity    int     `json:"humidity"`
+type MeterProCo2DeviceStatusResponse struct {
+	CommonResponse
+	Body *MeterProCo2DeviceStatusBody `json:"body"`
 }
 
-type MotionSensorDeviceStatus struct {
+func (device *MeterProCo2Device) GetStatus() (*MeterProCo2DeviceStatusResponse, error) {
+	response := &MeterProCo2DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type LockDeviceStatusBody struct {
+	CommonDevice
+	Battery   int    `json:"battery"`
+	Version   string `json:"version"`
+	LockState string `json:"lockState"`
+	DoorState string `json:"doorState"`
+	Calibrate bool   `json:"calibrate"`
+}
+
+type LockDeviceStatusResponse struct {
+	CommonResponse
+	Body *LockDeviceStatusBody `json:"body"`
+}
+
+func (device *LockDevice) GetStatus() (*LockDeviceStatusResponse, error) {
+	response := &LockDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type MotionSensorDeviceStatusBody struct {
 	CommonDevice
 	Battery      int    `json:"battery"`
 	Version      string `json:"version"`
@@ -76,61 +135,14 @@ type MotionSensorDeviceStatus struct {
 	Brightness   string `json:"brightness"`
 }
 
-func GetDeviceStatusResponseParser(response *GetDeviceStatusResponse) ResponseParser {
-	return func(bodyBytes []byte) error {
-		err := json.Unmarshal(bodyBytes, response)
-		if err != nil {
-			return err
-		}
-
-		body, ok := response.Body.(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("failed to cast body to map[string]interface{}")
-		}
-		bodyString, err := json.Marshal(body)
-		if err != nil {
-			return err
-		}
-
-		deviceType, ok := body["deviceType"].(string)
-		if !ok {
-			return fmt.Errorf("failed to cast deviceType to string")
-		}
-
-		var parsed interface{}
-		switch deviceType {
-		case "Bot":
-			parsed = &BotDeviceStatus{}
-		case "Meter":
-			parsed = &MeterDeviceStatus{}
-		case "MeterPlus":
-			parsed = &MeterPlusDeviceStatus{}
-		case "WoIOSensor":
-			parsed = &OutdoorMeterDeviceStatus{}
-		case "MeterPro":
-			parsed = &MeterProDeviceStatus{}
-		case "MeterPro(CO2)":
-			parsed = &MeterProCo2DeviceStatus{}
-		case "Hub 2":
-			parsed = &Hub2DeviceStatus{}
-		case "MotionSensor":
-			parsed = &MotionSensorDeviceStatus{}
-		default:
-			parsed = &CommonDevice{}
-		}
-		err = json.Unmarshal(bodyString, parsed)
-		if err != nil {
-			return err
-		}
-		response.Body = parsed
-
-		return nil
-	}
+type MotionSensorDeviceStatusResponse struct {
+	CommonResponse
+	Body *MotionSensorDeviceStatusBody `json:"body"`
 }
 
-func (client *Client) GetDeviceStatus(deviceId string) (*GetDeviceStatusResponse, error) {
-	response := &GetDeviceStatusResponse{}
-	err := client.GetRequest("/devices/"+deviceId+"/status", GetDeviceStatusResponseParser(response))
+func (device *MotionSensorDevice) GetStatus() (*MotionSensorDeviceStatusResponse, error) {
+	response := &MotionSensorDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
 	if err != nil {
 		return nil, err
 	}
