@@ -11,8 +11,8 @@ type GetDevicesResponse struct {
 }
 
 type GetDevicesResponseBody struct {
-	DeviceList         []interface{}          `json:"deviceList"`
-	InfraredRemoteList []InfraredRemoteDevice `json:"infraredRemoteList"`
+	DeviceList         []interface{} `json:"deviceList"`
+	InfraredRemoteList []interface{} `json:"infraredRemoteList"`
 }
 
 type CommonDevice struct {
@@ -79,6 +79,62 @@ type InfraredRemoteDevice struct {
 	DeviceName  string `json:"deviceName"`
 	RemoteType  string `json:"remoteType"`
 	HubDeviceId string `json:"hubDeviceId"`
+}
+
+type InfraredRemoteAirConditionerDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteTVDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteLightDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteStreamerDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteSetTopBoxDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteDvdPlayerDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteFanDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteProjectorDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteCameraDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteAirPurifierDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteSpeakerDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteWaterHeaterDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteRobotVacuumCleanerDevice struct {
+	InfraredRemoteDevice
+}
+
+type InfraredRemoteOthersDevice struct {
+	InfraredRemoteDevice
 }
 
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
@@ -148,9 +204,78 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 		response.Body.DeviceList = parsedDevices
 
 		// Set the Client for each InfraredRemoteDevice
-		for _, infraredRemoteDevice := range response.Body.InfraredRemoteList {
-			infraredRemoteDevice.Client = client
+		var parsedInfraredRemoteDevices []interface{}
+		for _, infraredRemoteDeviceInterface := range response.Body.InfraredRemoteList {
+			infraredRemoteDevice, ok := infraredRemoteDeviceInterface.(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("failed to cast infraredRemoteDevice to map[string]interface{}")
+			}
+			jsonString, err := json.Marshal(infraredRemoteDevice)
+			if err != nil {
+				return err
+			}
+
+			remoteType, ok := infraredRemoteDevice["remoteType"].(string)
+			if !ok {
+				return fmt.Errorf("failed to cast remoteType to string")
+			}
+
+			var parsedInfrared interface{}
+			switch remoteType {
+			case "Air Conditioner":
+				parsedInfrared = &InfraredRemoteAirConditionerDevice{}
+				parsedInfrared.(*InfraredRemoteAirConditionerDevice).Client = client
+			case "TV":
+				parsedInfrared = &InfraredRemoteTVDevice{}
+				parsedInfrared.(*InfraredRemoteTVDevice).Client = client
+			case "Light":
+				parsedInfrared = &InfraredRemoteLightDevice{}
+				parsedInfrared.(*InfraredRemoteLightDevice).Client = client
+			case "Streamer":
+				parsedInfrared = &InfraredRemoteStreamerDevice{}
+				parsedInfrared.(*InfraredRemoteStreamerDevice).Client = client
+			case "Set Top Box":
+				parsedInfrared = &InfraredRemoteSetTopBoxDevice{}
+				parsedInfrared.(*InfraredRemoteSetTopBoxDevice).Client = client
+			case "DVD Player":
+				parsedInfrared = &InfraredRemoteDvdPlayerDevice{}
+				parsedInfrared.(*InfraredRemoteDvdPlayerDevice).Client = client
+			case "Fan":
+				parsedInfrared = &InfraredRemoteFanDevice{}
+				parsedInfrared.(*InfraredRemoteFanDevice).Client = client
+			case "Projector":
+				parsedInfrared = &InfraredRemoteProjectorDevice{}
+				parsedInfrared.(*InfraredRemoteProjectorDevice).Client = client
+			case "Camera":
+				parsedInfrared = &InfraredRemoteCameraDevice{}
+				parsedInfrared.(*InfraredRemoteCameraDevice).Client = client
+			case "Air Purifier":
+				parsedInfrared = &InfraredRemoteAirPurifierDevice{}
+				parsedInfrared.(*InfraredRemoteAirPurifierDevice).Client = client
+			case "Speaker":
+				parsedInfrared = &InfraredRemoteSpeakerDevice{}
+				parsedInfrared.(*InfraredRemoteSpeakerDevice).Client = client
+			case "Water Heater":
+				parsedInfrared = &InfraredRemoteWaterHeaterDevice{}
+				parsedInfrared.(*InfraredRemoteWaterHeaterDevice).Client = client
+			case "Robot Vacuum Cleaner":
+				parsedInfrared = &InfraredRemoteRobotVacuumCleanerDevice{}
+				parsedInfrared.(*InfraredRemoteRobotVacuumCleanerDevice).Client = client
+			case "Others":
+				parsedInfrared = &InfraredRemoteOthersDevice{}
+				parsedInfrared.(*InfraredRemoteOthersDevice).Client = client
+			default:
+				parsedInfrared = &InfraredRemoteDevice{}
+				parsedInfrared.(*InfraredRemoteDevice).Client = client
+			}
+
+			err = json.Unmarshal(jsonString, parsedInfrared)
+			if err != nil {
+				return err
+			}
+			parsedInfraredRemoteDevices = append(parsedInfraredRemoteDevices, parsedInfrared)
 		}
+		response.Body.InfraredRemoteList = parsedInfraredRemoteDevices
 
 		return nil
 	}

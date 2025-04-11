@@ -24,6 +24,13 @@ func main() {
 	}
 
 	for _, infraredRemoteDevice := range response.Body.InfraredRemoteList {
-		log.Printf("Infrared Remote. DeviceID:%s, DeviceName:%s, RemoteType:%s", infraredRemoteDevice.DeviceID, infraredRemoteDevice.DeviceName, infraredRemoteDevice.RemoteType)
+		switch infraredRemoteDevice.(type) {
+		case *switchbot.InfraredRemoteAirConditionerDevice:
+			infraredRemoteDevice := infraredRemoteDevice.(*switchbot.InfraredRemoteAirConditionerDevice)
+			log.Printf("Air Conditioner. DeviceID:%s, DeviceName:%s, RemoteType:%s", infraredRemoteDevice.DeviceID, infraredRemoteDevice.DeviceName, infraredRemoteDevice.RemoteType)
+		case *switchbot.InfraredRemoteLightDevice:
+			infraredRemoteDevice := infraredRemoteDevice.(*switchbot.InfraredRemoteLightDevice)
+			log.Printf("Light. DeviceID:%s, DeviceName:%s, RemoteType:%s", infraredRemoteDevice.DeviceID, infraredRemoteDevice.DeviceName, infraredRemoteDevice.RemoteType)
+		}
 	}
 }
