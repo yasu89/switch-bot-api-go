@@ -11,7 +11,8 @@ type GetDevicesResponse struct {
 }
 
 type GetDevicesResponseBody struct {
-	DeviceList []interface{} `json:"deviceList"`
+	DeviceList         []interface{}          `json:"deviceList"`
+	InfraredRemoteList []InfraredRemoteDevice `json:"infraredRemoteList"`
 }
 
 type CommonDevice struct {
@@ -72,6 +73,14 @@ type RemoteDevice struct {
 	CommonDeviceListItem
 }
 
+type InfraredRemoteDevice struct {
+	Client      *Client
+	DeviceID    string `json:"deviceId"`
+	DeviceName  string `json:"deviceName"`
+	RemoteType  string `json:"remoteType"`
+	HubDeviceId string `json:"hubDeviceId"`
+}
+
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 	return func(client *Client, bodyBytes []byte) error {
 		err := json.Unmarshal(bodyBytes, response)
@@ -79,6 +88,7 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			return err
 		}
 
+		// Parse the device list
 		var parsedDevices []interface{}
 		for _, deviceInterface := range response.Body.DeviceList {
 			device, ok := deviceInterface.(map[string]interface{})
@@ -136,6 +146,11 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			parsedDevices = append(parsedDevices, parsed)
 		}
 		response.Body.DeviceList = parsedDevices
+
+		// Set the Client for each InfraredRemoteDevice
+		for _, infraredRemoteDevice := range response.Body.InfraredRemoteList {
+			infraredRemoteDevice.Client = client
+		}
 
 		return nil
 	}
