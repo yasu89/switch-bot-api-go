@@ -139,7 +139,7 @@ const (
 func (device *InfraredRemoteAirConditionerDevice) SetAll(
 	temperatureCelsius int, mode AirConditionerMode, fan AirConditionerFanMode, powerState AirConditionerPowerState,
 ) (*CommonResponse, error) {
-	if temperatureCelsius < 16 || temperatureCelsius > 30 {
+	if temperatureCelsius < -10 || temperatureCelsius > 40 {
 		return nil, fmt.Errorf("invalid temperatureCelsius: %d", temperatureCelsius)
 	}
 	if mode < 1 || mode > 5 {
