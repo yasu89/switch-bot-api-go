@@ -97,6 +97,24 @@ func (device *LockDevice) Unlock() (*CommonResponse, error) {
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+func (InfraredRemoteDevice *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return InfraredRemoteDevice.Client.SendCommand(InfraredRemoteDevice.DeviceID, request)
+}
+
+func (InfraredRemoteDevice *InfraredRemoteDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return InfraredRemoteDevice.Client.SendCommand(InfraredRemoteDevice.DeviceID, request)
+}
+
 func (client *Client) SendCommand(deviceId string, request ControlRequest) (*CommonResponse, error) {
 	return client.PostRequest("/devices/"+deviceId+"/commands", request)
 }
