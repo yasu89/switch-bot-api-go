@@ -81,60 +81,78 @@ type InfraredRemoteDevice struct {
 	HubDeviceId string `json:"hubDeviceId"`
 }
 
+// InfraredRemoteAirConditionerDevice represents an infrared remote-controlled air conditioner device.
 type InfraredRemoteAirConditionerDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteTVDevice represents an infrared remote-controlled TV device.
 type InfraredRemoteTVDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteLightDevice represents an infrared remote-controlled light device.
 type InfraredRemoteLightDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteStreamerDevice represents an infrared remote-controlled streamer device.
 type InfraredRemoteStreamerDevice struct {
-	InfraredRemoteDevice
+	InfraredRemoteTVDevice
 }
 
+// InfraredRemoteSetTopBoxDevice represents an infrared remote-controlled set-top box device.
 type InfraredRemoteSetTopBoxDevice struct {
-	InfraredRemoteDevice
+	InfraredRemoteTVDevice
 }
 
+// InfraredRemoteDvdPlayerDevice represents an infrared remote-controlled DVD player device.
 type InfraredRemoteDvdPlayerDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteFanDevice represents an infrared remote-controlled fan device.
 type InfraredRemoteFanDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteProjectorDevice represents an infrared remote-controlled projector device.
 type InfraredRemoteProjectorDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteCameraDevice represents an infrared remote-controlled camera device.
 type InfraredRemoteCameraDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteAirPurifierDevice represents an infrared remote-controlled air purifier device.
 type InfraredRemoteAirPurifierDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteSpeakerDevice represents an infrared remote-controlled speaker device.
 type InfraredRemoteSpeakerDevice struct {
-	InfraredRemoteDevice
+	InfraredRemoteDvdPlayerDevice
 }
 
+// InfraredRemoteWaterHeaterDevice represents an infrared remote-controlled water heater device.
 type InfraredRemoteWaterHeaterDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteRobotVacuumCleanerDevice represents an infrared remote-controlled robot vacuum cleaner device.
 type InfraredRemoteRobotVacuumCleanerDevice struct {
 	InfraredRemoteDevice
 }
 
+// InfraredRemoteOthersDevice represents an infrared remote-controlled device of other types.
 type InfraredRemoteOthersDevice struct {
-	InfraredRemoteDevice
+	Client      *Client
+	DeviceID    string `json:"deviceId"`
+	DeviceName  string `json:"deviceName"`
+	RemoteType  string `json:"remoteType"`
+	HubDeviceId string `json:"hubDeviceId"`
 }
 
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
