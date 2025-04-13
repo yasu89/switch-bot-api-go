@@ -126,6 +126,24 @@ func (device *LockDevice) GetStatus() (*LockDeviceStatusResponse, error) {
 	return response, nil
 }
 
+type KeypadDeviceStatusBody struct {
+	CommonDevice
+}
+
+type KeypadStatusResponse struct {
+	CommonResponse
+	Body *KeypadDeviceStatusBody `json:"body"`
+}
+
+func (device *KeypadDevice) GetStatus() (*KeypadStatusResponse, error) {
+	response := &KeypadStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
 type MotionSensorDeviceStatusBody struct {
 	CommonDevice
 	Battery      int    `json:"battery"`

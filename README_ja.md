@@ -54,8 +54,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Meter Pro CO2                        |   ✅   |    ✅    |   -    |      |
 | Lock                                 |   ✅   |    ✅    |   ✅    |      |
 | Lock Pro                             |   ✅   |    ✅    |   ✅    |      |
-| Keypad                               |   ❌   |    ❌    |   ❌    |      |
-| Keypad Touch                         |   ❌   |    ❌    |   ❌    |      |
+| Keypad                               |   ✅   |    ✅    |   -    |      |
+| Keypad Touch                         |   ✅   |    ✅    |   -    |      |
 | Remote                               |   ✅   |    ❌    |   -    |      |
 | Motion Sensor                        |   ✅   |    ❌    |   -    |      |
 | Contact Sensor                       |   ❌   |    ❌    |   -    |      |

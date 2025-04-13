@@ -65,11 +65,27 @@ type LockDevice struct {
 	LockDevicesIds []string `json:"lockDevicesIds"`
 }
 
-type MotionSensorDevice struct {
+type KeyListItem struct {
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Password   string `json:"password"`
+	Iv         string `json:"iv"`
+	Status     string `json:"status"`
+	CreateTime int64  `json:"createTime"`
+}
+
+type KeypadDevice struct {
 	CommonDeviceListItem
+	LockDevicesIds []string      `json:"lockDevicesIds"`
+	KeyList        []KeyListItem `json:"keyList"`
 }
 
 type RemoteDevice struct {
+	CommonDeviceListItem
+}
+
+type MotionSensorDevice struct {
 	CommonDeviceListItem
 }
 
@@ -202,12 +218,15 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Smart Lock", "Smart Lock Pro":
 				parsed = &LockDevice{}
 				parsed.(*LockDevice).Client = client
-			case "Motion Sensor":
-				parsed = &MotionSensorDevice{}
-				parsed.(*MotionSensorDevice).Client = client
+			case "Keypad", "Keypad Touch":
+				parsed = &KeypadDevice{}
+				parsed.(*KeypadDevice).Client = client
 			case "Remote":
 				parsed = &RemoteDevice{}
 				parsed.(*RemoteDevice).Client = client
+			case "Motion Sensor":
+				parsed = &MotionSensorDevice{}
+				parsed.(*MotionSensorDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client
