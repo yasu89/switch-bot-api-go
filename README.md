@@ -87,7 +87,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Blind Tilt                           |         ✅         |     ✅      |      ✅       |              |
 | Battery Circulator Fan               |         ✅         |     ✅      |      ✅       |              |
 | Circulator Fan                       |         ✅         |     ✅      |      ✅       |              |
-| Roller Shade                         |         ❌         |     ❌      |      ❌       |              |
+| Roller Shade                         |         ✅         |     ✅      |      ✅       |              |
 | Relay Switch 1PM                     |         ❌         |     ❌      |      ❌       |              |
 | Relay Switch 1                       |         ❌         |     ❌      |      ❌       |              |
 

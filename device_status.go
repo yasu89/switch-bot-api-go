@@ -518,3 +518,26 @@ func (device *CirculatorFanDevice) GetStatus() (*CirculatorFanDeviceStatusRespon
 	}
 	return response, nil
 }
+
+type RollerShadeDeviceStatusBody struct {
+	CommonDevice
+	Version       string `json:"version"`
+	Calibrate     bool   `json:"calibrate"`
+	Battery       int    `json:"battery"`
+	Moving        bool   `json:"moving"`
+	SlidePosition int    `json:"slidePosition"`
+}
+
+type RollerShadeDeviceStatusResponse struct {
+	CommonResponse
+	Body *RollerShadeDeviceStatusBody `json:"body"`
+}
+
+func (device *RollerShadeDevice) GetStatus() (*RollerShadeDeviceStatusResponse, error) {
+	response := &RollerShadeDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

@@ -941,6 +941,19 @@ func (device *CirculatorFanDevice) SetWindSpeed(speed int) (*CommonResponse, err
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// SetPosition sends a command to set the position of the RollerShadeDevice
+func (device *RollerShadeDevice) SetPosition(position int) (*CommonResponse, error) {
+	if position < 0 || position > 100 {
+		return nil, fmt.Errorf("invalid position: %d", position)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setPosition",
+		Parameter:   fmt.Sprintf("%d", position),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOff sends a command to turn off the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOff() (*CommonResponse, error) {
 	request := ControlRequest{

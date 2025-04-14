@@ -164,6 +164,15 @@ type CirculatorFanDevice struct {
 	CommonDeviceListItem
 }
 
+type RollerShadeDevice struct {
+	CommonDeviceListItem
+	BleVersion         string   `json:"bleVersion"`
+	GroupingDevicesIds []string `json:"groupingDevicesIds"`
+	Group              bool     `json:"group"`
+	Master             bool     `json:"master"`
+	GroupName          string   `json:"groupName"`
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -353,6 +362,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Circulator Fan":
 				parsed = &CirculatorFanDevice{}
 				parsed.(*CirculatorFanDevice).Client = client
+			case "Roller Shade":
+				parsed = &RollerShadeDevice{}
+				parsed.(*RollerShadeDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client
