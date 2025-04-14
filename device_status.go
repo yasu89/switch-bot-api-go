@@ -341,3 +341,26 @@ func (device *RobotVacuumCleanerDevice) GetStatus() (*RobotVacuumCleanerDeviceSt
 	}
 	return response, nil
 }
+
+type RobotVacuumCleanerS10DeviceStatusBody struct {
+	CommonDevice
+	WorkingStatus    string `json:"workingStatus"`
+	OnlineStatus     string `json:"onlineStatus"`
+	Battery          int    `json:"battery"`
+	WaterBaseBattery int    `json:"waterBaseBattery"`
+	TaskType         string `json:"taskType"`
+}
+
+type RobotVacuumCleanerS10DeviceStatusResponse struct {
+	CommonResponse
+	Body *RobotVacuumCleanerS10DeviceStatusBody `json:"body"`
+}
+
+func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10DeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerS10DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

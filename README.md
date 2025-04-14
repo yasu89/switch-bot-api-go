@@ -72,8 +72,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Robot Vacuum Cleaner S1 Plus         |         ✅         |     ✅      |      ✅       |              |
 | Mini Robot Vacuum K10+               |         ✅         |     ✅      |      ✅       |              |
 | Mini Robot Vacuum K10+ Pro           |         ✅         |     ✅      |      ✅       |              |
-| K10+ Pro Combo                       |         ❌         |     ❌      |      ❌       |              |
-| Floor Cleaning Robot S10             |         ❌         |     ❌      |      ❌       |              |
+| K10+ Pro Combo                       |         ✅         |     ✅      |      ✅       |              |
+| Floor Cleaning Robot S10             |         ✅         |     ✅      |      ✅       |              |
 | Humidifier                           |         ❌         |     ❌      |      ❌       |              |
 | Evaporative Humidifier               |         ❌         |     ❌      |      ❌       |              |
 | Evaporative Humidifier (Auto-refill) |         ❌         |     ❌      |      ❌       |              |
