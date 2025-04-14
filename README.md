@@ -42,8 +42,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Device                               | Struct Definition | Get Status | Send Command | Verification |
 |:-------------------------------------|:-----------------:|:----------:|:------------:|:------------:|
 | Bot                                  |         ✅         |     ✅      |      ✅       |      ✅       |
-| Curtain                              |         ✅         |     ❌      |      ✅       |              |
-| Curtain 3                            |         ✅         |     ❌      |      ✅       |              |
+| Curtain                              |         ✅         |     ✅      |      ✅       |              |
+| Curtain 3                            |         ✅         |     ✅      |      ✅       |              |
 | Hub                                  |        ✅️         |     ❌      |      -       |              |
 | Hub Plus                             |         ✅         |     ❌      |      -       |              |
 | Hub Mini                             |         ✅         |     ❌      |      -       |      ✅       |

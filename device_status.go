@@ -36,6 +36,30 @@ func (device *BotDevice) GetStatus() (*BotDeviceStatusResponse, error) {
 	return response, nil
 }
 
+type CurtainDeviceStatusBody struct {
+	CommonDevice
+	Calibrate     bool   `json:"calibrate"`
+	Group         bool   `json:"group"`
+	Moving        bool   `json:"moving"`
+	Battery       int    `json:"battery"`
+	Version       string `json:"version"`
+	SlidePosition string `json:"slidePosition"`
+}
+
+type CurtainDeviceStatusResponse struct {
+	CommonResponse
+	Body *CurtainDeviceStatusBody `json:"body"`
+}
+
+func (device *CurtainDevice) GetStatus() (*CurtainDeviceStatusResponse, error) {
+	response := &CurtainDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
 type Hub2DeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
