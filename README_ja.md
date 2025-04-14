@@ -67,10 +67,10 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Plug                                 |   ✅   |    ✅    |   ✅    |      |
 | Strip Light                          |   ✅   |    ✅    |   ✅    |      |
 | Color Bulb                           |   ✅   |    ✅    |   ✅    |      |
-| Robot Vacuum Cleaner S1              |   ❌   |    ❌    |   ❌    |      |
-| Robot Vacuum Cleaner S1 Plus         |   ❌   |    ❌    |   ❌    |      |
-| Mini Robot Vacuum K10+               |   ❌   |    ❌    |   ❌    |      |
-| Mini Robot Vacuum K10+ Pro           |   ❌   |    ❌    |   ❌    |      |
+| Robot Vacuum Cleaner S1              |   ✅   |    ✅    |   ✅    |      |
+| Robot Vacuum Cleaner S1 Plus         |   ✅   |    ✅    |   ✅    |      |
+| Mini Robot Vacuum K10+               |   ✅   |    ✅    |   ✅    |      |
+| Mini Robot Vacuum K10+ Pro           |   ✅   |    ✅    |   ✅    |      |
 | K10+ Pro Combo                       |   ❌   |    ❌    |   ❌    |      |
 | Floor Cleaning Robot S10             |   ❌   |    ❌    |   ❌    |      |
 | Humidifier                           |   ❌   |    ❌    |   ❌    |      |

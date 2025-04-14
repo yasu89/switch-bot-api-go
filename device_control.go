@@ -378,6 +378,59 @@ func (device *ColorBulbDevice) SetColorTemperature(colorTemperature int) (*Commo
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// Start sends a command to start vacuuming the RobotVacuumCleanerDevice
+func (device *RobotVacuumCleanerDevice) Start() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "start",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Stop sends a command to stop vacuuming the RobotVacuumCleanerDevice
+func (device *RobotVacuumCleanerDevice) Stop() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "stop",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Dock sends a command to return the RobotVacuumCleanerDevice to its charging dock.
+func (device *RobotVacuumCleanerDevice) Dock() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "dock",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// RobotVacuumCleanerPowerLevel represents the power level of the RobotVacuumCleanerDevice.
+type RobotVacuumCleanerPowerLevel int
+
+const (
+	RobotVacuumCleanerPowerLevelQuiet    = RobotVacuumCleanerPowerLevel(0)
+	RobotVacuumCleanerPowerLevelStandard = RobotVacuumCleanerPowerLevel(1)
+	RobotVacuumCleanerPowerLevelStrong   = RobotVacuumCleanerPowerLevel(2)
+	RobotVacuumCleanerPowerLevelMax      = RobotVacuumCleanerPowerLevel(3)
+)
+
+// SetPowerLevel sends a command to set the suction power level of the RobotVacuumCleanerDevice.
+func (device *RobotVacuumCleanerDevice) SetPowerLevel(powerLevel RobotVacuumCleanerPowerLevel) (*CommonResponse, error) {
+	if powerLevel < 0 || powerLevel > 3 {
+		return nil, fmt.Errorf("invalid powerLevel: %d", powerLevel)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "PowLevel",
+		Parameter:   fmt.Sprintf("%d", powerLevel),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	request := ControlRequest{

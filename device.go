@@ -117,6 +117,10 @@ type ColorBulbDevice struct {
 	CommonDeviceListItem
 }
 
+type RobotVacuumCleanerDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -276,6 +280,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Color Bulb":
 				parsed = &ColorBulbDevice{}
 				parsed.(*ColorBulbDevice).Client = client
+			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro":
+				parsed = &RobotVacuumCleanerDevice{}
+				parsed.(*RobotVacuumCleanerDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

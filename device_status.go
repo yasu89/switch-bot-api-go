@@ -320,3 +320,24 @@ func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, erro
 	}
 	return response, nil
 }
+
+type RobotVacuumCleanerDeviceStatusBody struct {
+	CommonDevice
+	WorkingStatus string `json:"workingStatus"`
+	OnlineStatus  string `json:"onlineStatus"`
+	Battery       int    `json:"battery"`
+}
+
+type RobotVacuumCleanerDeviceStatusResponse struct {
+	CommonResponse
+	Body *RobotVacuumCleanerDeviceStatusBody `json:"body"`
+}
+
+func (device *RobotVacuumCleanerDevice) GetStatus() (*RobotVacuumCleanerDeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
