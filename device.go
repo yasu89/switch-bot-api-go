@@ -65,11 +65,119 @@ type LockDevice struct {
 	LockDevicesIds []string `json:"lockDevicesIds"`
 }
 
+type KeyListItem struct {
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Password   string `json:"password"`
+	Iv         string `json:"iv"`
+	Status     string `json:"status"`
+	CreateTime int64  `json:"createTime"`
+}
+
+type KeypadDevice struct {
+	CommonDeviceListItem
+	LockDevicesIds []string      `json:"lockDevicesIds"`
+	KeyList        []KeyListItem `json:"keyList"`
+}
+
+type RemoteDevice struct {
+	CommonDeviceListItem
+}
+
 type MotionSensorDevice struct {
 	CommonDeviceListItem
 }
 
-type RemoteDevice struct {
+type ContactSensorDevice struct {
+	CommonDeviceListItem
+}
+
+type WaterLeakDetectorDevice struct {
+	CommonDeviceListItem
+}
+
+type CeilingLightDevice struct {
+	CommonDeviceListItem
+}
+
+type PlugMiniDevice struct {
+	CommonDeviceListItem
+}
+
+type PlugDevice struct {
+	CommonDeviceListItem
+}
+
+type StripLightDevice struct {
+	CommonDeviceListItem
+}
+
+type ColorBulbDevice struct {
+	CommonDeviceListItem
+}
+
+type RobotVacuumCleanerDevice struct {
+	CommonDeviceListItem
+}
+
+type RobotVacuumCleanerS10Device struct {
+	CommonDeviceListItem
+}
+
+type HumidifierDevice struct {
+	CommonDeviceListItem
+}
+
+type EvaporativeHumidifierDevice struct {
+	CommonDeviceListItem
+}
+
+type AirPurifierDevice struct {
+	CommonDeviceListItem
+}
+
+type IndoorCamDevice struct {
+	CommonDeviceListItem
+}
+
+type PanTiltCamDevice struct {
+	CommonDeviceListItem
+}
+
+type BlindTiltDevice struct {
+	CommonDeviceListItem
+	Version             int      `json:"version"`
+	BlindTiltDevicesIds []string `json:"blindTiltDevicesIds"`
+	Calibrate           bool     `json:"calibrate"`
+	Group               bool     `json:"group"`
+	Master              bool     `json:"master"`
+	Direction           string   `json:"direction"`
+	SlidePosition       int      `json:"slidePosition"`
+}
+
+type BatteryCirculatorFanDevice struct {
+	CommonDeviceListItem
+}
+
+type CirculatorFanDevice struct {
+	CommonDeviceListItem
+}
+
+type RollerShadeDevice struct {
+	CommonDeviceListItem
+	BleVersion         string   `json:"bleVersion"`
+	GroupingDevicesIds []string `json:"groupingDevicesIds"`
+	Group              bool     `json:"group"`
+	Master             bool     `json:"master"`
+	GroupName          string   `json:"groupName"`
+}
+
+type RelaySwitch1PMDevice struct {
+	CommonDeviceListItem
+}
+
+type RelaySwitch1Device struct {
 	CommonDeviceListItem
 }
 
@@ -202,12 +310,75 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Smart Lock", "Smart Lock Pro":
 				parsed = &LockDevice{}
 				parsed.(*LockDevice).Client = client
-			case "Motion Sensor":
-				parsed = &MotionSensorDevice{}
-				parsed.(*MotionSensorDevice).Client = client
+			case "Keypad", "Keypad Touch":
+				parsed = &KeypadDevice{}
+				parsed.(*KeypadDevice).Client = client
 			case "Remote":
 				parsed = &RemoteDevice{}
 				parsed.(*RemoteDevice).Client = client
+			case "Motion Sensor":
+				parsed = &MotionSensorDevice{}
+				parsed.(*MotionSensorDevice).Client = client
+			case "Contact Sensor":
+				parsed = &ContactSensorDevice{}
+				parsed.(*ContactSensorDevice).Client = client
+			case "Water Detector":
+				parsed = &WaterLeakDetectorDevice{}
+				parsed.(*WaterLeakDetectorDevice).Client = client
+			case "Ceiling Light", "Ceiling Light Pro":
+				parsed = &CeilingLightDevice{}
+				parsed.(*CeilingLightDevice).Client = client
+			case "Plug Mini (US)", "Plug Mini (JP)":
+				parsed = &PlugMiniDevice{}
+				parsed.(*PlugMiniDevice).Client = client
+			case "Plug":
+				parsed = &PlugDevice{}
+				parsed.(*PlugDevice).Client = client
+			case "Strip Light":
+				parsed = &StripLightDevice{}
+				parsed.(*StripLightDevice).Client = client
+			case "Color Bulb":
+				parsed = &ColorBulbDevice{}
+				parsed.(*ColorBulbDevice).Client = client
+			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro", "Robot Vacuum Cleaner K10+ Pro Combo":
+				parsed = &RobotVacuumCleanerDevice{}
+				parsed.(*RobotVacuumCleanerDevice).Client = client
+			case "Robot Vacuum Cleaner S10":
+				parsed = &RobotVacuumCleanerS10Device{}
+				parsed.(*RobotVacuumCleanerS10Device).Client = client
+			case "Humidifier":
+				parsed = &HumidifierDevice{}
+				parsed.(*HumidifierDevice).Client = client
+			case "Humidifier2":
+				parsed = &EvaporativeHumidifierDevice{}
+				parsed.(*EvaporativeHumidifierDevice).Client = client
+			case "Air Purifier VOC", "Air Purifier Table VOC", "Air Purifier PM2.5", "Air Purifier Table PM2.5":
+				parsed = &AirPurifierDevice{}
+				parsed.(*AirPurifierDevice).Client = client
+			case "Indoor Cam":
+				parsed = &IndoorCamDevice{}
+				parsed.(*IndoorCamDevice).Client = client
+			case "Pan/Tilt Cam":
+				parsed = &PanTiltCamDevice{}
+				parsed.(*PanTiltCamDevice).Client = client
+			case "Blind Tilt":
+				parsed = &BlindTiltDevice{}
+				parsed.(*BlindTiltDevice).Client = client
+			case "Battery Circulator Fan":
+				parsed = &BatteryCirculatorFanDevice{}
+				parsed.(*BatteryCirculatorFanDevice).Client = client
+			case "Circulator Fan":
+				parsed = &CirculatorFanDevice{}
+				parsed.(*CirculatorFanDevice).Client = client
+			case "Roller Shade":
+				parsed = &RollerShadeDevice{}
+				parsed.(*RollerShadeDevice).Client = client
+			case "Relay Switch 1PM":
+				parsed = &RelaySwitch1PMDevice{}
+				parsed.(*RelaySwitch1PMDevice).Client = client
+			case "Relay Switch 1":
+				parsed = &RelaySwitch1Device{}
+				parsed.(*RelaySwitch1Device).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client
