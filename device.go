@@ -137,6 +137,14 @@ type AirPurifierDevice struct {
 	CommonDeviceListItem
 }
 
+type IndoorCamDevice struct {
+	CommonDeviceListItem
+}
+
+type PanTiltCamDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -311,6 +319,12 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Air Purifier VOC", "Air Purifier Table VOC", "Air Purifier PM2.5", "Air Purifier Table PM2.5":
 				parsed = &AirPurifierDevice{}
 				parsed.(*AirPurifierDevice).Client = client
+			case "Indoor Cam":
+				parsed = &IndoorCamDevice{}
+				parsed.(*IndoorCamDevice).Client = client
+			case "Pan/Tilt Cam":
+				parsed = &PanTiltCamDevice{}
+				parsed.(*PanTiltCamDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

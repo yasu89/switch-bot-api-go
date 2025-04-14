@@ -80,9 +80,9 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Air Purifier Table VOC               |   ✅   |    ✅    |   ✅    |      |
 | Air Purifier PM2.5                   |   ✅   |    ✅    |   ✅    |      |
 | Air Purifier Table PM2.5             |   ✅   |    ✅    |   ✅    |      |
-| Indoor Cam                           |   ❌   |    -    |   -    |      |
-| Pan/Tilt Cam                         |   ❌   |    -    |   -    |      |
-| Pan/Tilt Cam 2K                      |   ❌   |    -    |   -    |      |
+| Indoor Cam                           |   ✅   |    -    |   -    |      |
+| Pan/Tilt Cam                         |   ✅   |    -    |   -    |      |
+| Pan/Tilt Cam 2K                      |   ✅   |    -    |   -    |      |
 | Blind Tilt                           |   ❌   |    ❌    |   ❌    |      |
 | Battery Circulator Fan               |   ❌   |    ❌    |   ❌    |      |
 | Circulator Fan                       |   ❌   |    ❌    |   ❌    |      |
