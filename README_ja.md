@@ -43,9 +43,9 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Bot                                  |   ✅   |    ✅    |   ✅    |  ✅   |
 | Curtain                              |   ✅   |    ✅    |   ✅    |      |
 | Curtain 3                            |   ✅   |    ✅    |   ✅    |      |
-| Hub                                  |  ✅️   |    ❌    |   -    |      |
-| Hub Plus                             |   ✅   |    ❌    |   -    |      |
-| Hub Mini                             |   ✅   |    ❌    |   -    |  ✅   |
+| Hub                                  |  ✅️   |    -    |   -    |      |
+| Hub Plus                             |   ✅   |    -    |   -    |      |
+| Hub Mini                             |   ✅   |    -    |   -    |  ✅   |
 | Hub 2                                |   ✅   |    ✅    |   -    |  ✅   |
 | Meter                                |   ✅   |    ✅    |   -    |  ✅   |
 | Meter Plus                           |   ✅   |    ✅    |   -    |      |
