@@ -156,6 +156,14 @@ type BlindTiltDevice struct {
 	SlidePosition       int      `json:"slidePosition"`
 }
 
+type BatteryCirculatorFanDevice struct {
+	CommonDeviceListItem
+}
+
+type CirculatorFanDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -339,6 +347,12 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Blind Tilt":
 				parsed = &BlindTiltDevice{}
 				parsed.(*BlindTiltDevice).Client = client
+			case "Battery Circulator Fan":
+				parsed = &BatteryCirculatorFanDevice{}
+				parsed.(*BatteryCirculatorFanDevice).Client = client
+			case "Circulator Fan":
+				parsed = &CirculatorFanDevice{}
+				parsed.(*CirculatorFanDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

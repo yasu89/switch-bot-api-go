@@ -806,6 +806,141 @@ func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// TurnOn sends a command to turn on the BatteryCirculatorFanDevice
+func (device *BatteryCirculatorFanDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the BatteryCirculatorFanDevice
+func (device *BatteryCirculatorFanDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type CirculatorNightLightMode string
+
+const (
+	CirculatorNightLightModeTurnOff    = CirculatorNightLightMode("off")
+	CirculatorNightLightModeTurnBright = CirculatorNightLightMode("1")
+	CirculatorNightLightModeTurnDim    = CirculatorNightLightMode("2")
+)
+
+// SetNightLightMode sends a command to set the night light mode of the BatteryCirculatorFanDevice
+func (device *BatteryCirculatorFanDevice) SetNightLightMode(mode CirculatorNightLightMode) (*CommonResponse, error) {
+	if mode != CirculatorNightLightModeTurnOff && mode != CirculatorNightLightModeTurnBright && mode != CirculatorNightLightModeTurnDim {
+		return nil, fmt.Errorf("invalid mode: %s", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setNightLightMode",
+		Parameter:   mode,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type CirculatorWindMode string
+
+const (
+	CirculatorWindModeDirect  = CirculatorWindMode("direct")
+	CirculatorWindModeNatural = CirculatorWindMode("natural")
+	CirculatorWindModeSleep   = CirculatorWindMode("sleep")
+	CirculatorWindModeBaby    = CirculatorWindMode("baby")
+)
+
+// SetWindMode sends a command to set the wind mode of the BatteryCirculatorFanDevice
+func (device *BatteryCirculatorFanDevice) SetWindMode(mode CirculatorWindMode) (*CommonResponse, error) {
+	if mode != CirculatorWindModeDirect && mode != CirculatorWindModeNatural && mode != CirculatorWindModeSleep && mode != CirculatorWindModeBaby {
+		return nil, fmt.Errorf("invalid mode: %s", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setWindMode",
+		Parameter:   mode,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetWindSpeed sends a command to set the wind speed of the BatteryCirculatorFanDevice
+func (device *BatteryCirculatorFanDevice) SetWindSpeed(speed int) (*CommonResponse, error) {
+	if speed < 1 || speed > 100 {
+		return nil, fmt.Errorf("invalid speed: %d", speed)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setWindSpeed",
+		Parameter:   fmt.Sprintf("%d", speed),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the CirculatorFanDevice
+func (device *CirculatorFanDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetNightLightMode sends a command to set the night light mode of the CirculatorFanDevice
+func (device *CirculatorFanDevice) SetNightLightMode(mode CirculatorNightLightMode) (*CommonResponse, error) {
+	if mode != CirculatorNightLightModeTurnOff && mode != CirculatorNightLightModeTurnBright && mode != CirculatorNightLightModeTurnDim {
+		return nil, fmt.Errorf("invalid mode: %s", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setNightLightMode",
+		Parameter:   mode,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the CirculatorFanDevice
+func (device *CirculatorFanDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetWindMode sends a command to set the wind mode of the CirculatorFanDevice
+func (device *CirculatorFanDevice) SetWindMode(mode CirculatorWindMode) (*CommonResponse, error) {
+	if mode != CirculatorWindModeDirect && mode != CirculatorWindModeNatural && mode != CirculatorWindModeSleep && mode != CirculatorWindModeBaby {
+		return nil, fmt.Errorf("invalid mode: %s", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setWindMode",
+		Parameter:   mode,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetWindSpeed sends a command to set the wind speed of the CirculatorFanDevice
+func (device *CirculatorFanDevice) SetWindSpeed(speed int) (*CommonResponse, error) {
+	if speed < 1 || speed > 100 {
+		return nil, fmt.Errorf("invalid speed: %d", speed)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setWindSpeed",
+		Parameter:   fmt.Sprintf("%d", speed),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOff sends a command to turn off the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOff() (*CommonResponse, error) {
 	request := ControlRequest{

@@ -466,3 +466,55 @@ func (device *BlindTiltDevice) GetStatus() (*BlindTiltDeviceStatusResponse, erro
 	}
 	return response, nil
 }
+
+type BatteryCirculatorFanDeviceStatusBody struct {
+	CommonDevice
+	Mode                string `json:"mode"`
+	Version             string `json:"version"`
+	Battery             int    `json:"battery"`
+	Power               string `json:"power"`
+	NightStatus         string `json:"nightStatus"`
+	Oscillation         string `json:"oscillation"`
+	VerticalOscillation string `json:"verticalOscillation"`
+	ChargingStatus      string `json:"chargingStatus"`
+	FanSpeed            int    `json:"fanSpeed"`
+}
+
+type BatteryCirculatorFanDeviceStatusResponse struct {
+	CommonResponse
+	Body *BatteryCirculatorFanDeviceStatusBody `json:"body"`
+}
+
+func (device *BatteryCirculatorFanDevice) GetStatus() (*BatteryCirculatorFanDeviceStatusResponse, error) {
+	response := &BatteryCirculatorFanDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type CirculatorFanDeviceStatusBody struct {
+	CommonDevice
+	Mode                string `json:"mode"`
+	Version             string `json:"version"`
+	Power               string `json:"power"`
+	NightStatus         string `json:"nightStatus"`
+	Oscillation         string `json:"oscillation"`
+	VerticalOscillation string `json:"verticalOscillation"`
+	FanSpeed            int    `json:"fanSpeed"`
+}
+
+type CirculatorFanDeviceStatusResponse struct {
+	CommonResponse
+	Body *CirculatorFanDeviceStatusBody `json:"body"`
+}
+
+func (device *CirculatorFanDevice) GetStatus() (*CirculatorFanDeviceStatusResponse, error) {
+	response := &CirculatorFanDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

@@ -84,8 +84,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Pan/Tilt Cam                         |   ✅   |    -    |   -    |      |
 | Pan/Tilt Cam 2K                      |   ✅   |    -    |   -    |      |
 | Blind Tilt                           |   ✅   |    ✅    |   ✅    |      |
-| Battery Circulator Fan               |   ❌   |    ❌    |   ❌    |      |
-| Circulator Fan                       |   ❌   |    ❌    |   ❌    |      |
+| Battery Circulator Fan               |   ✅   |    ✅    |   ✅    |      |
+| Circulator Fan                       |   ✅   |    ✅    |   ✅    |      |
 | Roller Shade                         |   ❌   |    ❌    |   ❌    |      |
 | Relay Switch 1PM                     |   ❌   |    ❌    |   ❌    |      |
 | Relay Switch 1                       |   ❌   |    ❌    |   ❌    |      |
