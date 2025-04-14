@@ -166,3 +166,69 @@ func (device *MotionSensorDevice) GetStatus() (*MotionSensorDeviceStatusResponse
 	}
 	return response, nil
 }
+
+type ContactSensorDeviceStatusBody struct {
+	CommonDevice
+	Battery      int    `json:"battery"`
+	Version      string `json:"version"`
+	MoveDetected bool   `json:"moveDetected"`
+	OpenState    string `json:"openState"`
+	Brightness   string `json:"brightness"`
+}
+
+type ContactSensorDeviceStatusResponse struct {
+	CommonResponse
+	Body *ContactSensorDeviceStatusBody `json:"body"`
+}
+
+func (device *ContactSensorDevice) GetStatus() (*ContactSensorDeviceStatusResponse, error) {
+	response := &ContactSensorDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type WaterLeakDetectorDeviceStatusBody struct {
+	CommonDevice
+	Battery int    `json:"battery"`
+	Version string `json:"version"`
+	Status  bool   `json:"status"`
+}
+
+type WaterLeakDetectorDeviceStatusResponse struct {
+	CommonResponse
+	Body *WaterLeakDetectorDeviceStatusBody `json:"body"`
+}
+
+func (device *WaterLeakDetectorDevice) GetStatus() (*WaterLeakDetectorDeviceStatusResponse, error) {
+	response := &WaterLeakDetectorDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type CeilingLightDeviceStatusBody struct {
+	CommonDevice
+	Power            string `json:"power"`
+	Version          string `json:"version"`
+	Brightness       int    `json:"brightness"`
+	ColorTemperature int    `json:"colorTemperature"`
+}
+
+type CeilingLightDeviceStatusResponse struct {
+	CommonResponse
+	Body *CeilingLightDeviceStatusBody `json:"body"`
+}
+
+func (device *CeilingLightDevice) GetStatus() (*CeilingLightDeviceStatusResponse, error) {
+	response := &CeilingLightDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

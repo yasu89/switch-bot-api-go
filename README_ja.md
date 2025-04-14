@@ -58,10 +58,10 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Keypad Touch                         |   ✅   |    ✅    |   -    |      |
 | Remote                               |   ✅   |    ❌    |   -    |      |
 | Motion Sensor                        |   ✅   |    ❌    |   -    |      |
-| Contact Sensor                       |   ❌   |    ❌    |   -    |      |
-| Water Leak Detector                  |   ❌   |    ❌    |   -    |      |
-| Ceiling Light                        |   ❌   |    ❌    |   ❌    |      |
-| Ceiling Light Pro                    |   ❌   |    ❌    |   ❌    |      |
+| Contact Sensor                       |   ✅   |    ✅    |   -    |      |
+| Water Leak Detector                  |   ✅   |    ✅    |   -    |      |
+| Ceiling Light                        |   ✅   |    ✅    |   ✅    |      |
+| Ceiling Light Pro                    |   ✅   |    ✅    |   ✅    |      |
 | Plug Mini (US)                       |   ❌   |    ❌    |   ❌    |      |
 | Plug Mini (JP)                       |   ❌   |    ❌    |   ❌    |      |
 | Plug                                 |   ❌   |    ❌    |   ❌    |      |

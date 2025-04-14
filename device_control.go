@@ -97,6 +97,57 @@ func (device *LockDevice) Unlock() (*CommonResponse, error) {
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+func (device *CeilingLightDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *CeilingLightDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *CeilingLightDevice) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *CeilingLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+	if brightness < 0 || brightness > 100 {
+		return nil, fmt.Errorf("invalid brightness: %d", brightness)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setBrightness",
+		Parameter:   fmt.Sprintf("%d", brightness),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *CeilingLightDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+	if colorTemperature < 2700 || colorTemperature > 6500 {
+		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setColorTemperature",
+		Parameter:   fmt.Sprintf("%d", colorTemperature),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	request := ControlRequest{

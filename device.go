@@ -89,6 +89,18 @@ type MotionSensorDevice struct {
 	CommonDeviceListItem
 }
 
+type ContactSensorDevice struct {
+	CommonDeviceListItem
+}
+
+type WaterLeakDetectorDevice struct {
+	CommonDeviceListItem
+}
+
+type CeilingLightDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -227,6 +239,15 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Motion Sensor":
 				parsed = &MotionSensorDevice{}
 				parsed.(*MotionSensorDevice).Client = client
+			case "Contact Sensor":
+				parsed = &ContactSensorDevice{}
+				parsed.(*ContactSensorDevice).Client = client
+			case "Water Detector":
+				parsed = &WaterLeakDetectorDevice{}
+				parsed.(*WaterLeakDetectorDevice).Client = client
+			case "Ceiling Light", "Ceiling Light Pro":
+				parsed = &CeilingLightDevice{}
+				parsed.(*CeilingLightDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client
