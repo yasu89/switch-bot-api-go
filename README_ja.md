@@ -87,8 +87,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Battery Circulator Fan               |   ✅   |    ✅    |   ✅    |      |
 | Circulator Fan                       |   ✅   |    ✅    |   ✅    |      |
 | Roller Shade                         |   ✅   |    ✅    |   ✅    |      |
-| Relay Switch 1PM                     |   ❌   |    ❌    |   ❌    |      |
-| Relay Switch 1                       |   ❌   |    ❌    |   ❌    |      |
+| Relay Switch 1PM                     |   ✅   |    ✅    |   ✅    |      |
+| Relay Switch 1                       |   ✅   |    ✅    |   ✅    |      |
 
 ### 赤外線リモコン
 

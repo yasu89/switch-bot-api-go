@@ -541,3 +541,47 @@ func (device *RollerShadeDevice) GetStatus() (*RollerShadeDeviceStatusResponse, 
 	}
 	return response, nil
 }
+
+type RelaySwitch1PMDeviceStatusBody struct {
+	CommonDevice
+	SwitchStatus    int    `json:"switchStatus"`
+	Voltage         int    `json:"voltage"`
+	Version         string `json:"version"`
+	Power           int    `json:"power"`
+	UsedElectricity int    `json:"usedElectricity"`
+	ElectricCurrent int    `json:"electricCurrent"`
+}
+
+type RelaySwitch1PMDeviceStatusResponse struct {
+	CommonResponse
+	Body *RelaySwitch1PMDeviceStatusBody `json:"body"`
+}
+
+func (device *RelaySwitch1PMDevice) GetStatus() (*RelaySwitch1PMDeviceStatusResponse, error) {
+	response := &RelaySwitch1PMDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type RelaySwitch1DeviceStatusBody struct {
+	CommonDevice
+	SwitchStatus int    `json:"switchStatus"`
+	Version      string `json:"version"`
+}
+
+type RelaySwitch1DeviceStatusResponse struct {
+	CommonResponse
+	Body *RelaySwitch1DeviceStatusBody `json:"body"`
+}
+
+func (device *RelaySwitch1Device) GetStatus() (*RelaySwitch1DeviceStatusResponse, error) {
+	response := &RelaySwitch1DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

@@ -954,6 +954,101 @@ func (device *RollerShadeDevice) SetPosition(position int) (*CommonResponse, err
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// TurnOn sends a command to turn on the RelaySwitch1PMDevice
+func (device *RelaySwitch1PMDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the RelaySwitch1PMDevice
+func (device *RelaySwitch1PMDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Toggle sends a command to toggle the RelaySwitch1PMDevice
+func (device *RelaySwitch1PMDevice) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type RelaySwitchMode int
+
+const (
+	RelaySwitchModeToggle    = RelaySwitchMode(0)
+	RelaySwitchModeEdge      = RelaySwitchMode(1)
+	RelaySwitchModeDetached  = RelaySwitchMode(2)
+	RelaySwitchModeMomentary = RelaySwitchMode(3)
+)
+
+// SetMode sends a command to set the mode of the RelaySwitch1PMDevice
+func (device *RelaySwitch1PMDevice) SetMode(mode RelaySwitchMode) (*CommonResponse, error) {
+	if mode < 0 || mode > 3 {
+		return nil, fmt.Errorf("invalid mode: %d", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d", mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the RelaySwitch1Device
+func (device *RelaySwitch1Device) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the RelaySwitch1Device
+func (device *RelaySwitch1Device) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Toggle sends a command to toggle the RelaySwitch1Device
+func (device *RelaySwitch1Device) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetMode sends a command to set the mode of the RelaySwitch1Device
+func (device *RelaySwitch1Device) SetMode(mode RelaySwitchMode) (*CommonResponse, error) {
+	if mode < 0 || mode > 3 {
+		return nil, fmt.Errorf("invalid mode: %d", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d", mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOff sends a command to turn off the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOff() (*CommonResponse, error) {
 	request := ControlRequest{

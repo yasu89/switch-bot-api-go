@@ -173,6 +173,14 @@ type RollerShadeDevice struct {
 	GroupName          string   `json:"groupName"`
 }
 
+type RelaySwitch1PMDevice struct {
+	CommonDeviceListItem
+}
+
+type RelaySwitch1Device struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -365,6 +373,12 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Roller Shade":
 				parsed = &RollerShadeDevice{}
 				parsed.(*RollerShadeDevice).Client = client
+			case "Relay Switch 1PM":
+				parsed = &RelaySwitch1PMDevice{}
+				parsed.(*RelaySwitch1PMDevice).Client = client
+			case "Relay Switch 1":
+				parsed = &RelaySwitch1Device{}
+				parsed.(*RelaySwitch1Device).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client
