@@ -275,3 +275,48 @@ func (device *PlugDevice) GetStatus() (*PlugDeviceStatusResponse, error) {
 	}
 	return response, nil
 }
+
+type StripLightDeviceStatusBody struct {
+	CommonDevice
+	Power      string `json:"power"`
+	Version    string `json:"version"`
+	Brightness int    `json:"brightness"`
+	Color      string `json:"color"`
+}
+
+type StripLightDeviceStatusResponse struct {
+	CommonResponse
+	Body *StripLightDeviceStatusBody `json:"body"`
+}
+
+func (device *StripLightDevice) GetStatus() (*StripLightDeviceStatusResponse, error) {
+	response := &StripLightDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type ColorBulbDeviceStatusBody struct {
+	CommonDevice
+	Power            string `json:"power"`
+	Brightness       int    `json:"brightness"`
+	Version          string `json:"version"`
+	Color            string `json:"color"`
+	ColorTemperature int    `json:"colorTemperature"`
+}
+
+type ColorBulbDeviceStatusResponse struct {
+	CommonResponse
+	Body *ColorBulbDeviceStatusBody `json:"body"`
+}
+
+func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, error) {
+	response := &ColorBulbDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

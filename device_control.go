@@ -2,6 +2,7 @@ package switchbot
 
 import (
 	"fmt"
+	"image/color"
 	"regexp"
 )
 
@@ -254,6 +255,125 @@ func (device *PlugDevice) TurnOff() (*CommonResponse, error) {
 		CommandType: "command",
 		Command:     "turnOff",
 		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the StripLightDevice
+func (device *StripLightDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the StripLightDevice
+func (device *StripLightDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Toggle sends a command to toggle the StripLightDevice
+func (device *StripLightDevice) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetBrightness sends a command to set the brightness of the StripLightDevice
+func (device *StripLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+	if brightness < 0 || brightness > 100 {
+		return nil, fmt.Errorf("invalid brightness: %d", brightness)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setBrightness",
+		Parameter:   fmt.Sprintf("%d", brightness),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetColor sends a command to set the color of the StripLightDevice
+func (device *StripLightDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setColor",
+		Parameter:   fmt.Sprintf("%d:%d:%d", color.R, color.G, color.B),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the ColorBulbDevice
+func (device *ColorBulbDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the ColorBulbDevice
+func (device *ColorBulbDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Toggle sends a command to toggle the ColorBulbDevice
+func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetBrightness sends a command to set the brightness of the ColorBulbDevice
+func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+	if brightness < 0 || brightness > 100 {
+		return nil, fmt.Errorf("invalid brightness: %d", brightness)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setBrightness",
+		Parameter:   fmt.Sprintf("%d", brightness),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetColor sends a command to set the color of the ColorBulbDevice
+func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setColor",
+		Parameter:   fmt.Sprintf("%d:%d:%d", color.R, color.G, color.B),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetColorTemperature sends a command to set the color temperature of the ColorBulbDevice
+func (device *ColorBulbDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+	if colorTemperature < 2700 || colorTemperature > 6500 {
+		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setColorTemperature",
+		Parameter:   fmt.Sprintf("%d", colorTemperature),
 	}
 	return device.Client.SendCommand(device.DeviceID, request)
 }

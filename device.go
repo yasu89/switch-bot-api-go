@@ -109,6 +109,14 @@ type PlugDevice struct {
 	CommonDeviceListItem
 }
 
+type StripLightDevice struct {
+	CommonDeviceListItem
+}
+
+type ColorBulbDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -262,6 +270,12 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Plug":
 				parsed = &PlugDevice{}
 				parsed.(*PlugDevice).Client = client
+			case "Strip Light":
+				parsed = &StripLightDevice{}
+				parsed.(*StripLightDevice).Client = client
+			case "Color Bulb":
+				parsed = &ColorBulbDevice{}
+				parsed.(*ColorBulbDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

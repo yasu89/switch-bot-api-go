@@ -66,8 +66,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Plug Mini (US)                       |         ✅         |     ✅      |      ✅       |              |
 | Plug Mini (JP)                       |         ✅         |     ✅      |      ✅       |              |
 | Plug                                 |         ✅         |     ✅      |      ✅       |              |
-| Strip Light                          |         ❌         |     ❌      |      ❌       |              |
-| Color Bulb                           |         ❌         |     ❌      |      ❌       |              |
+| Strip Light                          |         ✅         |     ✅      |      ✅       |              |
+| Color Bulb                           |         ✅         |     ✅      |      ✅       |              |
 | Robot Vacuum Cleaner S1              |         ❌         |     ❌      |      ❌       |              |
 | Robot Vacuum Cleaner S1 Plus         |         ❌         |     ❌      |      ❌       |              |
 | Mini Robot Vacuum K10+               |         ❌         |     ❌      |      ❌       |              |
