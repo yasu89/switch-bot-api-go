@@ -63,9 +63,9 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Water Leak Detector                  |         ✅         |     ✅      |      -       |              |
 | Ceiling Light                        |         ✅         |     ✅      |      ✅       |              |
 | Ceiling Light Pro                    |         ✅         |     ✅      |      ✅       |              |
-| Plug Mini (US)                       |         ❌         |     ❌      |      ❌       |              |
-| Plug Mini (JP)                       |         ❌         |     ❌      |      ❌       |              |
-| Plug                                 |         ❌         |     ❌      |      ❌       |              |
+| Plug Mini (US)                       |         ✅         |     ✅      |      ✅       |              |
+| Plug Mini (JP)                       |         ✅         |     ✅      |      ✅       |              |
+| Plug                                 |         ✅         |     ✅      |      ✅       |              |
 | Strip Light                          |         ❌         |     ❌      |      ❌       |              |
 | Color Bulb                           |         ❌         |     ❌      |      ❌       |              |
 | Robot Vacuum Cleaner S1              |         ❌         |     ❌      |      ❌       |              |

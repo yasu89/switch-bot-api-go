@@ -213,6 +213,51 @@ func (device *CeilingLightDevice) SetColorTemperature(colorTemperature int) (*Co
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+func (device *PlugMiniDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *PlugMiniDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *PlugMiniDevice) Toggle() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *PlugDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+func (device *PlugDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	request := ControlRequest{

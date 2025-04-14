@@ -232,3 +232,46 @@ func (device *CeilingLightDevice) GetStatus() (*CeilingLightDeviceStatusResponse
 	}
 	return response, nil
 }
+
+type PlugMiniDeviceStatusBody struct {
+	CommonDevice
+	Voltage          float64 `json:"voltage"`
+	Version          string  `json:"version"`
+	Weight           float64 `json:"weight"`
+	ElectricityOfDay int     `json:"electricityOfDay"`
+	ElectricCurrent  float64 `json:"electricCurrent"`
+}
+
+type PlugMiniDeviceStatusResponse struct {
+	CommonResponse
+	Body *PlugMiniDeviceStatusBody `json:"body"`
+}
+
+func (device *PlugMiniDevice) GetStatus() (*PlugMiniDeviceStatusResponse, error) {
+	response := &PlugMiniDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type PlugDeviceStatusBody struct {
+	CommonDevice
+	Power   string `json:"power"`
+	Version string `json:"version"`
+}
+
+type PlugDeviceStatusResponse struct {
+	CommonResponse
+	Body *PlugDeviceStatusBody `json:"body"`
+}
+
+func (device *PlugDevice) GetStatus() (*PlugDeviceStatusResponse, error) {
+	response := &PlugDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
