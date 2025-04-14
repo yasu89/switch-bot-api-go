@@ -1,11 +1,14 @@
 package switchbot
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
 
 type ControlRequest struct {
-	Command     string `json:"command"`
-	Parameter   string `json:"parameter"`
-	CommandType string `json:"commandType"`
+	Command     string      `json:"command"`
+	Parameter   interface{} `json:"parameter"`
+	CommandType string      `json:"commandType"`
 }
 
 func (device *BotDevice) TurnOn() (*CommonResponse, error) {
@@ -93,6 +96,68 @@ func (device *LockDevice) Unlock() (*CommonResponse, error) {
 		CommandType: "command",
 		Command:     "unlock",
 		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type KeypadKey struct {
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Password  string `json:"password"`
+	StartTime int64  `json:"startTime,omitempty"`
+	EndTime   int64  `json:"endTime,omitempty"`
+}
+
+// NewKeypadKey creates a new KeypadKey instance with validation.
+func NewKeypadKey(name string, keyType string, password string, startTime int64, endTime int64) (*KeypadKey, error) {
+	if keyType != "permanent" && keyType != "timeLimit" && keyType != "disposable" && keyType != "urgent" {
+		return nil, fmt.Errorf("invalid keyType: %s", keyType)
+	}
+	passwordRegexp := regexp.MustCompile(`^\d{6,12}$`)
+	if !passwordRegexp.MatchString(password) {
+		return nil, fmt.Errorf("invalid password: %s", password)
+	}
+	if keyType == "timeLimit" || keyType == "disposable" {
+		if startTime <= 0 || endTime <= 0 {
+			return nil, fmt.Errorf("invalid startTime or endTime: %d, %d", startTime, endTime)
+		}
+		if endTime <= startTime {
+			return nil, fmt.Errorf("startTime must be less than endTime: %d >= %d", startTime, endTime)
+		}
+	}
+
+	return &KeypadKey{
+		Name:      name,
+		Type:      keyType,
+		Password:  password,
+		StartTime: startTime,
+		EndTime:   endTime,
+	}, nil
+}
+
+// CreateKey sends a command to create a new key for the KeypadDevice.
+// Note: The result of this request is not returned by this method but is asynchronously returned via a webhook.
+func (device *KeypadDevice) CreateKey(keypadKey *KeypadKey) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "createKey",
+		Parameter:   keypadKey,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// DeleteKey sends a command to delete a key from the KeypadDevice.
+// Note: The result of this request is not returned by this method but is asynchronously returned via a webhook.
+func (device *KeypadDevice) DeleteKey(id string) (*CommonResponse, error) {
+	deleteKeyParameter := struct {
+		Id string `json:"id"`
+	}{
+		Id: id,
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "deleteKey",
+		Parameter:   deleteKeyParameter,
 	}
 	return device.Client.SendCommand(device.DeviceID, request)
 }
