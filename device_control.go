@@ -747,6 +747,55 @@ func (device *AirPurifierDevice) SetChildLock(flag bool) (*CommonResponse, error
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// SetPosition sends a command to set the position of the BlindTiltDevice
+func (device *BlindTiltDevice) SetPosition(direction string, position int) (*CommonResponse, error) {
+	if direction != "up" && direction != "down" {
+		return nil, fmt.Errorf("invalid direction: %s", direction)
+	}
+	if position < 0 || position > 100 {
+		return nil, fmt.Errorf("invalid position: %d", position)
+	}
+	if position%2 != 0 {
+		return nil, fmt.Errorf("position must be even: %d", position)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setPosition",
+		Parameter:   fmt.Sprintf("%s;%d", direction, position),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// FullyOpen sends a command to fully open the BlindTiltDevice
+func (device *BlindTiltDevice) FullyOpen() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "fullyOpen",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// CloseUp sends a command to close up the BlindTiltDevice
+func (device *BlindTiltDevice) CloseUp() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "closeUp",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// CloseDown sends a command to close down the BlindTiltDevice
+func (device *BlindTiltDevice) CloseDown() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "closeDown",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	request := ControlRequest{

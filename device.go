@@ -145,6 +145,17 @@ type PanTiltCamDevice struct {
 	CommonDeviceListItem
 }
 
+type BlindTiltDevice struct {
+	CommonDeviceListItem
+	Version             int      `json:"version"`
+	BlindTiltDevicesIds []string `json:"blindTiltDevicesIds"`
+	Calibrate           bool     `json:"calibrate"`
+	Group               bool     `json:"group"`
+	Master              bool     `json:"master"`
+	Direction           string   `json:"direction"`
+	SlidePosition       int      `json:"slidePosition"`
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -325,6 +336,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Pan/Tilt Cam":
 				parsed = &PanTiltCamDevice{}
 				parsed.(*PanTiltCamDevice).Client = client
+			case "Blind Tilt":
+				parsed = &BlindTiltDevice{}
+				parsed.(*BlindTiltDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

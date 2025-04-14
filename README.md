@@ -84,7 +84,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Indoor Cam                           |         ✅         |     -      |      -       |              |
 | Pan/Tilt Cam                         |         ✅         |     -      |      -       |              |
 | Pan/Tilt Cam 2K                      |         ✅         |     -      |      -       |              |
-| Blind Tilt                           |         ❌         |     ❌      |      ❌       |              |
+| Blind Tilt                           |         ✅         |     ✅      |      ✅       |              |
 | Battery Circulator Fan               |         ❌         |     ❌      |      ❌       |              |
 | Circulator Fan                       |         ❌         |     ❌      |      ❌       |              |
 | Roller Shade                         |         ❌         |     ❌      |      ❌       |              |

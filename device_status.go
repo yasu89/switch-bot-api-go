@@ -428,3 +428,41 @@ type AirPurifierDeviceStatusBody struct {
 	Mode      int    `json:"mode"`
 	ChildLock bool   `json:"childLock"`
 }
+
+type AirPurifierDeviceStatusResponse struct {
+	CommonResponse
+	Body *AirPurifierDeviceStatusBody `json:"body"`
+}
+
+func (device *AirPurifierDevice) GetStatus() (*AirPurifierDeviceStatusResponse, error) {
+	response := &AirPurifierDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type BlindTiltDeviceStatusBody struct {
+	CommonDevice
+	Version       int    `json:"version"`
+	Calibrate     bool   `json:"calibrate"`
+	Group         bool   `json:"group"`
+	Moving        bool   `json:"moving"`
+	Direction     string `json:"direction"`
+	SlidePosition int    `json:"slidePosition"`
+}
+
+type BlindTiltDeviceStatusResponse struct {
+	CommonResponse
+	Body *BlindTiltDeviceStatusBody `json:"body"`
+}
+
+func (device *BlindTiltDevice) GetStatus() (*BlindTiltDeviceStatusResponse, error) {
+	response := &BlindTiltDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
