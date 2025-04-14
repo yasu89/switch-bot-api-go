@@ -420,3 +420,11 @@ func (device *EvaporativeHumidifierDevice) GetStatus() (*EvaporativeHumidifierDe
 	}
 	return response, nil
 }
+
+type AirPurifierDeviceStatusBody struct {
+	CommonDevice
+	Power     string `json:"power"`
+	Version   string `json:"version"`
+	Mode      int    `json:"mode"`
+	ChildLock bool   `json:"childLock"`
+}

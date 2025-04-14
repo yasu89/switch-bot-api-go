@@ -538,9 +538,9 @@ func (device *RobotVacuumCleanerS10Device) SetVolume(volume int) (*CommonRespons
 type SelfCleaningMode int
 
 const (
-	washMopSelfCleaningMode   = SelfCleaningMode(1)
-	drySelfCleaningMode       = SelfCleaningMode(2)
-	terminateSelfCleaningMode = SelfCleaningMode(3)
+	WashMopSelfCleaningMode   = SelfCleaningMode(1)
+	DrySelfCleaningMode       = SelfCleaningMode(2)
+	TerminateSelfCleaningMode = SelfCleaningMode(3)
 )
 
 // SelfClean sends a command to start self-cleaning the RobotVacuumCleanerS10Device.
@@ -676,6 +676,73 @@ func (device *EvaporativeHumidifierDevice) SetChildLock(flag bool) (*CommonRespo
 		CommandType: "command",
 		Command:     "setChildLock",
 		Parameter:   fmt.Sprintf("%t", flag),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the AirPurifierDevice
+func (device *AirPurifierDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the AirPurifierDevice
+func (device *AirPurifierDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type AirPurifierMode int
+
+const (
+	AirPurifierModeNormal = AirPurifierMode(1)
+	AirPurifierModeAuto   = AirPurifierMode(2)
+	AirPurifierModeSleep  = AirPurifierMode(3)
+	AirPurifierModePet    = AirPurifierMode(4)
+)
+
+type AirPurifierModeParameter struct {
+	Mode    AirPurifierMode `json:"mode"`
+	FanGear int             `json:"fanGear,omitempty"`
+}
+
+// SetMode sends a command to set the mode of the AirPurifierDevice
+func (device *AirPurifierDevice) SetMode(mode AirPurifierMode, fanLevel int) (*CommonResponse, error) {
+	if mode < 1 || mode > 4 {
+		return nil, fmt.Errorf("invalid mode: %d", mode)
+	}
+	if fanLevel < 1 || fanLevel > 3 {
+		return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter: AirPurifierModeParameter{
+			Mode:    mode,
+			FanGear: fanLevel,
+		},
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetChildLock sends a command to set the child lock of the AirPurifierDevice
+func (device *AirPurifierDevice) SetChildLock(flag bool) (*CommonResponse, error) {
+	flagInt := 0
+	if flag {
+		flagInt = 1
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setChildLock",
+		Parameter:   flagInt,
 	}
 	return device.Client.SendCommand(device.DeviceID, request)
 }

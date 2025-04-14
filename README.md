@@ -77,10 +77,10 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Humidifier                           |         ✅         |     ✅      |      ✅       |              |
 | Evaporative Humidifier               |         ✅         |     ✅      |      ✅       |              |
 | Evaporative Humidifier (Auto-refill) |         ✅         |     ✅      |      ✅       |              |
-| Air Purifier VOC                     |         ❌         |     ❌      |      ❌       |              |
-| Air Purifier Table VOC               |         ❌         |     ❌      |      ❌       |              |
-| Air Purifier PM2.5                   |         ❌         |     ❌      |      ❌       |              |
-| Air Purifier Table PM2.5             |         ❌         |     ❌      |      ❌       |              |
+| Air Purifier VOC                     |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier Table VOC               |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier PM2.5                   |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier Table PM2.5             |         ✅         |     ✅      |      ✅       |              |
 | Indoor Cam                           |         ❌         |     -      |      -       |              |
 | Pan/Tilt Cam                         |         ❌         |     -      |      -       |              |
 | Pan/Tilt Cam 2K                      |         ❌         |     -      |      -       |              |
