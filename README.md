@@ -11,11 +11,9 @@ This design promotes both safety and simplicity for users.
 
 - Devices
   - ✅️ Get device list
-  - 🚧 Get device status
-    - Support is currently limited to certain devices
-  - Send device control command
-    - 🚧 Physical devices
-      - Support is currently limited to certain devices
+  - ✅ Get device status
+  - ✅ Send device control command
+    - ✅ Physical devices
     - ✅ Virtual infrared remote devices
 - Scenes
   - ❌ Get scene list
@@ -57,8 +55,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Lock Pro                             |         ✅         |     ✅      |      ✅       |              |
 | Keypad                               |         ✅         |     ✅      |      ✅       |              |
 | Keypad Touch                         |         ✅         |     ✅      |      ✅       |              |
-| Remote                               |         ✅         |     ❌      |      -       |              |
-| Motion Sensor                        |         ✅         |     ❌      |      -       |              |
+| Remote                               |         ✅         |     -      |      -       |              |
+| Motion Sensor                        |         ✅         |     ✅      |      -       |              |
 | Contact Sensor                       |         ✅         |     ✅      |      -       |              |
 | Water Leak Detector                  |         ✅         |     ✅      |      -       |              |
 | Ceiling Light                        |         ✅         |     ✅      |      ✅       |              |

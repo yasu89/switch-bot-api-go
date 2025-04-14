@@ -10,11 +10,9 @@
 
 - Devices
   - ✅️ デバイス一覧の取得
-  - 🚧 デバイスのステータス取得
-    - 現在は一部デバイスのみ対応しています
-  - コマンドの送信
-    - 🚧 物理デバイス
-      - 現在は一部デバイスのみ対応しています
+  - ✅ デバイスのステータス取得
+  - ✅ コマンドの送信
+    - ✅ 物理デバイス
     - ✅ 赤外線リモコン
 - Scenes
   - ❌ シーン一覧の取得
@@ -56,8 +54,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Lock Pro                             |   ✅   |    ✅    |   ✅    |      |
 | Keypad                               |   ✅   |    ✅    |   ✅    |      |
 | Keypad Touch                         |   ✅   |    ✅    |   ✅    |      |
-| Remote                               |   ✅   |    ❌    |   -    |      |
-| Motion Sensor                        |   ✅   |    ❌    |   -    |      |
+| Remote                               |   ✅   |    -    |   -    |      |
+| Motion Sensor                        |   ✅   |    ✅    |   -    |      |
 | Contact Sensor                       |   ✅   |    ✅    |   -    |      |
 | Water Leak Detector                  |   ✅   |    ✅    |   -    |      |
 | Ceiling Light                        |   ✅   |    ✅    |   ✅    |      |
