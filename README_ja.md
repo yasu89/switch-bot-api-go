@@ -73,9 +73,9 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Mini Robot Vacuum K10+ Pro           |   ✅   |    ✅    |   ✅    |      |
 | K10+ Pro Combo                       |   ✅   |    ✅    |   ✅    |      |
 | Floor Cleaning Robot S10             |   ✅   |    ✅    |   ✅    |      |
-| Humidifier                           |   ❌   |    ❌    |   ❌    |      |
-| Evaporative Humidifier               |   ❌   |    ❌    |   ❌    |      |
-| Evaporative Humidifier (Auto-refill) |   ❌   |    ❌    |   ❌    |      |
+| Humidifier                           |   ✅   |    ✅    |   ✅    |      |
+| Evaporative Humidifier               |   ✅   |    ✅    |   ✅    |      |
+| Evaporative Humidifier (Auto-refill) |   ✅   |    ✅    |   ✅    |      |
 | Air Purifier VOC                     |   ❌   |    ❌    |   ❌    |      |
 | Air Purifier Table VOC               |   ❌   |    ❌    |   ❌    |      |
 | Air Purifier PM2.5                   |   ❌   |    ❌    |   ❌    |      |

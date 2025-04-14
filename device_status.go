@@ -364,3 +364,59 @@ func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10De
 	}
 	return response, nil
 }
+
+type HumidifierDeviceStatusBody struct {
+	CommonDevice
+	Power                  string `json:"power"`
+	Humidity               int    `json:"humidity"`
+	Temperature            int    `json:"temperature"`
+	NebulizationEfficiency int    `json:"nebulizationEfficiency"`
+	Auto                   bool   `json:"auto"`
+	ChildLock              bool   `json:"childLock"`
+	Sound                  bool   `json:"sound"`
+	LackWater              bool   `json:"lackWater"`
+}
+
+type HumidifierDeviceStatusResponse struct {
+	CommonResponse
+	Body *HumidifierDeviceStatusBody `json:"body"`
+}
+
+func (device *HumidifierDevice) GetStatus() (*HumidifierDeviceStatusResponse, error) {
+	response := &HumidifierDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+type EvaporativeHumidifierDeviceFilterElement struct {
+	EffectiveUsageHours int `json:"effectiveUsageHours"`
+	UsedHours           int `json:"usedHours"`
+}
+
+type EvaporativeHumidifierDeviceStatusBody struct {
+	CommonDevice
+	Power         string                                   `json:"power"`
+	Humidity      int                                      `json:"humidity"`
+	Mode          int                                      `json:"mode"`
+	Drying        bool                                     `json:"drying"`
+	ChildLock     bool                                     `json:"childLock"`
+	FilterElement EvaporativeHumidifierDeviceFilterElement `json:"filterElement"`
+	Version       int                                      `json:"version"`
+}
+
+type EvaporativeHumidifierDeviceStatusResponse struct {
+	CommonResponse
+	Body *EvaporativeHumidifierDeviceStatusBody `json:"body"`
+}
+
+func (device *EvaporativeHumidifierDevice) GetStatus() (*EvaporativeHumidifierDeviceStatusResponse, error) {
+	response := &EvaporativeHumidifierDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

@@ -566,6 +566,120 @@ func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam FloorC
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// TurnOn sends a command to turn on the HumidifierDevice
+func (device *HumidifierDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the HumidifierDevice
+func (device *HumidifierDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type HumidifierMode int
+
+const (
+	HumidifierModeAuto   = HumidifierMode(0)
+	HumidifierModeLow    = HumidifierMode(101)
+	HumidifierModeMedium = HumidifierMode(102)
+	HumidifierModeHigh   = HumidifierMode(103)
+)
+
+// SetMode sends a command to set the mode of the HumidifierDevice
+func (device *HumidifierDevice) SetMode(mode HumidifierMode) (*CommonResponse, error) {
+	if (mode < 101 || mode > 103) && (mode != 0) {
+		return nil, fmt.Errorf("invalid mode: %d", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d", mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetTargetHumidity sends a command to set the target humidity of the HumidifierDevice
+func (device *HumidifierDevice) SetTargetHumidity(targetHumidity int) (*CommonResponse, error) {
+	if targetHumidity < 0 || targetHumidity > 100 {
+		return nil, fmt.Errorf("invalid mode: %d", targetHumidity)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d", targetHumidity),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the EvaporativeHumidifierDevice
+func (device *EvaporativeHumidifierDevice) TurnOn() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOff sends a command to turn off the EvaporativeHumidifierDevice
+func (device *EvaporativeHumidifierDevice) TurnOff() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+type EvaporativeHumidifierMode int
+
+const (
+	EvaporativeHumidifierModeLevel4   = EvaporativeHumidifierMode(1)
+	EvaporativeHumidifierModeLevel3   = EvaporativeHumidifierMode(2)
+	EvaporativeHumidifierModeLevel2   = EvaporativeHumidifierMode(3)
+	EvaporativeHumidifierModeLevel1   = EvaporativeHumidifierMode(4)
+	EvaporativeHumidifierModeHumidity = EvaporativeHumidifierMode(5)
+	EvaporativeHumidifierModeSleep    = EvaporativeHumidifierMode(6)
+	EvaporativeHumidifierModeAuto     = EvaporativeHumidifierMode(7)
+	EvaporativeHumidifierModeDry      = EvaporativeHumidifierMode(8)
+)
+
+// SetMode sends a command to set the mode of the EvaporativeHumidifierDevice
+func (device *EvaporativeHumidifierDevice) SetMode(mode EvaporativeHumidifierMode, targetHumidity int) (*CommonResponse, error) {
+	if mode < 1 || mode > 8 {
+		return nil, fmt.Errorf("invalid mode: %d", mode)
+	}
+	if targetHumidity < 0 || targetHumidity > 100 {
+		return nil, fmt.Errorf("invalid targetHumidity: %d", targetHumidity)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetChildLock sends a command to set the child lock of the EvaporativeHumidifierDevice
+func (device *EvaporativeHumidifierDevice) SetChildLock(flag bool) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setChildLock",
+		Parameter:   fmt.Sprintf("%t", flag),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	request := ControlRequest{
