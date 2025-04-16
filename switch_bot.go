@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	ApiUrl = "https://api.switch-bot.com/v1.1"
+	DefaultBaseApiURL = "https://api.switch-bot.com/v1.1"
 )
 
 type Client struct {
@@ -25,6 +25,7 @@ type Client struct {
 	token      string
 	httpClient http.Client
 	debug      bool
+	baseApiURL string
 }
 
 type CommonResponse struct {
@@ -37,6 +38,7 @@ func NewClient(secret string, token string, options ...Option) *Client {
 		secret:     secret,
 		token:      token,
 		httpClient: http.Client{},
+		baseApiURL: DefaultBaseApiURL,
 	}
 
 	for _, opt := range options {
@@ -51,6 +53,12 @@ type Option func(*Client)
 func OptionDebug(debugFlag bool) func(*Client) {
 	return func(client *Client) {
 		client.debug = debugFlag
+	}
+}
+
+func OptionBaseApiURL(baseApiURL string) func(*Client) {
+	return func(client *Client) {
+		client.baseApiURL = baseApiURL
 	}
 }
 
@@ -80,7 +88,7 @@ func (client *Client) setHeader(req *http.Request) error {
 }
 
 func (client *Client) GetRequest(path string, parser ResponseParser) error {
-	url := fmt.Sprintf("%s%s", ApiUrl, path)
+	url := fmt.Sprintf("%s%s", client.baseApiURL, path)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
@@ -115,7 +123,7 @@ func (client *Client) GetRequest(path string, parser ResponseParser) error {
 }
 
 func (client *Client) PostRequest(path string, request ControlRequest) (*CommonResponse, error) {
-	url := fmt.Sprintf("%s%s", ApiUrl, path)
+	url := fmt.Sprintf("%s%s", client.baseApiURL, path)
 	requestBodyJson, err := json.Marshal(request)
 	if err != nil {
 		return nil, err
