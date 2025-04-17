@@ -30,7 +30,8 @@ func main() {
 			device := device.(*switchbot.BotDevice)
 			log.Printf("Bot Device. DeviceID:%s, DeviceName:%s", device.DeviceID, device.DeviceName)
 
-			commandResponse, err := device.TurnOn()
+			command := device.GetTurnOnCommand()
+			commandResponse, err := client.SendCommand(device.DeviceID, command)
 			if err != nil {
 				log.Fatalf("Error: %v", err)
 			}

@@ -32,7 +32,8 @@ func TestBotDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.TurnOn()
+		command := device.GetTurnOnCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -61,7 +62,8 @@ func TestBotDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.TurnOff()
+		command := device.GetTurnOffCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -90,7 +92,8 @@ func TestBotDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.Press()
+		command := device.GetPressCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -121,7 +124,11 @@ func TestCurtainDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.SetPosition(switchbot.CurtainPositionModeDefault, 75)
+		command, err := device.GetSetPositionCommand(switchbot.CurtainPositionModeDefault, 75)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -150,7 +157,8 @@ func TestCurtainDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.TurnOn()
+		command := device.GetTurnOnCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -179,7 +187,8 @@ func TestCurtainDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.TurnOff()
+		command := device.GetTurnOffCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -208,7 +217,8 @@ func TestCurtainDevice(t *testing.T) {
 				Client: client,
 			},
 		}
-		response, err := device.Pause()
+		command := device.GetPauseCommand()
+		response, err := client.SendCommand(device.DeviceID, command)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

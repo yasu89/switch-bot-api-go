@@ -122,7 +122,7 @@ func (client *Client) GetRequest(path string, parser ResponseParser) error {
 	return nil
 }
 
-func (client *Client) PostRequest(path string, request ControlRequest) (*CommonResponse, error) {
+func (client *Client) PostRequest(path string, request *ControlRequest) (*CommonResponse, error) {
 	url := fmt.Sprintf("%s%s", client.baseApiURL, path)
 	requestBodyJson, err := json.Marshal(request)
 	if err != nil {

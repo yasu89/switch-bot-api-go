@@ -28,11 +28,17 @@ type CommonDeviceListItem struct {
 	EnableCloudService bool   `json:"enableCloudService"`
 }
 
+type TurnOnOffDevice struct{}
+
+type ToggleCommandDevice struct{}
+
 type BotDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
 type CurtainDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 	CurtainDevicesIds []string `json:"curtainDevicesIds"`
 	Calibrate         bool     `json:"calibrate"`
@@ -98,22 +104,31 @@ type WaterLeakDetectorDevice struct {
 }
 
 type CeilingLightDevice struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
 type PlugMiniDevice struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
 type PlugDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
 type StripLightDevice struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
 type ColorBulbDevice struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
@@ -126,14 +141,17 @@ type RobotVacuumCleanerS10Device struct {
 }
 
 type HumidifierDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
 type EvaporativeHumidifierDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
 type AirPurifierDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
@@ -157,10 +175,12 @@ type BlindTiltDevice struct {
 }
 
 type BatteryCirculatorFanDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
 type CirculatorFanDevice struct {
+	TurnOnOffDevice
 	CommonDeviceListItem
 }
 
@@ -174,14 +194,19 @@ type RollerShadeDevice struct {
 }
 
 type RelaySwitch1PMDevice struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
 type RelaySwitch1Device struct {
+	TurnOnOffDevice
+	ToggleCommandDevice
 	CommonDeviceListItem
 }
 
 type InfraredRemoteDevice struct {
+	TurnOnOffDevice
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
 	DeviceName  string `json:"deviceName"`

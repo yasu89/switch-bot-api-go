@@ -12,31 +12,40 @@ type ControlRequest struct {
 	CommandType string      `json:"commandType"`
 }
 
-func (device *BotDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetTurnOnCommand generates a ControlRequest to turn on the device for the TurnOnOffDevice.
+func (device *TurnOnOffDevice) GetTurnOnCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "turnOn",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (device *BotDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetTurnOffCommand generates a ControlRequest to turn off the device for the TurnOnOffDevice.
+func (device *TurnOnOffDevice) GetTurnOffCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "turnOff",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (device *BotDevice) Press() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetToggleCommand generates a ControlRequest to toggle the device for the CeilingLightDevice.
+func (device *ToggleCommandDevice) GetToggleCommand() *ControlRequest {
+	return &ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   "default",
+	}
+}
+
+// GetPressCommand generates a ControlRequest to press the device for the BotDevice.
+func (device *BotDevice) GetPressCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "press",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 type CurtainPositionMode string
@@ -47,7 +56,8 @@ const (
 	CurtainPositionModeDefault     CurtainPositionMode = "ff"
 )
 
-func (device *CurtainDevice) SetPosition(mode CurtainPositionMode, position int) (*CommonResponse, error) {
+// GetSetPositionCommand generates a ControlRequest to set the position of the curtain for the CurtainDevice.
+func (device *CurtainDevice) GetSetPositionCommand(mode CurtainPositionMode, position int) (*ControlRequest, error) {
 	if mode != CurtainPositionModePerformance && mode != CurtainPositionModeSilent && mode != CurtainPositionModeDefault {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
@@ -55,58 +65,39 @@ func (device *CurtainDevice) SetPosition(mode CurtainPositionMode, position int)
 		return nil, fmt.Errorf("invalid position: %d", position)
 	}
 
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setPosition",
 		// MEMO: The "index0" parameter is unclear, so it is fixed to 0 for now.
 		Parameter: fmt.Sprintf("0,%s,%d", mode, position),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-func (device *CurtainDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *CurtainDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *CurtainDevice) Pause() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetPauseCommand generates a ControlRequest to pause the curtain for the CurtainDevice.
+func (device *CurtainDevice) GetPauseCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "pause",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (device *LockDevice) Lock() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetLockCommand generates a ControlRequest to lock the device for the LockDevice.
+func (device *LockDevice) GetLockCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "lock",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (device *LockDevice) Unlock() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetUnlockCommand generates a ControlRequest to unlock the device for the LockDevice.
+func (device *LockDevice) GetUnlockCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "unlock",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 type KeypadKey struct {
@@ -144,276 +135,134 @@ func NewKeypadKey(name string, keyType string, password string, startTime int64,
 	}, nil
 }
 
-// CreateKey sends a command to create a new key for the KeypadDevice.
+// GetCreateKeyCommand generates a ControlRequest to create a key for the KeypadDevice.
 // Note: The result of this request is not returned by this method but is asynchronously returned via a webhook.
-func (device *KeypadDevice) CreateKey(keypadKey *KeypadKey) (*CommonResponse, error) {
-	request := ControlRequest{
+func (device *KeypadDevice) GetCreateKeyCommand(keypadKey *KeypadKey) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "createKey",
 		Parameter:   keypadKey,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// DeleteKey sends a command to delete a key from the KeypadDevice.
+// GetDeleteKeyCommand create command to delete a key for the KeypadDevice.
 // Note: The result of this request is not returned by this method but is asynchronously returned via a webhook.
-func (device *KeypadDevice) DeleteKey(id string) (*CommonResponse, error) {
+func (device *KeypadDevice) GetDeleteKeyCommand(id string) *ControlRequest {
 	deleteKeyParameter := struct {
 		Id string `json:"id"`
 	}{
 		Id: id,
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "deleteKey",
 		Parameter:   deleteKeyParameter,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (device *CeilingLightDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *CeilingLightDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *CeilingLightDevice) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *CeilingLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+// GetSetBrightnessCommand generates a ControlRequest to set the brightness of the device for the CeilingLightDevice.
+func (device *CeilingLightDevice) GetSetBrightnessCommand(brightness int) (*ControlRequest, error) {
 	if brightness < 0 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setBrightness",
 		Parameter:   fmt.Sprintf("%d", brightness),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-func (device *CeilingLightDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+// GetSetColorTemperatureCommand generates a ControlRequest to set the color temperature of the device for the CeilingLightDevice.
+func (device *CeilingLightDevice) GetSetColorTemperatureCommand(colorTemperature int) (*ControlRequest, error) {
 	if colorTemperature < 2700 || colorTemperature > 6500 {
 		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setColorTemperature",
 		Parameter:   fmt.Sprintf("%d", colorTemperature),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-func (device *PlugMiniDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *PlugMiniDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *PlugMiniDevice) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *PlugDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-func (device *PlugDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the StripLightDevice
-func (device *StripLightDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the StripLightDevice
-func (device *StripLightDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// Toggle sends a command to toggle the StripLightDevice
-func (device *StripLightDevice) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// SetBrightness sends a command to set the brightness of the StripLightDevice
-func (device *StripLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+// GetSetBrightnessCommand generates a ControlRequest to set the brightness of the device for the StripLightDevice.
+func (device *StripLightDevice) GetSetBrightnessCommand(brightness int) (*ControlRequest, error) {
 	if brightness < 0 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setBrightness",
 		Parameter:   fmt.Sprintf("%d", brightness),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetColor sends a command to set the color of the StripLightDevice
-func (device *StripLightDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSetColorCommand generates a ControlRequest to set the color of the device for the StripLightDevice.
+func (device *StripLightDevice) GetSetColorCommand(color color.RGBA) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setColor",
 		Parameter:   fmt.Sprintf("%d:%d:%d", color.R, color.G, color.B),
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// TurnOn sends a command to turn on the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// Toggle sends a command to toggle the ColorBulbDevice
-func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// SetBrightness sends a command to set the brightness of the ColorBulbDevice
-func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+// GetSetBrightnessCommand generates a ControlRequest to set the brightness of the device for the ColorBulbDevice.
+func (device *ColorBulbDevice) GetSetBrightnessCommand(brightness int) (*ControlRequest, error) {
 	if brightness < 0 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setBrightness",
 		Parameter:   fmt.Sprintf("%d", brightness),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetColor sends a command to set the color of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSetColorCommand generates a ControlRequest to set the color of the device for the ColorBulbDevice.
+func (device *ColorBulbDevice) GetSetColorCommand(color color.RGBA) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setColor",
 		Parameter:   fmt.Sprintf("%d:%d:%d", color.R, color.G, color.B),
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetColorTemperature sends a command to set the color temperature of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+// GetSetColorTemperatureCommand generates a ControlRequest to set the color temperature of the device for the ColorBulbDevice.
+func (device *ColorBulbDevice) GetSetColorTemperatureCommand(colorTemperature int) (*ControlRequest, error) {
 	if colorTemperature < 2700 || colorTemperature > 6500 {
 		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setColorTemperature",
 		Parameter:   fmt.Sprintf("%d", colorTemperature),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// Start sends a command to start vacuuming the RobotVacuumCleanerDevice
-func (device *RobotVacuumCleanerDevice) Start() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetStartCommand generates a ControlRequest to start vacuuming the RobotVacuumCleanerDevice.
+func (device *RobotVacuumCleanerDevice) GetStartCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "start",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Stop sends a command to stop vacuuming the RobotVacuumCleanerDevice
-func (device *RobotVacuumCleanerDevice) Stop() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetStopCommand generates a ControlRequest to stop vacuuming the RobotVacuumCleanerDevice.
+func (device *RobotVacuumCleanerDevice) GetStopCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "stop",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Dock sends a command to return the RobotVacuumCleanerDevice to its charging dock.
-func (device *RobotVacuumCleanerDevice) Dock() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetDockCommand generates a ControlRequest to dock the RobotVacuumCleanerDevice.
+func (device *RobotVacuumCleanerDevice) GetDockCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "dock",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 // RobotVacuumCleanerPowerLevel represents the power level of the RobotVacuumCleanerDevice.
@@ -426,17 +275,16 @@ const (
 	RobotVacuumCleanerPowerLevelMax      = RobotVacuumCleanerPowerLevel(3)
 )
 
-// SetPowerLevel sends a command to set the suction power level of the RobotVacuumCleanerDevice.
-func (device *RobotVacuumCleanerDevice) SetPowerLevel(powerLevel RobotVacuumCleanerPowerLevel) (*CommonResponse, error) {
+// GetSetPowerLevelCommand generates a ControlRequest to set the power level of the RobotVacuumCleanerDevice.
+func (device *RobotVacuumCleanerDevice) GetSetPowerLevelCommand(powerLevel RobotVacuumCleanerPowerLevel) (*ControlRequest, error) {
 	if powerLevel < 0 || powerLevel > 3 {
 		return nil, fmt.Errorf("invalid powerLevel: %d", powerLevel)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "PowLevel",
 		Parameter:   fmt.Sprintf("%d", powerLevel),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
 // FloorCleaningAction represents the action to be performed floor cleaning mode.
@@ -490,59 +338,55 @@ func NewFloorCleaningParam(fanLevel int, waterLevel int, times int) (*FloorClean
 	}, nil
 }
 
-// StartClean sends a command to start cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam StartFloorCleaningParam) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetStartCleanCommand generates a ControlRequest to start cleaning the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetStartCleanCommand(startFloorCleaningParam StartFloorCleaningParam) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "startClean",
 		Parameter:   startFloorCleaningParam,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// AddWaterForHumi sends a command to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) AddWaterForHumi() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetAddWaterForHumiCommand generates a ControlRequest to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetAddWaterForHumiCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "addWaterForHumi",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Pause sends a command to pause the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) Pause() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetPauseCommand generates a ControlRequest to pause the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetPauseCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "pause",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Dock sends a command to return the RobotVacuumCleanerS10Device to its charging dock.
-func (device *RobotVacuumCleanerS10Device) Dock() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetDockCommand generates a ControlRequest to dock the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetDockCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "dock",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetVolume sends a command to set the volume of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SetVolume(volume int) (*CommonResponse, error) {
+// GetSetVolumeCommand generates a ControlRequest to set the volume of the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetSetVolumeCommand(volume int) (*ControlRequest, error) {
 	if volume < 0 || volume > 100 {
 		return nil, fmt.Errorf("invalid volume: %d", volume)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setVolume",
 		Parameter:   fmt.Sprintf("%d", volume),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
+// SelfCleaningMode represents the self-cleaning mode of the RobotVacuumCleanerS10Device.
 type SelfCleaningMode int
 
 const (
@@ -551,47 +395,25 @@ const (
 	TerminateSelfCleaningMode = SelfCleaningMode(3)
 )
 
-// SelfClean sends a command to start self-cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*CommonResponse, error) {
+// GetSelfCleanCommand generates a ControlRequest to start self-cleaning the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetSelfCleanCommand(mode SelfCleaningMode) (*ControlRequest, error) {
 	if mode < 1 || mode > 3 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "selfClean",
 		Parameter:   fmt.Sprintf("%d", mode),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam FloorCleaningParam) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetChangeParamCommand generates a ControlRequest to change the parameters of the RobotVacuumCleanerS10Device.
+func (device *RobotVacuumCleanerS10Device) GetChangeParamCommand(floorCleaningParam FloorCleaningParam) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "changeParam",
 		Parameter:   floorCleaningParam,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the HumidifierDevice
-func (device *HumidifierDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the HumidifierDevice
-func (device *HumidifierDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 type HumidifierMode int
@@ -603,50 +425,28 @@ const (
 	HumidifierModeHigh   = HumidifierMode(103)
 )
 
-// SetMode sends a command to set the mode of the HumidifierDevice
-func (device *HumidifierDevice) SetMode(mode HumidifierMode) (*CommonResponse, error) {
+// GetSetModeCommand generates a ControlRequest to set the mode of the HumidifierDevice.
+func (device *HumidifierDevice) GetSetModeCommand(mode HumidifierMode) (*ControlRequest, error) {
 	if (mode < 101 || mode > 103) && (mode != 0) {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   fmt.Sprintf("%d", mode),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetTargetHumidity sends a command to set the target humidity of the HumidifierDevice
-func (device *HumidifierDevice) SetTargetHumidity(targetHumidity int) (*CommonResponse, error) {
+// GetSetTargetHumidityCommand generates a ControlRequest to set the target humidity of the HumidifierDevice.
+func (device *HumidifierDevice) GetSetTargetHumidityCommand(targetHumidity int) (*ControlRequest, error) {
 	if targetHumidity < 0 || targetHumidity > 100 {
 		return nil, fmt.Errorf("invalid mode: %d", targetHumidity)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   fmt.Sprintf("%d", targetHumidity),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the EvaporativeHumidifierDevice
-func (device *EvaporativeHumidifierDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the EvaporativeHumidifierDevice
-func (device *EvaporativeHumidifierDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
 type EvaporativeHumidifierMode int
@@ -662,50 +462,28 @@ const (
 	EvaporativeHumidifierModeDry      = EvaporativeHumidifierMode(8)
 )
 
-// SetMode sends a command to set the mode of the EvaporativeHumidifierDevice
-func (device *EvaporativeHumidifierDevice) SetMode(mode EvaporativeHumidifierMode, targetHumidity int) (*CommonResponse, error) {
+// GetSetModeCommand generates a ControlRequest to set the mode of the EvaporativeHumidifierDevice.
+func (device *EvaporativeHumidifierDevice) GetSetModeCommand(mode EvaporativeHumidifierMode, targetHumidity int) (*ControlRequest, error) {
 	if mode < 1 || mode > 8 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
 	if targetHumidity < 0 || targetHumidity > 100 {
 		return nil, fmt.Errorf("invalid targetHumidity: %d", targetHumidity)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetChildLock sends a command to set the child lock of the EvaporativeHumidifierDevice
-func (device *EvaporativeHumidifierDevice) SetChildLock(flag bool) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSetChildLockCommand generates a ControlRequest to set the child lock of the EvaporativeHumidifierDevice.
+func (device *EvaporativeHumidifierDevice) GetSetChildLockCommand(flag bool) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setChildLock",
 		Parameter:   fmt.Sprintf("%t", flag),
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the AirPurifierDevice
-func (device *AirPurifierDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the AirPurifierDevice
-func (device *AirPurifierDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 type AirPurifierMode int
@@ -722,41 +500,39 @@ type AirPurifierModeParameter struct {
 	FanGear int             `json:"fanGear,omitempty"`
 }
 
-// SetMode sends a command to set the mode of the AirPurifierDevice
-func (device *AirPurifierDevice) SetMode(mode AirPurifierMode, fanLevel int) (*CommonResponse, error) {
+// GetSetModeCommand generates a ControlRequest to set the mode of the AirPurifierDevice.
+func (device *AirPurifierDevice) GetSetModeCommand(mode AirPurifierMode, fanLevel int) (*ControlRequest, error) {
 	if mode < 1 || mode > 4 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
 	if fanLevel < 1 || fanLevel > 3 {
 		return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter: AirPurifierModeParameter{
 			Mode:    mode,
 			FanGear: fanLevel,
 		},
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetChildLock sends a command to set the child lock of the AirPurifierDevice
-func (device *AirPurifierDevice) SetChildLock(flag bool) (*CommonResponse, error) {
+// GetSetChildLockCommand generates a ControlRequest to set the child lock of the AirPurifierDevice.
+func (device *AirPurifierDevice) GetSetChildLockCommand(flag bool) *ControlRequest {
 	flagInt := 0
 	if flag {
 		flagInt = 1
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setChildLock",
 		Parameter:   flagInt,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetPosition sends a command to set the position of the BlindTiltDevice
-func (device *BlindTiltDevice) SetPosition(direction string, position int) (*CommonResponse, error) {
+// GetSetPositionCommand generates a ControlRequest to set the position of the BlindTiltDevice.
+func (device *BlindTiltDevice) GetSetPositionCommand(direction string, position int) (*ControlRequest, error) {
 	if direction != "up" && direction != "down" {
 		return nil, fmt.Errorf("invalid direction: %s", direction)
 	}
@@ -766,72 +542,38 @@ func (device *BlindTiltDevice) SetPosition(direction string, position int) (*Com
 	if position%2 != 0 {
 		return nil, fmt.Errorf("position must be even: %d", position)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setPosition",
 		Parameter:   fmt.Sprintf("%s;%d", direction, position),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// FullyOpen sends a command to fully open the BlindTiltDevice
-func (device *BlindTiltDevice) FullyOpen() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetFullyOpenCommand generates a ControlRequest to fully open the BlindTiltDevice.
+func (device *BlindTiltDevice) GetFullyOpenCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "fullyOpen",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// CloseUp sends a command to close up the BlindTiltDevice
-func (device *BlindTiltDevice) CloseUp() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetCloseUpCommand generates a ControlRequest to close up the BlindTiltDevice.
+func (device *BlindTiltDevice) GetCloseUpCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "closeUp",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// CloseDown sends a command to close down the BlindTiltDevice
-func (device *BlindTiltDevice) CloseDown() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetCloseDownCommand generates a ControlRequest to close down the BlindTiltDevice.
+func (device *BlindTiltDevice) GetCloseDownCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "closeDown",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the InfraredRemoteDevice
-func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the BatteryCirculatorFanDevice
-func (device *BatteryCirculatorFanDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the BatteryCirculatorFanDevice
-func (device *BatteryCirculatorFanDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
 type CirculatorNightLightMode string
@@ -842,17 +584,16 @@ const (
 	CirculatorNightLightModeTurnDim    = CirculatorNightLightMode("2")
 )
 
-// SetNightLightMode sends a command to set the night light mode of the BatteryCirculatorFanDevice
-func (device *BatteryCirculatorFanDevice) SetNightLightMode(mode CirculatorNightLightMode) (*CommonResponse, error) {
+// GetSetNightLightModeCommand generates a ControlRequest to set the night light mode of the BatteryCirculatorFanDevice.
+func (device *BatteryCirculatorFanDevice) GetSetNightLightModeCommand(mode CirculatorNightLightMode) (*ControlRequest, error) {
 	if mode != CirculatorNightLightModeTurnOff && mode != CirculatorNightLightModeTurnBright && mode != CirculatorNightLightModeTurnDim {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setNightLightMode",
 		Parameter:   mode,
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
 type CirculatorWindMode string
@@ -864,132 +605,76 @@ const (
 	CirculatorWindModeBaby    = CirculatorWindMode("baby")
 )
 
-// SetWindMode sends a command to set the wind mode of the BatteryCirculatorFanDevice
-func (device *BatteryCirculatorFanDevice) SetWindMode(mode CirculatorWindMode) (*CommonResponse, error) {
+// GetSetWindModeCommand generates a ControlRequest to set the wind mode of the BatteryCirculatorFanDevice.
+func (device *BatteryCirculatorFanDevice) GetSetWindModeCommand(mode CirculatorWindMode) (*ControlRequest, error) {
 	if mode != CirculatorWindModeDirect && mode != CirculatorWindModeNatural && mode != CirculatorWindModeSleep && mode != CirculatorWindModeBaby {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setWindMode",
 		Parameter:   mode,
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetWindSpeed sends a command to set the wind speed of the BatteryCirculatorFanDevice
-func (device *BatteryCirculatorFanDevice) SetWindSpeed(speed int) (*CommonResponse, error) {
+// GetSetWindSpeedCommand generates a ControlRequest to set the wind speed of the BatteryCirculatorFanDevice.
+func (device *BatteryCirculatorFanDevice) GetSetWindSpeedCommand(speed int) (*ControlRequest, error) {
 	if speed < 1 || speed > 100 {
 		return nil, fmt.Errorf("invalid speed: %d", speed)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setWindSpeed",
 		Parameter:   fmt.Sprintf("%d", speed),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// TurnOn sends a command to turn on the CirculatorFanDevice
-func (device *CirculatorFanDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// SetNightLightMode sends a command to set the night light mode of the CirculatorFanDevice
-func (device *CirculatorFanDevice) SetNightLightMode(mode CirculatorNightLightMode) (*CommonResponse, error) {
+// GetSetNightLightModeCommand generates a ControlRequest to set the night light mode of the CirculatorFanDevice.
+func (device *CirculatorFanDevice) GetSetNightLightModeCommand(mode CirculatorNightLightMode) (*ControlRequest, error) {
 	if mode != CirculatorNightLightModeTurnOff && mode != CirculatorNightLightModeTurnBright && mode != CirculatorNightLightModeTurnDim {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setNightLightMode",
 		Parameter:   mode,
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// TurnOff sends a command to turn off the CirculatorFanDevice
-func (device *CirculatorFanDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// SetWindMode sends a command to set the wind mode of the CirculatorFanDevice
-func (device *CirculatorFanDevice) SetWindMode(mode CirculatorWindMode) (*CommonResponse, error) {
+// GetSetWindModeCommand generates a ControlRequest to set the wind mode of the CirculatorFanDevice.
+func (device *CirculatorFanDevice) GetSetWindModeCommand(mode CirculatorWindMode) (*ControlRequest, error) {
 	if mode != CirculatorWindModeDirect && mode != CirculatorWindModeNatural && mode != CirculatorWindModeSleep && mode != CirculatorWindModeBaby {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setWindMode",
 		Parameter:   mode,
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetWindSpeed sends a command to set the wind speed of the CirculatorFanDevice
-func (device *CirculatorFanDevice) SetWindSpeed(speed int) (*CommonResponse, error) {
+// GetSetWindSpeedCommand generates a ControlRequest to set the wind speed of the CirculatorFanDevice.
+func (device *CirculatorFanDevice) GetSetWindSpeedCommand(speed int) (*ControlRequest, error) {
 	if speed < 1 || speed > 100 {
 		return nil, fmt.Errorf("invalid speed: %d", speed)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setWindSpeed",
 		Parameter:   fmt.Sprintf("%d", speed),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetPosition sends a command to set the position of the RollerShadeDevice
-func (device *RollerShadeDevice) SetPosition(position int) (*CommonResponse, error) {
+// GetSetPositionCommand generates a ControlRequest to set the position of the RollerShadeDevice.
+func (device *RollerShadeDevice) GetSetPositionCommand(position int) (*ControlRequest, error) {
 	if position < 0 || position > 100 {
 		return nil, fmt.Errorf("invalid position: %d", position)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setPosition",
 		Parameter:   fmt.Sprintf("%d", position),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOn sends a command to turn on the RelaySwitch1PMDevice
-func (device *RelaySwitch1PMDevice) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the RelaySwitch1PMDevice
-func (device *RelaySwitch1PMDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// Toggle sends a command to toggle the RelaySwitch1PMDevice
-func (device *RelaySwitch1PMDevice) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
 type RelaySwitchMode int
@@ -1001,70 +686,28 @@ const (
 	RelaySwitchModeMomentary = RelaySwitchMode(3)
 )
 
-// SetMode sends a command to set the mode of the RelaySwitch1PMDevice
-func (device *RelaySwitch1PMDevice) SetMode(mode RelaySwitchMode) (*CommonResponse, error) {
+// GetSetModeCommand generates a ControlRequest to set the mode of the RelaySwitch1PMDevice.
+func (device *RelaySwitch1PMDevice) GetSetModeCommand(mode RelaySwitchMode) (*ControlRequest, error) {
 	if mode < 0 || mode > 3 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   fmt.Sprintf("%d", mode),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// TurnOn sends a command to turn on the RelaySwitch1Device
-func (device *RelaySwitch1Device) TurnOn() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOn",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the RelaySwitch1Device
-func (device *RelaySwitch1Device) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// Toggle sends a command to toggle the RelaySwitch1Device
-func (device *RelaySwitch1Device) Toggle() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "toggle",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// SetMode sends a command to set the mode of the RelaySwitch1Device
-func (device *RelaySwitch1Device) SetMode(mode RelaySwitchMode) (*CommonResponse, error) {
+// GetSetModeCommand generates a ControlRequest to set the mode of the RelaySwitch1Device.
+func (device *RelaySwitch1Device) GetSetModeCommand(mode RelaySwitchMode) (*ControlRequest, error) {
 	if mode < 0 || mode > 3 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   fmt.Sprintf("%d", mode),
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
-}
-
-// TurnOff sends a command to turn off the InfraredRemoteDevice
-func (device *InfraredRemoteDevice) TurnOff() (*CommonResponse, error) {
-	request := ControlRequest{
-		CommandType: "command",
-		Command:     "turnOff",
-		Parameter:   "default",
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
 type AirConditionerMode int
@@ -1085,10 +728,10 @@ const (
 	AirConditionerPowerStateOff = AirConditionerPowerState("off")
 )
 
-// SetAll sends a command to configure all parameters of the InfraredRemoteAirConditionerDevice
-func (device *InfraredRemoteAirConditionerDevice) SetAll(
+// GetSetAllCommand generates a ControlRequest to set the mode, fan speed, and power state of the InfraredRemoteAirConditionerDevice.
+func (device *InfraredRemoteAirConditionerDevice) GetSetAllCommand(
 	temperatureCelsius int, mode AirConditionerMode, fan AirConditionerFanMode, powerState AirConditionerPowerState,
-) (*CommonResponse, error) {
+) (*ControlRequest, error) {
 	if temperatureCelsius < -10 || temperatureCelsius > 40 {
 		return nil, fmt.Errorf("invalid temperatureCelsius: %d", temperatureCelsius)
 	}
@@ -1100,234 +743,212 @@ func (device *InfraredRemoteAirConditionerDevice) SetAll(
 	}
 
 	parameter := fmt.Sprintf("%d,%d,%d,%s", temperatureCelsius, mode, fan, powerState)
-	request := ControlRequest{
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setAll",
 		Parameter:   parameter,
-	}
-	return device.Client.SendCommand(device.DeviceID, request)
+	}, nil
 }
 
-// SetChannel sends a command to set the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
-func (device *InfraredRemoteTVDevice) SetChannel(channel int) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSetChannelCommand generates a ControlRequest to set the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice.
+func (device *InfraredRemoteTVDevice) GetSetChannelCommand(channel int) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "SetChannel",
 		Parameter:   fmt.Sprintf("%d", channel),
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// VolumeAdd sends a command to increase the volume of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
-func (device *InfraredRemoteTVDevice) VolumeAdd() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetVolumeAddCommand generates a ControlRequest to increase the volume of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice.
+func (device *InfraredRemoteTVDevice) GetVolumeAddCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "volumeAdd",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// VolumeSub sends a command to decrease the volume of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
-func (device *InfraredRemoteTVDevice) VolumeSub() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetVolumeSubCommand generates a ControlRequest to decrease the volume of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice.
+func (device *InfraredRemoteTVDevice) GetVolumeSubCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "volumeSub",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// ChannelAdd sends a command to increase the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
-func (device *InfraredRemoteTVDevice) ChannelAdd() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetChannelAddCommand generates a ControlRequest to increase the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice.
+func (device *InfraredRemoteTVDevice) GetChannelAddCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "channelAdd",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetMute sends a command to mute/unmute the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) SetMute() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSetMuteCommand generates a ControlRequest to mute/unmute the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetSetMuteCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "setMute",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// FastForward sends a command to fast-forward the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) FastForward() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetFastForwardCommand generates a ControlRequest to fast-forward the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetFastForwardCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "FastForward",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Rewind sends a command to rewind the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Rewind() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetRewindCommand generates a ControlRequest to rewind the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetRewindCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Rewind",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Next sends a command to play the next track on the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Next() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetNextCommand generates a ControlRequest to play the next track on the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetNextCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Next",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Previous sends a command to play the previous track on the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Previous() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetPreviousCommand generates a ControlRequest to play the previous track on the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetPreviousCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Previous",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Pause sends a command to pause the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Pause() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetPauseCommand generates a ControlRequest to pause the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetPauseCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Pause",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Play sends a command to play/resume the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Play() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetPlayCommand generates a ControlRequest to play/resume the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetPlayCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Play",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Stop sends a command to stop the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteDvdPlayerDevice) Stop() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetStopCommand generates a ControlRequest to stop the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteDvdPlayerDevice) GetStopCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "Stop",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// VolumeAdd sends a command to increase the volume of the InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteSpeakerDevice) VolumeAdd() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetVolumeAddCommand generates a ControlRequest to increase the volume of the InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteSpeakerDevice) GetVolumeAddCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "volumeAdd",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// VolumeSub sends a command to decrease the volume of the InfraredRemoteSpeakerDevice
-func (device *InfraredRemoteSpeakerDevice) VolumeSub() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetVolumeSubCommand generates a ControlRequest to decrease the volume of the InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteSpeakerDevice) GetVolumeSubCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "volumeSub",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Swing sends a command to enable/disable the swing feature of the InfraredRemoteFanDevice
-func (device *InfraredRemoteFanDevice) Swing() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetSwingCommand generates a ControlRequest to enable/disable the swing feature of the InfraredRemoteFanDevice.
+func (device *InfraredRemoteFanDevice) GetSwingCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "swing",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// Timer sends a command to set the timer of the InfraredRemoteFanDevice
-func (device *InfraredRemoteFanDevice) Timer() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetTimerCommand generates a ControlRequest to set the timer of the InfraredRemoteFanDevice.
+func (device *InfraredRemoteFanDevice) GetTimerCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "timer",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// LowSpeed sends a command to set the fan speed to low on the InfraredRemoteFanDevice
-func (device *InfraredRemoteFanDevice) LowSpeed() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetLowSpeedCommand generates a ControlRequest to set the fan speed to low on the InfraredRemoteFanDevice
+func (device *InfraredRemoteFanDevice) GetLowSpeedCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "lowSpeed",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// MiddleSpeed sends a command to set the fan speed to middle on the InfraredRemoteFanDevice
-func (device *InfraredRemoteFanDevice) MiddleSpeed() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetMiddleSpeedCommand generates a ControlRequest to set the fan speed to middle on the InfraredRemoteFanDevice
+func (device *InfraredRemoteFanDevice) GetMiddleSpeedCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "middleSpeed",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// HighSpeed sends a command to set the fan speed to high on the InfraredRemoteFanDevice
-func (device *InfraredRemoteFanDevice) HighSpeed() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetHighSpeedCommand generates a ControlRequest to set the fan speed to high on the InfraredRemoteFanDevice
+func (device *InfraredRemoteFanDevice) GetHighSpeedCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "highSpeed",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// BrightnessUp sends a command to increase the brightness of the InfraredRemoteLightDevice
-func (device *InfraredRemoteLightDevice) BrightnessUp() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetBrightnessUpCommand generates a ControlRequest to increase the brightness of the InfraredRemoteLightDevice
+func (device *InfraredRemoteLightDevice) GetBrightnessUpCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "brightnessUp",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// BrightnessDown sends a command to decrease the brightness of the InfraredRemoteLightDevice
-func (device *InfraredRemoteLightDevice) BrightnessDown() (*CommonResponse, error) {
-	request := ControlRequest{
+// GetBrightnessDownCommand generates a ControlRequest to decrease the brightness of the InfraredRemoteLightDevice
+func (device *InfraredRemoteLightDevice) GetBrightnessDownCommand() *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "brightnessDown",
 		Parameter:   "default",
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// CustomCommand sends a user-defined command to the InfraredRemoteOthersDevice
-func (device *InfraredRemoteOthersDevice) CustomCommand(buttonName string) (*CommonResponse, error) {
-	request := ControlRequest{
+// GetCustomCommand generates a ControlRequest to send a custom command to the InfraredRemoteOthersDevice.
+func (device *InfraredRemoteOthersDevice) GetCustomCommand(buttonName string) *ControlRequest {
+	return &ControlRequest{
 		CommandType: "command",
 		Command:     "customize",
 		Parameter:   buttonName,
 	}
-	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-func (client *Client) SendCommand(deviceId string, request ControlRequest) (*CommonResponse, error) {
+// SendCommand sends a command to the device with the specified deviceId.
+func (client *Client) SendCommand(deviceId string, request *ControlRequest) (*CommonResponse, error) {
 	return client.PostRequest("/devices/"+deviceId+"/commands", request)
 }
