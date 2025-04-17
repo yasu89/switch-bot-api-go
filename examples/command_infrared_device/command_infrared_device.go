@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/yasu89/switch-bot-api-go"
+	switchbot "github.com/yasu89/switch-bot-api-go"
 )
 
 func main() {
