@@ -48,7 +48,7 @@ const (
 )
 
 func (device *CurtainDevice) SetPosition(mode CurtainPositionMode, position int) (*CommonResponse, error) {
-	if mode != "0" && mode != "1" && mode != "ff" {
+	if mode != CurtainPositionModePerformance && mode != CurtainPositionModeSilent && mode != CurtainPositionModeDefault {
 		return nil, fmt.Errorf("invalid mode: %s", mode)
 	}
 	if position < 0 || position > 100 {
