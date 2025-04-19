@@ -531,6 +531,12 @@ const (
 	EvaporativeHumidifierModeDry      = EvaporativeHumidifierMode(8)
 )
 
+// EvaporativeHumidifierModeParam represents the parameters for setting the mode of the EvaporativeHumidifierDevice.
+type EvaporativeHumidifierModeParam struct {
+	Mode           EvaporativeHumidifierMode `json:"mode"`
+	TargetHumidity int                       `json:"targetHumidity"`
+}
+
 // SetMode sends a command to set the mode of the EvaporativeHumidifierDevice
 func (device *EvaporativeHumidifierDevice) SetMode(mode EvaporativeHumidifierMode, targetHumidity int) (*CommonResponse, error) {
 	if mode < 1 || mode > 8 {
@@ -542,7 +548,10 @@ func (device *EvaporativeHumidifierDevice) SetMode(mode EvaporativeHumidifierMod
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "setMode",
-		Parameter:   "default",
+		Parameter: EvaporativeHumidifierModeParam{
+			Mode:           mode,
+			TargetHumidity: targetHumidity,
+		},
 	}
 	return device.Client.SendCommand(device.DeviceID, request)
 }
@@ -586,8 +595,10 @@ func (device *AirPurifierDevice) SetMode(mode AirPurifierMode, fanLevel int) (*C
 	if mode < 1 || mode > 4 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
-	if fanLevel < 1 || fanLevel > 3 {
-		return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
+	if mode == AirPurifierModeNormal {
+		if fanLevel < 1 || fanLevel > 3 {
+			return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
+		}
 	}
 	request := ControlRequest{
 		CommandType: "command",
