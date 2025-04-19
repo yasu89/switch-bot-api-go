@@ -1,5 +1,7 @@
 coverage:
   if: true
+  exclude:
+    - 'github.com/yasu89/switch-bot-api-go/examples/**/*.go'
 codeToTestRatio:
   if: true
   code:
