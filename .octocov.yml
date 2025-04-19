@@ -1,7 +1,5 @@
 coverage:
   if: true
-  badge:
-    path: badges/coverage.svg
 codeToTestRatio:
   if: true
   code:
@@ -9,12 +7,8 @@ codeToTestRatio:
     - '!**/*_test.go'
   test:
     - '**/*_test.go'
-  badge:
-    path: badges/ratio.svg
 testExecutionTime:
   if: true
-  badge:
-    path: badges/time.svg
 diff:
   datastores:
     - artifact://${GITHUB_REPOSITORY}
@@ -27,5 +21,3 @@ report:
   if: is_default_branch
   datastores:
     - artifact://${GITHUB_REPOSITORY}
-push:
-  if: is_pull_request
