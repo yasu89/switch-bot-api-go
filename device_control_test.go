@@ -846,6 +846,174 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 	}
 }
 
+func TestRelaySwitch1Device(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.RelaySwitch1Device) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "SetMode(Toggle)",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"0\"}",
+			method: func(device *switchbot.RelaySwitch1Device) (*switchbot.CommonResponse, error) {
+				return device.SetMode(switchbot.RelaySwitchModeToggle)
+			},
+		},
+		{
+			name:         "SetMode(Momentary)",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"3\"}",
+			method: func(device *switchbot.RelaySwitch1Device) (*switchbot.CommonResponse, error) {
+				return device.SetMode(switchbot.RelaySwitchModeMomentary)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			testServer := newTestCommandServer(t, testData.expectedBody)
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch1Device{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := testData.method(device)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			assertResponse(t, response)
+		})
+	}
+}
+
+func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn()
+			},
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff()
+			},
+		},
+		{
+			name:         "SetAll",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setAll\",\"parameter\": \"25,2,4,on\"}",
+			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
+				return device.SetAll(25, switchbot.AirConditionerModeCool, switchbot.AirConditionerFanModeHigh, switchbot.AirConditionerPowerStateOn)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			testServer := newTestCommandServer(t, testData.expectedBody)
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteAirConditionerDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:     client,
+					DeviceID:   "ABCDEF123456",
+					DeviceName: "Test AC",
+				},
+			}
+			response, err := testData.method(device)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			assertResponse(t, response)
+		})
+	}
+}
+
+func TestInfraredRemoteTVDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.InfraredRemoteTVDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "SetChannel",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"SetChannel\",\"parameter\": \"5\"}",
+			method: func(device *switchbot.InfraredRemoteTVDevice) (*switchbot.CommonResponse, error) {
+				return device.SetChannel(5)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			testServer := newTestCommandServer(t, testData.expectedBody)
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteTVDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:     client,
+					DeviceID:   "ABCDEF123456",
+					DeviceName: "Test TV",
+				},
+			}
+			response, err := testData.method(device)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			assertResponse(t, response)
+		})
+	}
+}
+
+func TestInfraredRemoteOthersDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.InfraredRemoteOthersDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "CustomCommand",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"customize\",\"parameter\": \"testButton\"}",
+			method: func(device *switchbot.InfraredRemoteOthersDevice) (*switchbot.CommonResponse, error) {
+				return device.CustomCommand("testButton")
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			testServer := newTestCommandServer(t, testData.expectedBody)
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteOthersDevice{
+				Client:     client,
+				DeviceID:   "ABCDEF123456",
+				DeviceName: "Test Others",
+			}
+			response, err := testData.method(device)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			assertResponse(t, response)
+		})
+	}
+}
+
 func newTestCommandServer(t *testing.T, expectedBody string) *httptest.Server {
 	t.Helper()
 	return httptest.NewServer(
