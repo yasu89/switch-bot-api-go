@@ -395,7 +395,7 @@ func NewFloorCleaningParam(fanLevel int, waterLevel int, times int) (*FloorClean
 }
 
 // StartClean sends a command to start cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam StartFloorCleaningParam) (*CommonResponse, error) {
+func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam *StartFloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "startClean",
@@ -454,7 +454,7 @@ func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*Co
 }
 
 // ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam FloorCleaningParam) (*CommonResponse, error) {
+func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "changeParam",
