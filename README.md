@@ -1,5 +1,9 @@
 # SwitchBot API in Go
 
+![Coverage](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/coverage.svg)
+![Code to Test Ratio](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/ratio.svg)
+![Test Execution Time](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/time.svg)
+
 [日本語はこちら](README_ja.md)
 
 A Golang library for the [SwitchBot API v1.1](https://github.com/OpenWonderLabs/SwitchBotAPI).
