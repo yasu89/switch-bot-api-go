@@ -1,7 +1,7 @@
 coverage:
   if: true
   exclude:
-    - 'examples/*.go'
+    - 'examples/**/*.go'
 codeToTestRatio:
   if: true
   code:
