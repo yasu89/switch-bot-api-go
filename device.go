@@ -197,6 +197,10 @@ type InfraredRemoteDevice struct {
 	HubDeviceId string `json:"hubDeviceId"`
 }
 
+func (device *InfraredRemoteDevice) GetDeviceID() string {
+	return device.DeviceID
+}
+
 // InfraredRemoteAirConditionerDevice represents an infrared remote-controlled air conditioner device.
 type InfraredRemoteAirConditionerDevice struct {
 	InfraredRemoteDevice
@@ -269,6 +273,10 @@ type InfraredRemoteOthersDevice struct {
 	DeviceName  string `json:"deviceName"`
 	RemoteType  string `json:"remoteType"`
 	HubDeviceId string `json:"hubDeviceId"`
+}
+
+func (device *InfraredRemoteOthersDevice) GetDeviceID() string {
+	return device.DeviceID
 }
 
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
