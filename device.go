@@ -15,10 +15,18 @@ type GetDevicesResponseBody struct {
 	InfraredRemoteList []interface{} `json:"infraredRemoteList"`
 }
 
+type DeviceIdGettable interface {
+	GetDeviceId() string
+}
+
 type CommonDevice struct {
 	DeviceID    string `json:"deviceId"`
 	DeviceType  string `json:"deviceType"`
 	HubDeviceId string `json:"hubDeviceId"`
+}
+
+func (device *CommonDevice) GetDeviceId() string {
+	return device.DeviceID
 }
 
 type CommonDeviceListItem struct {
