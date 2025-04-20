@@ -4,6 +4,11 @@ import (
 	"encoding/json"
 )
 
+// StatusGettable is an interface that defines a method to get the status of a device as a value of type `any`
+type StatusGettable interface {
+	GetAnyStatusBody() (any, error)
+}
+
 func GetDeviceStatusResponseParser(response interface{}) ResponseParser {
 	return func(client *Client, bodyBytes []byte) error {
 		err := json.Unmarshal(bodyBytes, response)
@@ -36,6 +41,15 @@ func (device *BotDevice) GetStatus() (*BotDeviceStatusResponse, error) {
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *BotDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type CurtainDeviceStatusBody struct {
 	CommonDevice
 	Calibrate     bool   `json:"calibrate"`
@@ -60,6 +74,15 @@ func (device *CurtainDevice) GetStatus() (*CurtainDeviceStatusResponse, error) {
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *CurtainDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type Hub2DeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
@@ -82,6 +105,15 @@ func (device *Hub2Device) GetStatus() (*Hub2DeviceStatusResponse, error) {
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *Hub2Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type MeterDeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
@@ -102,6 +134,15 @@ func (device *MeterDevice) GetStatus() (*MeterDeviceStatusResponse, error) {
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *MeterDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type MeterProCo2DeviceStatusBody struct {
@@ -127,6 +168,15 @@ func (device *MeterProCo2Device) GetStatus() (*MeterProCo2DeviceStatusResponse, 
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *MeterProCo2Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type LockDeviceStatusBody struct {
 	CommonDevice
 	Battery   int    `json:"battery"`
@@ -150,6 +200,15 @@ func (device *LockDevice) GetStatus() (*LockDeviceStatusResponse, error) {
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *LockDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type KeypadDeviceStatusBody struct {
 	CommonDevice
 }
@@ -166,6 +225,15 @@ func (device *KeypadDevice) GetStatus() (*KeypadStatusResponse, error) {
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *KeypadDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type MotionSensorDeviceStatusBody struct {
@@ -191,6 +259,15 @@ func (device *MotionSensorDevice) GetStatus() (*MotionSensorDeviceStatusResponse
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *MotionSensorDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type ContactSensorDeviceStatusBody struct {
 	CommonDevice
 	Battery      int    `json:"battery"`
@@ -214,6 +291,15 @@ func (device *ContactSensorDevice) GetStatus() (*ContactSensorDeviceStatusRespon
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *ContactSensorDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type WaterLeakDetectorDeviceStatusBody struct {
 	CommonDevice
 	Battery int    `json:"battery"`
@@ -233,6 +319,15 @@ func (device *WaterLeakDetectorDevice) GetStatus() (*WaterLeakDetectorDeviceStat
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *WaterLeakDetectorDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type CeilingLightDeviceStatusBody struct {
@@ -255,6 +350,15 @@ func (device *CeilingLightDevice) GetStatus() (*CeilingLightDeviceStatusResponse
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *CeilingLightDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type PlugMiniDeviceStatusBody struct {
@@ -280,6 +384,15 @@ func (device *PlugMiniDevice) GetStatus() (*PlugMiniDeviceStatusResponse, error)
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *PlugMiniDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type PlugDeviceStatusBody struct {
 	CommonDevice
 	Power   string `json:"power"`
@@ -298,6 +411,15 @@ func (device *PlugDevice) GetStatus() (*PlugDeviceStatusResponse, error) {
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *PlugDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type StripLightDeviceStatusBody struct {
@@ -320,6 +442,15 @@ func (device *StripLightDevice) GetStatus() (*StripLightDeviceStatusResponse, er
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *StripLightDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type ColorBulbDeviceStatusBody struct {
@@ -345,6 +476,15 @@ func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, erro
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *ColorBulbDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type RobotVacuumCleanerDeviceStatusBody struct {
 	CommonDevice
 	WorkingStatus string `json:"workingStatus"`
@@ -364,6 +504,15 @@ func (device *RobotVacuumCleanerDevice) GetStatus() (*RobotVacuumCleanerDeviceSt
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RobotVacuumCleanerDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type RobotVacuumCleanerS10DeviceStatusBody struct {
@@ -387,6 +536,15 @@ func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10De
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RobotVacuumCleanerS10Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type HumidifierDeviceStatusBody struct {
@@ -413,6 +571,15 @@ func (device *HumidifierDevice) GetStatus() (*HumidifierDeviceStatusResponse, er
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *HumidifierDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type EvaporativeHumidifierDeviceFilterElement struct {
@@ -445,6 +612,15 @@ func (device *EvaporativeHumidifierDevice) GetStatus() (*EvaporativeHumidifierDe
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *EvaporativeHumidifierDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type AirPurifierDeviceStatusBody struct {
 	CommonDevice
 	Power     string `json:"power"`
@@ -465,6 +641,15 @@ func (device *AirPurifierDevice) GetStatus() (*AirPurifierDeviceStatusResponse, 
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *AirPurifierDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type BlindTiltDeviceStatusBody struct {
@@ -489,6 +674,15 @@ func (device *BlindTiltDevice) GetStatus() (*BlindTiltDeviceStatusResponse, erro
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *BlindTiltDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type BatteryCirculatorFanDeviceStatusBody struct {
@@ -518,6 +712,15 @@ func (device *BatteryCirculatorFanDevice) GetStatus() (*BatteryCirculatorFanDevi
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *BatteryCirculatorFanDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type CirculatorFanDeviceStatusBody struct {
 	CommonDevice
 	Mode                string `json:"mode"`
@@ -543,6 +746,15 @@ func (device *CirculatorFanDevice) GetStatus() (*CirculatorFanDeviceStatusRespon
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *CirculatorFanDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type RollerShadeDeviceStatusBody struct {
 	CommonDevice
 	Version       string `json:"version"`
@@ -564,6 +776,15 @@ func (device *RollerShadeDevice) GetStatus() (*RollerShadeDeviceStatusResponse, 
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RollerShadeDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
 
 type RelaySwitch1PMDeviceStatusBody struct {
@@ -590,6 +811,15 @@ func (device *RelaySwitch1PMDevice) GetStatus() (*RelaySwitch1PMDeviceStatusResp
 	return response, nil
 }
 
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RelaySwitch1PMDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type RelaySwitch1DeviceStatusBody struct {
 	CommonDevice
 	SwitchStatus int    `json:"switchStatus"`
@@ -608,4 +838,13 @@ func (device *RelaySwitch1Device) GetStatus() (*RelaySwitch1DeviceStatusResponse
 		return nil, err
 	}
 	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RelaySwitch1Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
 }
