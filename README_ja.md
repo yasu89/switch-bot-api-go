@@ -1,5 +1,7 @@
 # SwitchBot API in Go
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/yasu89/switch-bot-api-go.svg)](https://pkg.go.dev/github.com/yasu89/switch-bot-api-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yasu89/switch-bot-api-go)](https://goreportcard.com/report/github.com/yasu89/switch-bot-api-go)
 ![Coverage](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/coverage.svg)
 ![Code to Test Ratio](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/ratio.svg)
 ![Test Execution Time](https://raw.githubusercontent.com/yasu89/octocovs/main/badges/yasu89/switch-bot-api-go/time.svg)
