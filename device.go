@@ -15,8 +15,8 @@ type GetDevicesResponseBody struct {
 	InfraredRemoteList []interface{} `json:"infraredRemoteList"`
 }
 
-type DeviceIdGettable interface {
-	GetDeviceId() string
+type DeviceIDGettable interface {
+	GetDeviceID() string
 }
 
 type CommonDevice struct {
@@ -25,7 +25,7 @@ type CommonDevice struct {
 	HubDeviceId string `json:"hubDeviceId"`
 }
 
-func (device *CommonDevice) GetDeviceId() string {
+func (device *CommonDevice) GetDeviceID() string {
 	return device.DeviceID
 }
 
