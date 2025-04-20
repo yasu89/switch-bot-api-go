@@ -275,6 +275,10 @@ type InfraredRemoteOthersDevice struct {
 	HubDeviceId string `json:"hubDeviceId"`
 }
 
+func (device *InfraredRemoteOthersDevice) GetDeviceID() string {
+	return device.DeviceID
+}
+
 func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 	return func(client *Client, bodyBytes []byte) error {
 		err := json.Unmarshal(bodyBytes, response)
