@@ -6,6 +6,12 @@ import (
 	"regexp"
 )
 
+// SwitchableDevice represents a device that can be switched ON or OFF.
+type SwitchableDevice interface {
+	TurnOn() (*CommonResponse, error)
+	TurnOff() (*CommonResponse, error)
+}
+
 type ControlRequest struct {
 	Command     string      `json:"command"`
 	Parameter   interface{} `json:"parameter"`

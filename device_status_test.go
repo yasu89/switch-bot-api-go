@@ -9,7 +9,7 @@ import (
 	switchbot "github.com/yasu89/switch-bot-api-go"
 )
 
-func TestGetStatus(t *testing.T) {
+func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	t.Run("BotDevice", func(t *testing.T) {
 		testServer := httptest.NewServer(
 			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +64,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("CurtainDevice", func(t *testing.T) {
@@ -124,6 +131,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("Hub2Device", func(t *testing.T) {
@@ -180,6 +194,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("MeterDevice", func(t *testing.T) {
@@ -236,6 +257,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("MeterProCo2Device", func(t *testing.T) {
@@ -294,6 +322,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("LockDevice", func(t *testing.T) {
@@ -352,6 +387,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("KeypadDevice", func(t *testing.T) {
@@ -400,6 +442,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("MotionSensorDevice", func(t *testing.T) {
@@ -458,6 +507,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("ContactSensorDevice", func(t *testing.T) {
@@ -516,6 +572,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("WaterLeakDetectorDevice", func(t *testing.T) {
@@ -569,6 +632,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("CeilingLightDevice", func(t *testing.T) {
@@ -625,6 +695,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("PlugMiniDevice", func(t *testing.T) {
@@ -683,6 +760,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("PlugDevice", func(t *testing.T) {
@@ -735,6 +819,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("StripLightDevice", func(t *testing.T) {
@@ -791,6 +882,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("ColorBulbDevice", func(t *testing.T) {
@@ -849,6 +947,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("RobotVacuumCleanerDevice", func(t *testing.T) {
@@ -903,6 +1008,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("RobotVacuumCleanerS10Device", func(t *testing.T) {
@@ -961,6 +1073,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("HumidifierDevice", func(t *testing.T) {
@@ -1025,6 +1144,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("EvaporativeHumidifierDevice", func(t *testing.T) {
@@ -1093,6 +1219,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("AirPurifierDevice", func(t *testing.T) {
@@ -1149,6 +1282,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("BlindTiltDevice", func(t *testing.T) {
@@ -1209,6 +1349,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("BatteryCirculatorFanDevice", func(t *testing.T) {
@@ -1275,6 +1422,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("CirculatorFanDevice", func(t *testing.T) {
@@ -1337,6 +1491,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("RollerShadeDevice", func(t *testing.T) {
@@ -1395,6 +1556,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("RelaySwitch1PMDevice", func(t *testing.T) {
@@ -1455,6 +1623,13 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
 	})
 
 	t.Run("RelaySwitch1Device", func(t *testing.T) {
@@ -1507,8 +1682,14 @@ func TestGetStatus(t *testing.T) {
 
 		assertResponse(t, &status.CommonResponse)
 		assertBody(t, status.Body, expectedBody)
-	})
 
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		assertBody(t, anyStatus, expectedBody)
+	})
 }
 
 func assertResponse(t *testing.T, response *switchbot.CommonResponse) {
