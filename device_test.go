@@ -2,39 +2,26 @@ package switchbot_test
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func TestGetPhysicalDevices(t *testing.T) {
 	// Tests do not cover devices that only embed CommonDeviceListItem/InfraredRemoteDevice with the same structure.
 
 	t.Run("BotDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "ABCDEF123456",
-                "deviceType": "Bot",
-                "hubDeviceId": "123456789",
-                "deviceName": "BotDevice",
-                "enableCloudService": true
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ABCDEF123456",
+			"deviceType":         "Bot",
+			"hubDeviceId":        "123456789",
+			"deviceName":         "BotDevice",
+			"enableCloudService": true,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -61,32 +48,20 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("CurtainDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "ABCDEF123456",
-                "deviceType": "Curtain3",
-                "hubDeviceId": "123456789",
-                "deviceName": "CurtainDevice",
-                "enableCloudService": false,
-				"curtainDevicesIds": ["BBBBBBBB", "CCCCCCCC", "DDDDDDDD"],
-				"calibrate": true,
-				"group": true,
-				"master": false,
-				"openDirection": "left"
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ABCDEF123456",
+			"deviceType":         "Curtain3",
+			"hubDeviceId":        "123456789",
+			"deviceName":         "CurtainDevice",
+			"enableCloudService": false,
+			"curtainDevicesIds":  []string{"BBBBBBBB", "CCCCCCCC", "DDDDDDDD"},
+			"calibrate":          true,
+			"group":              true,
+			"master":             false,
+			"openDirection":      "left",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -118,31 +93,19 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("LockDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "ABCDEF123456",
-                "deviceType": "Smart Lock",
-                "hubDeviceId": "123456789",
-                "deviceName": "LockDevice",
-                "enableCloudService": true,
-				"group": true,
-				"master": false,
-				"groupName": "LockGroup",
-				"lockDevicesIds": ["AAAAAAAA"]
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ABCDEF123456",
+			"deviceType":         "Smart Lock",
+			"hubDeviceId":        "123456789",
+			"deviceName":         "LockDevice",
+			"enableCloudService": true,
+			"group":              true,
+			"master":             false,
+			"groupName":          "LockGroup",
+			"lockDevicesIds":     []string{"AAAAAAAA"},
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -173,48 +136,36 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("KeypadDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "ABCDEF123456",
-                "deviceType": "Keypad Touch",
-                "hubDeviceId": "123456789",
-                "deviceName": "KeypadDevice",
-                "enableCloudService": true,
-				"lockDevicesIds": [],
-				"keyList": [
-					{
-						"id": 1,
-						"name": "firstKey",
-						"type": "permanent",
-						"password": "z41UoV93PIS0OYElzUd7nwA9TO6XxSDlf9N+P4nFuJw=",
-						"iv": "71fbf00383b6e214dc08b8b94183cf30",
-						"status": "normal",
-						"createTime": 1744814218
-					},
-					{
-						"id": 2,
-						"name": "secondKey",
-						"type": "timeLimit",
-						"password": "z6aSgCwa4+0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5afa=",
-						"iv": "af0b1a2c3d4e5f6g7h8i9j0k1l2m3n4o5",
-						"status": "expired",
-						"createTime": 1746025200
-					}
-				]
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ABCDEF123456",
+			"deviceType":         "Keypad Touch",
+			"hubDeviceId":        "123456789",
+			"deviceName":         "KeypadDevice",
+			"enableCloudService": true,
+			"lockDevicesIds":     []string{},
+			"keyList": []map[string]interface{}{
+				{
+					"id":         1,
+					"name":       "firstKey",
+					"type":       "permanent",
+					"password":   "z41UoV93PIS0OYElzUd7nwA9TO6XxSDlf9N+P4nFuJw=",
+					"iv":         "71fbf00383b6e214dc08b8b94183cf30",
+					"status":     "normal",
+					"createTime": 1744814218,
+				},
+				{
+					"id":         2,
+					"name":       "secondKey",
+					"type":       "timeLimit",
+					"password":   "z6aSgCwa4+0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5afa=",
+					"iv":         "af0b1a2c3d4e5f6g7h8i9j0k1l2m3n4o5",
+					"status":     "expired",
+					"createTime": 1746025200,
+				},
+			},
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -262,34 +213,22 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("BlindTiltDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "XYZ123456789",
-                "deviceType": "Blind Tilt",
-                "hubDeviceId": "987654321",
-                "deviceName": "BlindTiltDevice",
-                "enableCloudService": true,
-                "version": 1,
-                "blindTiltDevicesIds": ["BBBBBBBB"],
-                "calibrate": true,
-                "group": true,
-                "master": false,
-                "direction": "up",
-                "slidePosition": 50
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":            "XYZ123456789",
+			"deviceType":          "Blind Tilt",
+			"hubDeviceId":         "987654321",
+			"deviceName":          "BlindTiltDevice",
+			"enableCloudService":  true,
+			"version":             1,
+			"blindTiltDevicesIds": []string{"BBBBBBBB"},
+			"calibrate":           true,
+			"group":               true,
+			"master":              false,
+			"direction":           "up",
+			"slidePosition":       50,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -323,32 +262,20 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("RollerShadeDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-	   "statusCode": 100,
-	   "body": {
-	       "deviceList": [
-	           {
-	               "deviceId": "ROLLER123456",
-	               "deviceType": "Roller Shade",
-	               "hubDeviceId": "HUB123456",
-	               "deviceName": "RollerShadeDevice",
-	               "enableCloudService": true,
-	               "bleVersion": "1.0",
-	               "groupingDevicesIds": ["GROUP123"],
-	               "group": true,
-	               "master": true,
-	               "groupName": "RollerGroup"
-				}
-	       ],
-	       "infraredRemoteList": []
-	   },
-	   "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ROLLER123456",
+			"deviceType":         "Roller Shade",
+			"hubDeviceId":        "HUB123456",
+			"deviceName":         "RollerShadeDevice",
+			"enableCloudService": true,
+			"bleVersion":         "1.0",
+			"groupingDevicesIds": []string{"GROUP123"},
+			"group":              true,
+			"master":             true,
+			"groupName":          "RollerGroup",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -380,36 +307,23 @@ func TestGetPhysicalDevices(t *testing.T) {
 	})
 
 	t.Run("TwoDevices", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceList": [
-            {
-                "deviceId": "ABCDEF123456",
-                "deviceType": "Hub 2",
-                "hubDeviceId": "123456789",
-                "deviceName": "Hub2Device",
-                "enableCloudService": true
-            },
-			{
-                "deviceId": "GHIJKL987654",
-                "deviceType": "MeterPro(CO2)",
-                "hubDeviceId": "987654321",
-                "deviceName": "MeterProCO2Device",
-                "enableCloudService": true
-            }
-        ],
-        "infraredRemoteList": []
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "ABCDEF123456",
+			"deviceType":         "Hub 2",
+			"hubDeviceId":        "123456789",
+			"deviceName":         "Hub2Device",
+			"enableCloudService": true,
+		})
+		switchBotMock.AddDevice(map[string]interface{}{
+			"deviceId":           "GHIJKL987654",
+			"deviceType":         "MeterPro(CO2)",
+			"hubDeviceId":        "987654321",
+			"deviceName":         "MeterProCO2Device",
+			"enableCloudService": true,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
-
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
@@ -448,39 +362,26 @@ func TestGetPhysicalDevices(t *testing.T) {
 }
 
 func TestGetInfraredRemoteDevices(t *testing.T) {
-	testServer := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{
-	"statusCode": 100,
-	"body": {
-		"deviceList": [],
-		"infraredRemoteList": [
-			{
-				"deviceId": "AIRCONDITIONER123456",
-				"deviceName": "AirConditionerDevice",
-				"remoteType": "Air Conditioner",
-				"hubDeviceId": "HUB123456"
-			},
-			{
-				"deviceId": "SETTOPBOX123456",
-				"deviceName": "SetTopBoxDevice",
-				"remoteType": "Set Top Box",
-				"hubDeviceId": "HUB123456"
-			},
-			{
-				"deviceId": "OTHERDEVICE123456",
-				"deviceName": "OthersDevice",
-				"remoteType": "Others",
-				"hubDeviceId": "HUB123456"
-			}
-		]
-	},
-	"message": "success"
-}`))
-		}),
-	)
-	defer testServer.Close()
+	switchBotMock := helpers.NewSwitchBotMock(t)
+	switchBotMock.AddInfraredDevice(map[string]interface{}{
+		"deviceId":    "AIRCONDITIONER123456",
+		"deviceName":  "AirConditionerDevice",
+		"remoteType":  "Air Conditioner",
+		"hubDeviceId": "HUB123456",
+	})
+	switchBotMock.AddInfraredDevice(map[string]interface{}{
+		"deviceId":    "SETTOPBOX123456",
+		"deviceName":  "SetTopBoxDevice",
+		"remoteType":  "Set Top Box",
+		"hubDeviceId": "HUB123456",
+	})
+	switchBotMock.AddInfraredDevice(map[string]interface{}{
+		"deviceId":    "OTHERDEVICE123456",
+		"deviceName":  "OthersDevice",
+		"remoteType":  "Others",
+		"hubDeviceId": "HUB123456",
+	})
+	testServer := switchBotMock.NewTestServer()
 
 	client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
