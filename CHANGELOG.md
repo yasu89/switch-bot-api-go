@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.9](https://github.com/yasu89/switch-bot-api-go/compare/v0.3.8...v0.3.9) - 2025-04-23
+### Other Changes
+- Implements SwitchBot API mock helper. by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/11
+- Update tagpr.yml to use GitHub App token for authentication by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/15
+
 ## [v0.3.8](https://github.com/yasu89/switch-bot-api-go/compare/v0.3.7...v0.3.8) - 2025-04-23
 - add tagpr actions by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/12
 
