@@ -1,12 +1,10 @@
 package switchbot_test
 
 import (
-	"encoding/json"
 	"github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 	"image/color"
 	"net/http"
-	"net/http/httptest"
-	"reflect"
 	"testing"
 )
 
@@ -35,7 +33,9 @@ func TestBotDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -52,6 +52,7 @@ func TestBotDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -88,7 +89,9 @@ func TestCurtainDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -105,6 +108,7 @@ func TestCurtainDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -148,7 +152,9 @@ func TestKeypadDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -165,6 +171,7 @@ func TestKeypadDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -189,7 +196,9 @@ func TestLockDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -206,6 +215,7 @@ func TestLockDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -249,7 +259,9 @@ func TestCeilingLightDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -266,6 +278,7 @@ func TestCeilingLightDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -294,7 +307,9 @@ func TestStripLightDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -311,6 +326,7 @@ func TestStripLightDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -346,7 +362,9 @@ func TestColorBulbDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -363,6 +381,7 @@ func TestColorBulbDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -384,7 +403,9 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -401,6 +422,7 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -451,7 +473,9 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -468,6 +492,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -496,7 +521,9 @@ func TestHumidifierDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -513,6 +540,7 @@ func TestHumidifierDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -541,7 +569,9 @@ func TestEvaporativeHumidifierDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -558,6 +588,7 @@ func TestEvaporativeHumidifierDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -593,7 +624,9 @@ func TestAirPurifierDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -610,6 +643,7 @@ func TestAirPurifierDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -638,7 +672,9 @@ func TestBlindTiltDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -655,6 +691,7 @@ func TestBlindTiltDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -690,7 +727,9 @@ func TestBatteryCirculatorFanDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -707,6 +746,7 @@ func TestBatteryCirculatorFanDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -742,7 +782,9 @@ func TestCirculatorFanDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -759,6 +801,7 @@ func TestCirculatorFanDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -780,7 +823,9 @@ func TestRollerShadeDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -797,6 +842,7 @@ func TestRollerShadeDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -825,7 +871,9 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -842,6 +890,7 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -870,7 +919,9 @@ func TestRelaySwitch1Device(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -887,6 +938,7 @@ func TestRelaySwitch1Device(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -922,7 +974,9 @@ func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -938,6 +992,7 @@ func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -959,7 +1014,9 @@ func TestInfraredRemoteTVDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -975,6 +1032,7 @@ func TestInfraredRemoteTVDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -996,7 +1054,9 @@ func TestInfraredRemoteOthersDevice(t *testing.T) {
 
 	for _, testData := range testDataList {
 		t.Run(testData.name, func(t *testing.T) {
-			testServer := newTestCommandServer(t, testData.expectedBody)
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1010,38 +1070,7 @@ func TestInfraredRemoteOthersDevice(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
-}
-
-func newTestCommandServer(t *testing.T, expectedBody string) *httptest.Server {
-	t.Helper()
-	return httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != "/devices/ABCDEF123456/commands" {
-				t.Fatalf("Expected path '/devices/ABCDEF123456/commands', got '%s'", r.URL.Path)
-			}
-
-			var expectedObject map[string]interface{}
-			if err := json.Unmarshal([]byte(expectedBody), &expectedObject); err != nil {
-				t.Fatalf("Failed to unmarshal expected body: %v", err)
-			}
-
-			var actualObject map[string]interface{}
-			if err := json.NewDecoder(r.Body).Decode(&actualObject); err != nil {
-				t.Fatalf("Failed to decode actual body: %v", err)
-			}
-
-			if !reflect.DeepEqual(expectedObject, actualObject) {
-				t.Fatalf("Expected body %v, got %v", expectedObject, actualObject)
-			}
-
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {},
-    "message": "success"
-}`))
-		}),
-	)
 }

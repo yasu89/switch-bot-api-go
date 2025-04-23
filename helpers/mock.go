@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/yasu89/switch-bot-api-go"
@@ -98,6 +99,40 @@ func (s *SwitchBotMock) RegisterStatusMock(deviceId string, mockBody interface{}
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "application/json")
 			_, err = w.Write(responseJsonText)
+			if err != nil {
+				s.t.Fatalf("Failed to write response: %v", err)
+			}
+		},
+	})
+}
+
+// RegisterCommandMock registers a mock response for a specific device's command.
+func (s *SwitchBotMock) RegisterCommandMock(deviceId string, expectedBody string) {
+	s.handlers = append(s.handlers, &HttpMockHandler{
+		Method: http.MethodPost,
+		Path:   "/devices/" + deviceId + "/commands",
+		Count:  0,
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			var expectedObject map[string]interface{}
+			if err := json.Unmarshal([]byte(expectedBody), &expectedObject); err != nil {
+				s.t.Fatalf("Failed to unmarshal expected body: %v", err)
+			}
+
+			var actualObject map[string]interface{}
+			if err := json.NewDecoder(r.Body).Decode(&actualObject); err != nil {
+				s.t.Fatalf("Failed to decode actual body: %v", err)
+			}
+			if !reflect.DeepEqual(expectedObject, actualObject) {
+				s.t.Fatalf("Expected body %v, got %v", expectedObject, actualObject)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			_, err := w.Write([]byte(`{
+    "statusCode": 100,
+	"body": {},
+    "message": "success"
+}`))
 			if err != nil {
 				s.t.Fatalf("Failed to write response: %v", err)
 			}
