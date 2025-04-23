@@ -1,6 +1,7 @@
 package switchbot_test
 
 import (
+	"net/http"
 	"reflect"
 	"testing"
 
@@ -38,7 +39,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.BotDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -94,7 +95,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.CurtainDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -150,7 +151,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.Hub2DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -204,7 +205,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.MeterDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -259,7 +260,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.MeterProCo2DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -315,7 +316,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.LockDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -366,7 +367,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.KeypadDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -417,7 +418,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.MotionSensorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -473,7 +474,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.ContactSensorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -527,7 +528,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.WaterLeakDetectorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -580,7 +581,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.CeilingLightDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -635,7 +636,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.PlugMiniDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -688,7 +689,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.PlugDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -740,7 +741,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.StripLightDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -795,7 +796,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.ColorBulbDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -849,7 +850,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.RobotVacuumCleanerDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -903,7 +904,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.RobotVacuumCleanerS10DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -962,7 +963,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.HumidifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1026,7 +1027,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.EvaporativeHumidifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1086,7 +1087,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.AirPurifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1142,7 +1143,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.BlindTiltDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1203,7 +1204,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.BatteryCirculatorFanDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1265,7 +1266,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.CirculatorFanDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1323,7 +1324,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.RollerShadeDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1380,7 +1381,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.RelaySwitch1PMDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -1434,7 +1435,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.RelaySwitch1DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
