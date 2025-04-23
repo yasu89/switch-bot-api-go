@@ -1,38 +1,26 @@
 package switchbot_test
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"testing"
 
-	switchbot "github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	t.Run("BotDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123456/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123456/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123456",
-		"deviceType": "Bot",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"battery": 100,
-		"version": "1.0",
-		"deviceMode": "pressMode"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Bot",
+			"hubDeviceId": "123456789",
+			"power":       "ON",
+			"battery":     100,
+			"version":     "1.0",
+			"deviceMode":  "pressMode",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -49,6 +37,8 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
+
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
 
 		expectedBody := &switchbot.BotDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
@@ -74,30 +64,19 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("CurtainDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123457/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123457/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123457",
-		"deviceType": "Curtain",
-		"hubDeviceId": "123456789",
-		"calibrate": true,
-		"group": false,
-		"moving": false,
-		"battery": 80,
-		"version": "1.1",
-		"slidePosition": "50"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":      "ABCDEF123456",
+			"deviceType":    "Curtain",
+			"hubDeviceId":   "123456789",
+			"calibrate":     true,
+			"group":         false,
+			"moving":        false,
+			"battery":       80,
+			"version":       "1.1",
+			"slidePosition": "50",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -105,7 +84,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.CurtainDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123457",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -115,9 +94,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.CurtainDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123457",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Curtain",
 				HubDeviceId: "123456789",
 			},
@@ -141,28 +122,17 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("Hub2Device", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123458/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123458/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123458",
-		"deviceType": "Hub 2",
-		"hubDeviceId": "123456789",
-		"temperature": 22.5,
-		"lightLevel": 300,
-		"version": "1.2",
-		"humidity": 60
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Hub 2",
+			"hubDeviceId": "123456789",
+			"temperature": 22.5,
+			"lightLevel":  300,
+			"version":     "1.2",
+			"humidity":    60,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -170,7 +140,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.Hub2Device{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123458",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -180,9 +150,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.Hub2DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123458",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Hub 2",
 				HubDeviceId: "123456789",
 			},
@@ -204,28 +176,17 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("MeterDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123459/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123459/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123459",
-		"deviceType": "MeterPlus",
-		"hubDeviceId": "123456789",
-		"temperature": 25.5,
-		"version": "1.3",
-		"battery": 90,
-		"humidity": 50
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "MeterPlus",
+			"hubDeviceId": "123456789",
+			"temperature": 25.5,
+			"version":     "1.3",
+			"battery":     90,
+			"humidity":    50,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -233,7 +194,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.MeterDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123459",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -243,9 +204,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.MeterDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123459",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "MeterPlus",
 				HubDeviceId: "123456789",
 			},
@@ -267,29 +230,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("MeterProCo2Device", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123460/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123460/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123460",
-		"deviceType": "MeterPro(CO2)",
-		"hubDeviceId": "123456789",
-		"temperature": 23.0,
-		"version": "1.4",
-		"battery": 85,
-		"humidity": 55,
-		"CO2": 400
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "MeterPro(CO2)",
+			"hubDeviceId": "123456789",
+			"temperature": 23.0,
+			"version":     "1.4",
+			"battery":     85,
+			"humidity":    55,
+			"CO2":         400,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -297,7 +249,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.MeterProCo2Device{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123460",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -307,9 +259,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.MeterProCo2DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123460",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "MeterPro(CO2)",
 				HubDeviceId: "123456789",
 			},
@@ -332,29 +286,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("LockDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123461/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123461/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123461",
-		"deviceType": "Smart Lock",
-		"hubDeviceId": "123456789",
-		"battery": 70,
-		"version": "1.5",
-		"lockState": "locked",
-		"doorState": "closed",
-		"calibrate": true
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Smart Lock",
+			"hubDeviceId": "123456789",
+			"battery":     70,
+			"version":     "1.5",
+			"lockState":   "locked",
+			"doorState":   "closed",
+			"calibrate":   true,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -362,7 +305,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.LockDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123461",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -372,9 +315,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.LockDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123461",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Smart Lock",
 				HubDeviceId: "123456789",
 			},
@@ -397,24 +342,13 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("KeypadDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123462/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123462/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123462",
-		"deviceType": "Keypad Touch",
-		"hubDeviceId": "123456789"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Keypad Touch",
+			"hubDeviceId": "123456789",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -422,7 +356,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.KeypadDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123462",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -432,9 +366,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.KeypadDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123462",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Keypad Touch",
 				HubDeviceId: "123456789",
 			},
@@ -452,29 +388,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("MotionSensorDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123463/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123463/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123463",
-		"deviceType": "Motion Sensor",
-		"hubDeviceId": "123456789",
-		"battery": 80,
-		"version": "1.6",
-		"moveDetected": true,
-		"openState": "closed",
-		"brightness": "bright"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":     "ABCDEF123456",
+			"deviceType":   "Motion Sensor",
+			"hubDeviceId":  "123456789",
+			"battery":      80,
+			"version":      "1.6",
+			"moveDetected": true,
+			"openState":    "closed",
+			"brightness":   "bright",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -482,7 +407,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.MotionSensorDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123463",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -492,9 +417,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.MotionSensorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123463",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Motion Sensor",
 				HubDeviceId: "123456789",
 			},
@@ -517,29 +444,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("ContactSensorDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123464/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123464/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123464",
-		"deviceType": "Contact Sensor",
-		"hubDeviceId": "123456789",
-		"battery": 75,
-		"version": "1.7",
-		"moveDetected": false,
-		"openState": "open",
-		"brightness": "dim"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":     "ABCDEF123456",
+			"deviceType":   "Contact Sensor",
+			"hubDeviceId":  "123456789",
+			"battery":      75,
+			"version":      "1.7",
+			"moveDetected": false,
+			"openState":    "open",
+			"brightness":   "dim",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -547,7 +463,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.ContactSensorDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123464",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -557,9 +473,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.ContactSensorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123464",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Contact Sensor",
 				HubDeviceId: "123456789",
 			},
@@ -582,26 +500,16 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("WaterLeakDetectorDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123465/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123465/status', got '%s'", r.URL.Path)
-				}
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-    "body": {
-        "deviceId": "ABCDEF123465",
-        "deviceType": "Water Detector",
-        "hubDeviceId": "123456789",
-        "battery": 60,
-        "version": "1.8",
-		"status": true
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Water Detector",
+			"hubDeviceId": "123456789",
+			"battery":     60,
+			"version":     "1.8",
+			"status":      true,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -609,7 +517,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.WaterLeakDetectorDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123465",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -619,9 +527,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.WaterLeakDetectorDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123465",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Water Detector",
 				HubDeviceId: "123456789",
 			},
@@ -642,28 +552,17 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("CeilingLightDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123466/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123466/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123466",
-		"deviceType": "Ceiling Light",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"version": "1.9",
-		"brightness": 80,
-		"colorTemperature": 4000
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":         "ABCDEF123456",
+			"deviceType":       "Ceiling Light",
+			"hubDeviceId":      "123456789",
+			"power":            "ON",
+			"version":          "1.9",
+			"brightness":       80,
+			"colorTemperature": 4000,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -671,7 +570,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.CeilingLightDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123466",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -681,9 +580,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.CeilingLightDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123466",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Ceiling Light",
 				HubDeviceId: "123456789",
 			},
@@ -705,29 +606,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("PlugMiniDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123467/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123467/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123467",
-		"deviceType": "Plug Mini (JP)",
-		"hubDeviceId": "123456789",
-		"voltage": 220.5,
-		"version": "2.0",
-		"weight": 1.2,
-		"electricityOfDay": 15,
-		"electricCurrent": 0.5
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":         "ABCDEF123456",
+			"deviceType":       "Plug Mini (JP)",
+			"hubDeviceId":      "123456789",
+			"voltage":          220.5,
+			"version":          "2.0",
+			"weight":           1.2,
+			"electricityOfDay": 15,
+			"electricCurrent":  0.5,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -735,7 +625,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.PlugMiniDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123467",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -745,9 +635,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.PlugMiniDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123467",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Plug Mini (JP)",
 				HubDeviceId: "123456789",
 			},
@@ -770,26 +662,15 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("PlugDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123468/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123468/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123468",
-		"deviceType": "Plug",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"version": "2.1"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Plug",
+			"hubDeviceId": "123456789",
+			"power":       "ON",
+			"version":     "2.1",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -797,7 +678,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.PlugDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123468",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -807,9 +688,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.PlugDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123468",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Plug",
 				HubDeviceId: "123456789",
 			},
@@ -829,28 +712,17 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("StripLightDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123469/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123469/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123469",
-		"deviceType": "Strip Light",
-		"hubDeviceId": "123456789",
-		"power": "OFF",
-		"version": "2.2",
-		"brightness": 70,
-		"color": "#FF5733"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Strip Light",
+			"hubDeviceId": "123456789",
+			"power":       "OFF",
+			"version":     "2.2",
+			"brightness":  70,
+			"color":       "#FF5733",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -858,7 +730,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.StripLightDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123469",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -868,9 +740,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.StripLightDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123469",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Strip Light",
 				HubDeviceId: "123456789",
 			},
@@ -892,29 +766,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("ColorBulbDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123470/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123470/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123470",
-		"deviceType": "Color Bulb",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"brightness": 90,
-		"version": "2.3",
-		"color": "#00FF00",
-		"colorTemperature": 5000
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":         "ABCDEF123456",
+			"deviceType":       "Color Bulb",
+			"hubDeviceId":      "123456789",
+			"power":            "ON",
+			"brightness":       90,
+			"version":          "2.3",
+			"color":            "#00FF00",
+			"colorTemperature": 5000,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -922,7 +785,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.ColorBulbDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123470",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -932,9 +795,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.ColorBulbDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123470",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Color Bulb",
 				HubDeviceId: "123456789",
 			},
@@ -957,27 +822,16 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("RobotVacuumCleanerDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123471/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123471/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123471",
-		"deviceType": "Robot Vacuum Cleaner S1",
-		"hubDeviceId": "123456789",
-		"workingStatus": "cleaning",
-		"onlineStatus": "online",
-		"battery": 75
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":      "ABCDEF123456",
+			"deviceType":    "Robot Vacuum Cleaner S1",
+			"hubDeviceId":   "123456789",
+			"workingStatus": "cleaning",
+			"onlineStatus":  "online",
+			"battery":       75,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -985,7 +839,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.RobotVacuumCleanerDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123471",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -995,9 +849,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.RobotVacuumCleanerDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123471",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Robot Vacuum Cleaner S1",
 				HubDeviceId: "123456789",
 			},
@@ -1018,29 +874,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("RobotVacuumCleanerS10Device", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123472/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123472/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123472",
-		"deviceType": "Robot Vacuum Cleaner S10",
-		"hubDeviceId": "123456789",
-		"workingStatus": "mopping",
-		"onlineStatus": "offline",
-		"battery": 50,
-		"waterBaseBattery": 80,
-		"taskType": "mop"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":         "ABCDEF123456",
+			"deviceType":       "Robot Vacuum Cleaner S10",
+			"hubDeviceId":      "123456789",
+			"workingStatus":    "mopping",
+			"onlineStatus":     "offline",
+			"battery":          50,
+			"waterBaseBattery": 80,
+			"taskType":         "mop",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1048,7 +893,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.RobotVacuumCleanerS10Device{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123472",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1058,9 +903,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.RobotVacuumCleanerS10DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123472",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Robot Vacuum Cleaner S10",
 				HubDeviceId: "123456789",
 			},
@@ -1083,32 +930,21 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("HumidifierDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123473/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123473/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123473",
-		"deviceType": "Humidifier",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"humidity": 45,
-		"temperature": 22,
-		"nebulizationEfficiency": 3,
-		"auto": true,
-		"childLock": false,
-		"sound": true,
-		"lackWater": false
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":               "ABCDEF123456",
+			"deviceType":             "Humidifier",
+			"hubDeviceId":            "123456789",
+			"power":                  "ON",
+			"humidity":               45,
+			"temperature":            22,
+			"nebulizationEfficiency": 3,
+			"auto":                   true,
+			"childLock":              false,
+			"sound":                  true,
+			"lackWater":              false,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1116,7 +952,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.HumidifierDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123473",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1126,9 +962,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.HumidifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123473",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Humidifier",
 				HubDeviceId: "123456789",
 			},
@@ -1154,34 +992,23 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("EvaporativeHumidifierDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123474/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123474/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123474",
-		"deviceType": "Humidifier2",
-		"hubDeviceId": "123456789",
-		"power": "OFF",
-		"humidity": 50,
-		"mode": 2,
-		"drying": false,
-		"childLock": true,
-		"filterElement": {
-			"effectiveUsageHours": 100,
-			"usedHours": 20
-		},
-		"version": 1
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Humidifier2",
+			"hubDeviceId": "123456789",
+			"power":       "OFF",
+			"humidity":    50,
+			"mode":        2,
+			"drying":      false,
+			"childLock":   true,
+			"filterElement": map[string]interface{}{
+				"effectiveUsageHours": 100,
+				"usedHours":           20,
+			},
+			"version": 1,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1189,7 +1016,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.EvaporativeHumidifierDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123474",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1199,9 +1026,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.EvaporativeHumidifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123474",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Humidifier2",
 				HubDeviceId: "123456789",
 			},
@@ -1229,28 +1058,17 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("AirPurifierDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123475/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123475/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123475",
-		"deviceType": "Air Purifier VOC",
-		"hubDeviceId": "123456789",
-		"power": "ON",
-		"version": "1.0",
-		"mode": 3,
-		"childLock": false
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Air Purifier VOC",
+			"hubDeviceId": "123456789",
+			"power":       "ON",
+			"version":     "1.0",
+			"mode":        3,
+			"childLock":   false,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1258,7 +1076,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.AirPurifierDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123475",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1268,9 +1086,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.AirPurifierDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123475",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Air Purifier VOC",
 				HubDeviceId: "123456789",
 			},
@@ -1292,30 +1112,19 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("BlindTiltDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123476/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123476/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123476",
-		"deviceType": "Blind Tilt",
-		"hubDeviceId": "123456789",
-		"version": 1,
-		"calibrate": true,
-		"group": false,
-		"moving": false,
-		"direction": "up",
-		"slidePosition": 50
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":      "ABCDEF123456",
+			"deviceType":    "Blind Tilt",
+			"hubDeviceId":   "123456789",
+			"version":       1,
+			"calibrate":     true,
+			"group":         false,
+			"moving":        false,
+			"direction":     "up",
+			"slidePosition": 50,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1323,7 +1132,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.BlindTiltDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123476",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1333,9 +1142,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.BlindTiltDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123476",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Blind Tilt",
 				HubDeviceId: "123456789",
 			},
@@ -1359,33 +1170,22 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("BatteryCirculatorFanDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123477/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123477/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123477",
-		"deviceType": "Battery Circulator Fan",
-		"hubDeviceId": "123456789",
-		"mode": "normal",
-		"version": "1.0",
-		"battery": 85,
-		"power": "ON",
-		"nightStatus": "OFF",
-		"oscillation": "ON",
-		"verticalOscillation": "OFF",
-		"chargingStatus": "charging",
-		"fanSpeed": 3
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":            "ABCDEF123456",
+			"deviceType":          "Battery Circulator Fan",
+			"hubDeviceId":         "123456789",
+			"mode":                "normal",
+			"version":             "1.0",
+			"battery":             85,
+			"power":               "ON",
+			"nightStatus":         "OFF",
+			"oscillation":         "ON",
+			"verticalOscillation": "OFF",
+			"chargingStatus":      "charging",
+			"fanSpeed":            3,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1393,7 +1193,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.BatteryCirculatorFanDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123477",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1403,9 +1203,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.BatteryCirculatorFanDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123477",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Battery Circulator Fan",
 				HubDeviceId: "123456789",
 			},
@@ -1432,31 +1234,20 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("CirculatorFanDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123478/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123478/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123478",
-		"deviceType": "Circulator Fan",
-		"hubDeviceId": "123456789",
-		"mode": "eco",
-		"version": "1.1",
-		"power": "OFF",
-		"nightStatus": "ON",
-		"oscillation": "OFF",
-		"verticalOscillation": "ON",
-		"fanSpeed": 2
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":            "ABCDEF123456",
+			"deviceType":          "Circulator Fan",
+			"hubDeviceId":         "123456789",
+			"mode":                "eco",
+			"version":             "1.1",
+			"power":               "OFF",
+			"nightStatus":         "ON",
+			"oscillation":         "OFF",
+			"verticalOscillation": "ON",
+			"fanSpeed":            2,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1464,7 +1255,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.CirculatorFanDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123478",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1474,9 +1265,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.CirculatorFanDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123478",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Circulator Fan",
 				HubDeviceId: "123456789",
 			},
@@ -1501,29 +1294,18 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("RollerShadeDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123479/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123479/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123479",
-		"deviceType": "Roller Shade",
-		"hubDeviceId": "123456789",
-		"version": "1.0",
-		"calibrate": true,
-		"battery": 90,
-		"moving": false,
-		"slidePosition": 75
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":      "ABCDEF123456",
+			"deviceType":    "Roller Shade",
+			"hubDeviceId":   "123456789",
+			"version":       "1.0",
+			"calibrate":     true,
+			"battery":       90,
+			"moving":        false,
+			"slidePosition": 75,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1531,7 +1313,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.RollerShadeDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123479",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1541,9 +1323,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.RollerShadeDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123479",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Roller Shade",
 				HubDeviceId: "123456789",
 			},
@@ -1566,30 +1350,19 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("RelaySwitch1PMDevice", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123480/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123480/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123480",
-		"deviceType": "Relay Switch 1PM",
-		"hubDeviceId": "123456789",
-		"switchStatus": 1,
-		"voltage": 220,
-		"version": "1.1",
-		"power": 50,
-		"usedElectricity": 100,
-		"electricCurrent": 10
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":        "ABCDEF123456",
+			"deviceType":      "Relay Switch 1PM",
+			"hubDeviceId":     "123456789",
+			"switchStatus":    1,
+			"voltage":         220,
+			"version":         "1.1",
+			"power":           50,
+			"usedElectricity": 100,
+			"electricCurrent": 10,
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1597,7 +1370,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.RelaySwitch1PMDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123480",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1607,9 +1380,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.RelaySwitch1PMDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123480",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Relay Switch 1PM",
 				HubDeviceId: "123456789",
 			},
@@ -1633,26 +1408,15 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 	})
 
 	t.Run("RelaySwitch1Device", func(t *testing.T) {
-		testServer := httptest.NewServer(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/devices/ABCDEF123481/status" {
-					t.Fatalf("Expected path '/devices/ABCDEF123481/status', got '%s'", r.URL.Path)
-				}
-
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(`{
-    "statusCode": 100,
-	"body": {
-		"deviceId": "ABCDEF123481",
-		"deviceType": "Relay Switch 1",
-		"hubDeviceId": "123456789",
-		"switchStatus": 0,
-		"version": "1.2"
-    },
-    "message": "success"
-}`))
-			}),
-		)
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":     "ABCDEF123456",
+			"deviceType":   "Relay Switch 1",
+			"hubDeviceId":  "123456789",
+			"switchStatus": 0,
+			"version":      "1.2",
+		})
+		testServer := switchBotMock.NewTestServer()
 		defer testServer.Close()
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
@@ -1660,7 +1424,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		device := &switchbot.RelaySwitch1Device{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
-					DeviceID: "ABCDEF123481",
+					DeviceID: "ABCDEF123456",
 				},
 				Client: client,
 			},
@@ -1670,9 +1434,11 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		switchBotMock.AssertCallCount("GET", "/devices/ABCDEF123456/status", 1)
+
 		expectedBody := &switchbot.RelaySwitch1DeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
-				DeviceID:    "ABCDEF123481",
+				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Relay Switch 1",
 				HubDeviceId: "123456789",
 			},
