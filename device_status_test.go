@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/test-go/testify/assert"
 	"github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 )
@@ -35,9 +36,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -58,9 +57,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -91,9 +88,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -116,9 +111,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -147,9 +140,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -170,9 +161,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -201,9 +190,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -224,9 +211,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -256,9 +241,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -280,9 +263,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -312,9 +293,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -336,9 +315,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -363,9 +340,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -382,9 +357,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -414,9 +387,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -438,9 +409,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -470,9 +439,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -494,9 +461,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -524,9 +489,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -546,9 +509,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -577,9 +538,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -600,9 +559,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -632,9 +589,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -656,9 +611,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -685,9 +638,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -706,9 +657,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -737,9 +686,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -760,9 +707,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -792,9 +737,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -816,9 +759,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -846,9 +787,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -868,9 +807,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -900,9 +837,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -924,9 +859,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -959,9 +892,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -986,9 +917,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1023,9 +952,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1052,9 +979,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1083,9 +1008,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1106,9 +1029,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1139,9 +1060,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1164,9 +1083,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1200,9 +1117,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1228,9 +1143,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1262,9 +1175,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1288,9 +1199,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1320,9 +1229,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1344,9 +1251,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1377,9 +1282,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1402,9 +1305,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 
@@ -1431,9 +1332,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			},
 		}
 		status, err := device.GetStatus()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
@@ -1452,9 +1351,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		// Test GetAnyStatusBody() method
 		anyStatus, err := device.GetAnyStatusBody()
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
 }

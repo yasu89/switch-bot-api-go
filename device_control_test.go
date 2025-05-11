@@ -1,6 +1,7 @@
 package switchbot_test
 
 import (
+	"github.com/test-go/testify/assert"
 	"github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 	"image/color"
@@ -48,9 +49,7 @@ func TestBotDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -104,9 +103,7 @@ func TestCurtainDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -167,9 +164,7 @@ func TestKeypadDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -211,9 +206,7 @@ func TestLockDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -274,9 +267,7 @@ func TestCeilingLightDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -322,9 +313,7 @@ func TestStripLightDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -377,9 +366,7 @@ func TestColorBulbDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -418,9 +405,7 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -488,9 +473,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -536,9 +519,7 @@ func TestHumidifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -584,9 +565,7 @@ func TestEvaporativeHumidifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -639,9 +618,7 @@ func TestAirPurifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -687,9 +664,7 @@ func TestBlindTiltDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -742,9 +717,7 @@ func TestBatteryCirculatorFanDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -797,9 +770,7 @@ func TestCirculatorFanDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -838,9 +809,7 @@ func TestRollerShadeDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -886,9 +855,7 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -934,9 +901,7 @@ func TestRelaySwitch1Device(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -988,9 +953,7 @@ func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -1028,9 +991,7 @@ func TestInfraredRemoteTVDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -1066,9 +1027,7 @@ func TestInfraredRemoteOthersDevice(t *testing.T) {
 				DeviceName: "Test Others",
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})

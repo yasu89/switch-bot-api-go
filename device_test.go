@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 )
@@ -33,9 +34,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -80,9 +79,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -131,9 +128,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -198,9 +193,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -268,9 +261,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -322,9 +313,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -375,9 +364,7 @@ func TestGetPhysicalDevices(t *testing.T) {
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 		response, err := client.GetDevices()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
 
@@ -441,9 +428,7 @@ func TestGetInfraredRemoteDevices(t *testing.T) {
 	client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
 	response, err := client.GetDevices()
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	assertInfraredDevices(t, response, []interface{}{
 		&switchbot.InfraredRemoteAirConditionerDevice{
