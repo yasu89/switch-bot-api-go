@@ -182,3 +182,52 @@ func Test_CurtainDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_LockDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.LockDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_LockDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "Lock",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"lock\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Lock\"}",
+		},
+		{
+			name:         "Unlock",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"unlock\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Unlock\"}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.LockDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}

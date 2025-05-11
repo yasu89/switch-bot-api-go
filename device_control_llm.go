@@ -133,3 +133,31 @@ func (device *CurtainDevice) ExecCommand(jsonString string) (*CommonResponse, er
 func (device *CurtainDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(CurtainDeviceCommandParameter{})
 }
+
+// LockDeviceCommandParameter is a struct that represents the command parameter for the LockDevice
+type LockDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"Lock,Unlock" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the LockDevice
+func (device *LockDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter LockDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "Lock":
+		return device.Lock()
+	case "Unlock":
+		return device.Unlock()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the LockDevice command parameter
+func (device *LockDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(LockDeviceCommandParameter{})
+}
