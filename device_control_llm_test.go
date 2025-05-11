@@ -2,6 +2,7 @@ package switchbot_test
 
 import (
 	"github.com/yasu89/switch-bot-api-go/helpers"
+	"log"
 	"net/http"
 	"testing"
 
@@ -228,6 +229,125 @@ func Test_LockDeviceExecCommand(t *testing.T) {
 			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_KeypadDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.KeypadDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	log.Println(description)
+	assert.NotEmpty(t, description)
+}
+
+func Test_KeypadDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "CreateKey(permanent)",
+			expectedBody: "{\"commandType\":\"command\",\"command\":\"createKey\",\"parameter\":{\"name\":\"testKey\",\"type\":\"permanent\",\"password\":\"123456\"}}",
+			parameter:    "{\"command\":\"CreateKey\",\"name\":\"testKey\", \"type\":\"permanent\",\"password\":\"123456\"}",
+		},
+		{
+			name:         "CreateKey(timeLimit)",
+			expectedBody: "{\"commandType\":\"command\",\"command\":\"createKey\",\"parameter\":{\"name\":\"testKey\",\"type\":\"permanent\",\"password\":\"123456\",\"startTime\":1745080854,\"endTime\":1745167254}}",
+			parameter:    "{\"command\":\"CreateKey\",\"name\":\"testKey\", \"type\":\"permanent\",\"password\":\"123456\",\"startTime\":1745080854,\"endTime\":1745167254}",
+		},
+		{
+			name:         "DeleteKey",
+			expectedBody: "{\"commandType\":\"command\",\"command\":\"deleteKey\",\"parameter\":{\"id\":\"testKey\"}}",
+			parameter:    "{\"command\":\"DeleteKey\",\"id\":\"testKey\"}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.KeypadDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_KeypadDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Create normal key(missing name parameter)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"permanent\",\"password\":\"123456\"}",
+			errorContain: "Required property 'name' is missing",
+		},
+		{
+			name:         "Create normal key(missing password parameter)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"urgent\",\"name\":\"testKey\"}",
+			errorContain: "Required property 'password' is missing",
+		},
+		{
+			name:         "Create normal key(invalid password)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"permanent\",\"name\":\"testKey\",\"password\":\"12345\"}",
+			errorContain: "Value does not match the required pattern ^[0-9]{6,12}$",
+		},
+		{
+			name:         "Create timeLimit key(missing startTime parameter)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"timeLimit\",\"name\":\"testKey\",\"password\":\"123456\",\"endTime\":1745167254}",
+			errorContain: "Required property 'startTime' is missing",
+		},
+		{
+			name:         "Create timeLimit key(missing endTime parameter)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"disposable\",\"name\":\"testKey\",\"password\":\"123456\",\"startTime\":1745167254}",
+			errorContain: "Required property 'endTime' is missing",
+		},
+		{
+			name:         "Create timeLimit key(invalid startTime)",
+			parameter:    "{\"command\":\"CreateKey\",\"type\":\"timeLimit\",\"name\":\"testKey\",\"password\":\"123456\",\"startTime\":0,\"endTime\":1745167254}",
+			errorContain: "0 should be at least 100000000",
+		},
+		{
+			name:         "Delete key(missing id parameter)",
+			parameter:    "{\"command\":\"DeleteKey\"}",
+			errorContain: "Required property 'id' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.KeypadDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
 		})
 	}
 }

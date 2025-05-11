@@ -44,7 +44,7 @@ func validateAndUnmarshalJSON(device ExecutableCommandDevice, jsonString string,
 // reflectJSONSchema returns the JSON schema for the given parameter
 func reflectJSONSchema(parameter interface{}) (string, error) {
 	reflector := jsonschema.Reflector{}
-	schema, err := reflector.Reflect(parameter)
+	schema, err := reflector.Reflect(parameter, jsonschema.InlineRefs)
 	if err != nil {
 		return "", err
 	}
@@ -160,4 +160,108 @@ func (device *LockDevice) ExecCommand(jsonString string) (*CommonResponse, error
 // GetCommandParameterJSONSchema returns the JSON schema for the LockDevice command parameter
 func (device *LockDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(LockDeviceCommandParameter{})
+}
+
+// KeypadDeviceCommandParameter is a struct that represents the command parameter for the KeypadDevice
+type KeypadDeviceCommandParameter struct {
+	Command   string   `json:"command" title:"Command" enum:"CreateKey,DeleteKey" required:"true" description:"CreateKey:create a new passcode, DeleteKey:delete an existing passcode"`
+	Id        string   `json:"id" title:"ID" description:"the id of the passcode"`
+	Name      string   `json:"name" title:"Name" description:"a unique name for the passcode"`
+	Type      string   `json:"type" title:"Type" enum:"permanent,timeLimit,disposable,urgent" description:"type of the passcode. permanent, a permanent passcode. timeLimit, a temporary passcode. disposable, a one-time passcode. urgent, an emergency passcode."`
+	Password  string   `json:"password" title:"Password" pattern:"^[0-9]{6,12}$" description:"a 6 to 12-digit passcode in plain text"`
+	StartTime int64    `json:"startTime" title:"StartTime" minimum:"100000000" maximum:"9999999999" description:"set the time the passcode becomes valid from, mandatory for one-time passcode and temporary passcode. a 10-digit timestamp(Unix timestamp)."`
+	EndTime   int64    `json:"endTime" title:"EndTime" minimum:"100000000" maximum:"9999999999" description:"set the time the passcode becomes expired, mandatory for one-time passcode and temporary passcode. a 10-digit timestamp(Unix timestamp)."`
+	_         struct{} `additionalProperties:"false"`
+}
+
+// KeypadDeviceCommandCreateNormalKeyIfExposer represents the CreateKey command parameters for types: permanent and urgent.
+type KeypadDeviceCommandCreateNormalKeyIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the KeypadDeviceCommandCreateNormalKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandCreateNormalKeyIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"CreateKey" required:"true"`
+		Type    string `json:"type" enum:"permanent,urgent" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the KeypadDeviceCommandCreateNormalKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandCreateNormalKeyIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Name     string `json:"name" required:"true"`
+		Password string `json:"password" required:"true"`
+	}{}
+}
+
+// KeypadDeviceCommandCreateTimeLimitKeyIfExposer represents the CreateKey command parameters for type: timeLimit and disposable
+type KeypadDeviceCommandCreateTimeLimitKeyIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the KeypadDeviceCommandCreateTimeLimitKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandCreateTimeLimitKeyIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"CreateKey" required:"true"`
+		Type    string `json:"type" enum:"timeLimit,disposable" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the KeypadDeviceCommandCreateTimeLimitKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandCreateTimeLimitKeyIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Name      string `json:"name" required:"true"`
+		Password  string `json:"password" required:"true"`
+		StartTime int64  `json:"startTime" required:"true"`
+		EndTime   int64  `json:"endTime" required:"true"`
+	}{}
+}
+
+// KeypadDeviceCommandDeleteKeyIfExposer represents the DeleteKey command parameters
+type KeypadDeviceCommandDeleteKeyIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the KeypadDeviceCommandCreateNormalKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandDeleteKeyIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"DeleteKey" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the KeypadDeviceCommandCreateNormalKeyIfExposer parameter
+func (parameter *KeypadDeviceCommandDeleteKeyIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Id string `json:"id" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the KeypadDevice command parameter
+func (parameter *KeypadDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		KeypadDeviceCommandCreateNormalKeyIfExposer{},
+		KeypadDeviceCommandCreateTimeLimitKeyIfExposer{},
+		KeypadDeviceCommandDeleteKeyIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the KeypadDevice
+func (device *KeypadDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter KeypadDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "CreateKey":
+		key, err := NewKeypadKey(parameter.Name, parameter.Type, parameter.Password, parameter.StartTime, parameter.EndTime)
+		if err != nil {
+			return nil, err
+		}
+		return device.CreateKey(key)
+	case "DeleteKey":
+		return device.DeleteKey(parameter.Id)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the KeypadDevice command parameter
+func (device *KeypadDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(KeypadDeviceCommandParameter{})
 }
