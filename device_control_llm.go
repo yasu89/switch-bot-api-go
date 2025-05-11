@@ -57,7 +57,7 @@ func reflectJSONSchema(parameter interface{}) (string, error) {
 
 // BotDeviceCommandParameter is a struct that represents the command parameter for the BotDevice
 type BotDeviceCommandParameter struct {
-	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Press" required:"true"`
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Press" description:"TurnOn:set to OFF state, TurnOff:set to ON state, Press:trigger press" required:"true"`
 	_       struct{} `additionalProperties:"false"`
 }
 
@@ -87,8 +87,8 @@ func (device *BotDevice) GetCommandParameterJSONSchema() (string, error) {
 
 // CurtainDeviceCommandParameter is a struct that represents the command parameter for the CurtainDevice
 type CurtainDeviceCommandParameter struct {
-	Command  string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Pause,SetPosition" required:"true"`
-	Mode     string   `json:"mode" title:"Mode" enum:"0,1,ff"`
+	Command  string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Pause,SetPosition" description:"TurnOn:equivalent to set position to 100, TurnOff:equivalent to set position to 0, Pause:set to PAUSE state, SetPosition:set position" required:"true"`
+	Mode     string   `json:"mode" title:"Mode" enum:"0,1,ff" description:"0:performance mode, 1:silent mode, ff:default mode"`
 	Position int      `json:"position" title:"Position" minimum:"0" maximum:"100"`
 	_        struct{} `additionalProperties:"false"`
 }
@@ -103,7 +103,7 @@ func (parameter *CurtainDeviceCommandParameter) JSONSchemaIf() interface{} {
 // JSONSchemaThen returns the JSON schema then block for the CurtainDevice command parameter
 func (parameter *CurtainDeviceCommandParameter) JSONSchemaThen() interface{} {
 	return struct {
-		Mode     string `json:"mode" title:"Mode" enum:"0,1,ff" required:"true"`
+		Mode     string `json:"mode" title:"Mode" enum:"0,1,ff" description:"0:performance mode, 1:silent mode, ff:default mode" required:"true"`
 		Position int    `json:"position" title:"Position" minimum:"0" maximum:"100" required:"true"`
 	}{}
 }
@@ -136,7 +136,7 @@ func (device *CurtainDevice) GetCommandParameterJSONSchema() (string, error) {
 
 // LockDeviceCommandParameter is a struct that represents the command parameter for the LockDevice
 type LockDeviceCommandParameter struct {
-	Command string   `json:"command" title:"Command" enum:"Lock,Unlock" required:"true"`
+	Command string   `json:"command" title:"Command" enum:"Lock,Unlock" description:"Lock:rotate to locked position, Unlock:rotate to unlocked position" required:"true"`
 	_       struct{} `additionalProperties:"false"`
 }
 
