@@ -3,11 +3,43 @@ package switchbot
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	jsonschemaValidation "github.com/kaptinlin/jsonschema"
 	"github.com/swaggest/jsonschema-go"
 )
+
+type ExecutableCommandDevice interface {
+	GetCommandParameterJSONSchema() (string, error)
+	ExecCommand(jsonString string) (*CommonResponse, error)
+}
+
+// validateAndUnmarshalJSON validates the JSON string against the schema and unmarshal it into the target
+func validateAndUnmarshalJSON(device ExecutableCommandDevice, jsonString string, target interface{}) error {
+	schemaJSON, err := device.GetCommandParameterJSONSchema()
+	if err != nil {
+		return err
+	}
+
+	compiler := jsonschemaValidation.NewCompiler()
+	schema, err := compiler.Compile([]byte(schemaJSON))
+	if err != nil {
+		return err
+	}
+
+	var instance map[string]interface{}
+	err = json.Unmarshal([]byte(jsonString), &instance)
+	if err != nil {
+		return err
+	}
+
+	result := schema.Validate(instance)
+	if !result.IsValid() {
+		errorDetails, _ := json.Marshal(result.ToList())
+		return fmt.Errorf("invalid command parameter: %s", string(errorDetails))
+	}
+
+	return json.Unmarshal([]byte(jsonString), target)
+}
 
 // BotDeviceCommandParameter is a struct that represents the command parameter for the BotDevice
 type BotDeviceCommandParameter struct {
@@ -17,32 +49,8 @@ type BotDeviceCommandParameter struct {
 
 // ExecCommand sends a command to the BotDevice
 func (device *BotDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
-	schemaJSON, err := device.GetCommandParameterJSONSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	compiler := jsonschemaValidation.NewCompiler()
-	schema, err := compiler.Compile([]byte(schemaJSON))
-	if err != nil {
-		log.Fatalf("Failed to compile schema: %v", err)
-	}
-
-	var instance map[string]interface{}
-	err = json.Unmarshal([]byte(jsonString), &instance)
-	if err != nil {
-		return nil, err
-	}
-
-	result := schema.Validate(instance)
-	if !result.IsValid() {
-		errorDetails, _ := json.Marshal(result.ToList())
-		return nil, fmt.Errorf("invalid command parameter: %s", string(errorDetails))
-	}
-
 	var parameter BotDeviceCommandParameter
-	err = json.Unmarshal([]byte(jsonString), &parameter)
-	if err != nil {
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
 
@@ -97,32 +105,8 @@ func (parameter *CurtainDeviceCommandParameter) JSONSchemaThen() interface{} {
 
 // ExecCommand sends a command to the CurtainDevice
 func (device *CurtainDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
-	schemaJSON, err := device.GetCommandParameterJSONSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	compiler := jsonschemaValidation.NewCompiler()
-	schema, err := compiler.Compile([]byte(schemaJSON))
-	if err != nil {
-		log.Fatalf("Failed to compile schema: %v", err)
-	}
-
-	var instance map[string]interface{}
-	err = json.Unmarshal([]byte(jsonString), &instance)
-	if err != nil {
-		return nil, err
-	}
-
-	result := schema.Validate(instance)
-	if !result.IsValid() {
-		errorDetails, _ := json.Marshal(result.ToList())
-		return nil, fmt.Errorf("invalid command parameter: %s", string(errorDetails))
-	}
-
 	var parameter CurtainDeviceCommandParameter
-	err = json.Unmarshal([]byte(jsonString), &parameter)
-	if err != nil {
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
 
