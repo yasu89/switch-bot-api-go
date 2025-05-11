@@ -57,9 +57,7 @@ func Test_BotDeviceExecCommand(t *testing.T) {
 				},
 			}
 			response, err := device.ExecCommand(testData.parameter)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -119,11 +117,68 @@ func Test_CurtainDeviceExecCommand(t *testing.T) {
 				},
 			}
 			response, err := device.ExecCommand(testData.parameter)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_CurtainDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "SetPosition(invalid mode)",
+			parameter:    "{\"command\":\"SetPosition\",\"mode\":\"00\", \"position\":75}",
+			errorContain: "Property 'mode' does not match the schema",
+		},
+		{
+			name:         "SetPosition(invalid position)",
+			parameter:    "{\"command\":\"SetPosition\",\"mode\":\"ff\", \"position\":101}",
+			errorContain: "Property 'position' does not match the schema",
+		},
+		{
+			name:         "SetPosition(missing mode)",
+			parameter:    "{\"command\":\"SetPosition\", \"position\":80}",
+			errorContain: "Required property 'mode' is missing",
+		},
+		{
+			name:         "SetPosition(missing position)",
+			parameter:    "{\"command\":\"SetPosition\",\"mode\":\"ff\"}",
+			errorContain: "Required property 'position' is missing",
+		},
+		{
+			name:         "TurnOn(invalid parameter)",
+			parameter:    "{\"command\":\"TurnOn\",\"mode\":\"00\"}",
+			errorContain: "Property 'mode' does not match the schema",
+		},
+		{
+			name:         "Invalid command",
+			parameter:    "{\"command\":\"Invalid\"}",
+			errorContain: "Property 'command' does not match the schema",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.CurtainDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
 		})
 	}
 }
