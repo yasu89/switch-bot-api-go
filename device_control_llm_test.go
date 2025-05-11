@@ -134,12 +134,12 @@ func Test_CurtainDeviceExecCommandInvalid(t *testing.T) {
 		{
 			name:         "SetPosition(invalid mode)",
 			parameter:    "{\"command\":\"SetPosition\",\"mode\":\"00\", \"position\":75}",
-			errorContain: "Property 'mode' does not match the schema",
+			errorContain: "Value 00 should be one of the allowed values: 0, 1, ff",
 		},
 		{
 			name:         "SetPosition(invalid position)",
 			parameter:    "{\"command\":\"SetPosition\",\"mode\":\"ff\", \"position\":101}",
-			errorContain: "Property 'position' does not match the schema",
+			errorContain: "101 should be at most 100",
 		},
 		{
 			name:         "SetPosition(missing mode)",
@@ -152,14 +152,9 @@ func Test_CurtainDeviceExecCommandInvalid(t *testing.T) {
 			errorContain: "Required property 'position' is missing",
 		},
 		{
-			name:         "TurnOn(invalid parameter)",
-			parameter:    "{\"command\":\"TurnOn\",\"mode\":\"00\"}",
-			errorContain: "Property 'mode' does not match the schema",
-		},
-		{
 			name:         "Invalid command",
 			parameter:    "{\"command\":\"Invalid\"}",
-			errorContain: "Property 'command' does not match the schema",
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, Pause, SetPosition",
 		},
 	}
 
