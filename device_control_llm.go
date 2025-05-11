@@ -41,6 +41,20 @@ func validateAndUnmarshalJSON(device ExecutableCommandDevice, jsonString string,
 	return json.Unmarshal([]byte(jsonString), target)
 }
 
+// reflectJSONSchema returns the JSON schema for the given parameter
+func reflectJSONSchema(parameter interface{}) (string, error) {
+	reflector := jsonschema.Reflector{}
+	schema, err := reflector.Reflect(parameter)
+	if err != nil {
+		return "", err
+	}
+	jsonString, err := json.Marshal(schema)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonString), nil
+}
+
 // BotDeviceCommandParameter is a struct that represents the command parameter for the BotDevice
 type BotDeviceCommandParameter struct {
 	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Press" required:"true"`
@@ -68,16 +82,7 @@ func (device *BotDevice) ExecCommand(jsonString string) (*CommonResponse, error)
 
 // GetCommandParameterJSONSchema returns the JSON schema for the BotDevice command parameter
 func (device *BotDevice) GetCommandParameterJSONSchema() (string, error) {
-	reflector := jsonschema.Reflector{}
-	schema, err := reflector.Reflect(BotDeviceCommandParameter{})
-	if err != nil {
-		return "", err
-	}
-	jsonString, err := json.Marshal(schema)
-	if err != nil {
-		return "", err
-	}
-	return string(jsonString), nil
+	return reflectJSONSchema(BotDeviceCommandParameter{})
 }
 
 // CurtainDeviceCommandParameter is a struct that represents the command parameter for the CurtainDevice
@@ -126,14 +131,5 @@ func (device *CurtainDevice) ExecCommand(jsonString string) (*CommonResponse, er
 
 // GetCommandParameterJSONSchema returns the JSON schema for the CurtainDevice command parameter
 func (device *CurtainDevice) GetCommandParameterJSONSchema() (string, error) {
-	reflector := jsonschema.Reflector{}
-	schema, err := reflector.Reflect(CurtainDeviceCommandParameter{})
-	if err != nil {
-		return "", err
-	}
-	jsonString, err := json.Marshal(schema)
-	if err != nil {
-		return "", err
-	}
-	return string(jsonString), nil
+	return reflectJSONSchema(CurtainDeviceCommandParameter{})
 }
