@@ -1264,3 +1264,86 @@ func (device *RollerShadeDevice) ExecCommand(jsonString string) (*CommonResponse
 func (device *RollerShadeDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(RollerShadeDeviceCommandParameter{})
 }
+
+// RelaySwitch1DeviceCommandParameter is a struct that represents the command parameter for the RelaySwitch1Device
+type RelaySwitch1DeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetMode" description:"TurnOn:turn on the relay switch, TurnOff:turn off the relay switch, Toggle:toggle the relay switch state, SetMode:set the mode of the relay switch" required:"true"`
+	Mode    int      `json:"mode" title:"Mode" minimum:"0" maximum:"3" description:"Mode (0:toggle mode, 1:edge switch mode, 2:detached switch mode, 3:momentary switch mode)"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// RelaySwitch1DeviceCommandSetModeIfExposer represents the SetMode command parameters
+type RelaySwitch1DeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RelaySwitch1Device command parameter for SetMode
+func (parameter *RelaySwitch1DeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RelaySwitch1Device command parameter for SetMode
+func (parameter *RelaySwitch1DeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode int `json:"mode" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RelaySwitch1Device command parameter
+func (parameter *RelaySwitch1DeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RelaySwitch1DeviceCommandSetModeIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RelaySwitch1Device
+func (device *RelaySwitch1Device) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RelaySwitch1DeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "Toggle":
+		return device.Toggle()
+	case "SetMode":
+		return device.SetMode(RelaySwitchMode(parameter.Mode))
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RelaySwitch1Device command parameter
+func (device *RelaySwitch1Device) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RelaySwitch1DeviceCommandParameter{})
+}
+
+// ExecCommand sends a command to the RelaySwitch1PMDevice
+func (device *RelaySwitch1PMDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RelaySwitch1DeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "Toggle":
+		return device.Toggle()
+	case "SetMode":
+		return device.SetMode(RelaySwitchMode(parameter.Mode))
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RelaySwitch1PMDevice command parameter
+func (device *RelaySwitch1PMDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RelaySwitch1DeviceCommandParameter{})
+}

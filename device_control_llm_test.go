@@ -2142,3 +2142,177 @@ func Test_RollerShadeDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_RelaySwitch1DeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RelaySwitch1Device{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RelaySwitch1DeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "Toggle",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "default"}`,
+			parameter:    `{"command":"Toggle"}`,
+		},
+		{
+			name:         "SetMode(Toggle)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "0"}`,
+			parameter:    `{"command":"SetMode","mode":0}`,
+		},
+		{
+			name:         "SetMode(Edge)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "1"}`,
+			parameter:    `{"command":"SetMode","mode":1}`,
+		},
+		{
+			name:         "SetMode(Detached)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "2"}`,
+			parameter:    `{"command":"SetMode","mode":2}`,
+		},
+		{
+			name:         "SetMode(Momentary)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "3"}`,
+			parameter:    `{"command":"SetMode","mode":3}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch1Device{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RelaySwitch1DeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "InvalidCommand",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: `Value InvalidCommand should be one of the allowed values`,
+		},
+		{
+			name:         "SetModeWithoutMode",
+			parameter:    `{"command":"SetMode"}`,
+			errorContain: `Required property 'mode' is missing`,
+		},
+		{
+			name:         "SetModeWithInvalidModeTooSmall",
+			parameter:    `{"command":"SetMode","mode":-1}`,
+			errorContain: "-1 should be at least 0",
+		},
+		{
+			name:         "SetModeWithInvalidModeTooLarge",
+			parameter:    `{"command":"SetMode","mode":4}`,
+			errorContain: "4 should be at most 3",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch1Device{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
+
+func Test_RelaySwitch1PMDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RelaySwitch1PMDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RelaySwitch1PMDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "Toggle",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "default"}`,
+			parameter:    `{"command":"Toggle"}`,
+		},
+		{
+			name:         "SetMode(Toggle)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "0"}`,
+			parameter:    `{"command":"SetMode","mode":0}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch1PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
