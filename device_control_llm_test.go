@@ -2048,3 +2048,97 @@ func Test_CirculatorFanDeviceExecCommand(t *testing.T) {
 		})
 	}
 }
+
+func Test_RollerShadeDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RollerShadeDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RollerShadeDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "SetPosition",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "50"}`,
+			parameter:    `{"command":"SetPosition","position":50}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RollerShadeDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RollerShadeDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "InvalidCommand",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: `Value InvalidCommand should be one of the allowed values: SetPosition"`,
+		},
+		{
+			name:         "SetPositionWithoutPosition",
+			parameter:    `{"command":"SetPosition"}`,
+			errorContain: `Required property 'position' is missing`,
+		},
+		{
+			name:         "SetPositionWithInvalidPosition",
+			parameter:    `{"command":"SetPosition","position":-1}`,
+			errorContain: "-1 should be at least 0",
+		},
+		{
+			name:         "SetPositionWithInvalidPositionTooLarge",
+			parameter:    `{"command":"SetPosition","position":101}`,
+			errorContain: "101 should be at most 100",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RollerShadeDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}

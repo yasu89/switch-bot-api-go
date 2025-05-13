@@ -1237,3 +1237,30 @@ func (device *CirculatorFanDevice) ExecCommand(jsonString string) (*CommonRespon
 func (device *CirculatorFanDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(CirculatorFanDeviceCommandParameter{})
 }
+
+// RollerShadeDeviceCommandParameter is a struct that represents the command parameter for the RollerShadeDevice
+type RollerShadeDeviceCommandParameter struct {
+	Command  string   `json:"command" title:"Command" enum:"SetPosition" description:"SetPosition:set position" required:"true"`
+	Position int      `json:"position" title:"Position" minimum:"0" maximum:"100" description:"Position (0-100)" required:"true"`
+	_        struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the RollerShadeDevice
+func (device *RollerShadeDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RollerShadeDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "SetPosition":
+		return device.SetPosition(parameter.Position)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RollerShadeDevice command parameter
+func (device *RollerShadeDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RollerShadeDeviceCommandParameter{})
+}
