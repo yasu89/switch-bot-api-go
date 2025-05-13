@@ -934,6 +934,11 @@ func (device *InfraredRemoteTVDevice) ChannelAdd() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "channelAdd")
 }
 
+// ChannelSub sends a command to decrease the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
+func (device *InfraredRemoteTVDevice) ChannelSub() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "channelSub")
+}
+
 // SetMute sends a command to mute/unmute the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
 func (device *InfraredRemoteDvdPlayerDevice) SetMute() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "setMute")

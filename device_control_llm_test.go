@@ -2476,3 +2476,118 @@ func Test_InfraredRemoteAirConditionerDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_InfraredRemoteTVDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.InfraredRemoteTVDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_InfraredRemoteTVDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "VolumeAdd",
+			expectedBody: `{"commandType": "command","command": "volumeAdd","parameter": "default"}`,
+			parameter:    `{"command":"VolumeAdd"}`,
+		},
+		{
+			name:         "VolumeSub",
+			expectedBody: `{"commandType": "command","command": "volumeSub","parameter": "default"}`,
+			parameter:    `{"command":"VolumeSub"}`,
+		},
+		{
+			name:         "ChannelAdd",
+			expectedBody: `{"commandType": "command","command": "channelAdd","parameter": "default"}`,
+			parameter:    `{"command":"ChannelAdd"}`,
+		},
+		{
+			name:         "ChannelSub",
+			expectedBody: `{"commandType": "command","command": "channelSub","parameter": "default"}`,
+			parameter:    `{"command":"ChannelSub"}`,
+		},
+		{
+			name:         "SetChannel",
+			expectedBody: `{"commandType": "command","command": "SetChannel","parameter": "10"}`,
+			parameter:    `{"command":"SetChannel","channel":10}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteTVDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_InfraredRemoteTVDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "InvalidCommand",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: `Value InvalidCommand should be one of the allowed values`,
+		},
+		{
+			name:         "SetChannelWithoutChannel",
+			parameter:    `{"command":"SetChannel"}`,
+			errorContain: `Required property 'channel' is missing`,
+		},
+		{
+			name:         "SetChannelWithInvalidChannelTooSmall",
+			parameter:    `{"command":"SetChannel","channel":0}`,
+			errorContain: `0 should be at least 1`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteTVDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}

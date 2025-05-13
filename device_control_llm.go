@@ -1413,3 +1413,66 @@ func (device *InfraredRemoteAirConditionerDevice) ExecCommand(jsonString string)
 func (device *InfraredRemoteAirConditionerDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(InfraredRemoteAirConditionerDeviceCommandParameter{})
 }
+
+// InfraredRemoteTVDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteTVDevice
+type InfraredRemoteTVDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,VolumeAdd,VolumeSub,ChannelAdd,ChannelSub,SetChannel" description:"TurnOn:turn on the TV, TurnOff:turn off the TV, VolumeAdd:increase volume, VolumeSub:decrease volume, ChannelAdd:increase channel, ChannelSub: decrease channel, SetChannel:set specific channel" required:"true"`
+	Channel int      `json:"channel" title:"Channel" minimum:"1" description:"Channel number for SetChannel command"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// InfraredRemoteTVDeviceCommandSetChannelIfExposer represents the SetChannel command parameters
+type InfraredRemoteTVDeviceCommandSetChannelIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the InfraredRemoteTVDevice command parameter for SetChannel
+func (parameter *InfraredRemoteTVDeviceCommandSetChannelIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetChannel" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the InfraredRemoteTVDevice command parameter for SetChannel
+func (parameter *InfraredRemoteTVDeviceCommandSetChannelIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Channel int `json:"channel" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the InfraredRemoteTVDevice command parameter
+func (parameter *InfraredRemoteTVDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&InfraredRemoteTVDeviceCommandSetChannelIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the InfraredRemoteTVDevice
+func (device *InfraredRemoteTVDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteTVDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "VolumeAdd":
+		return device.VolumeAdd()
+	case "VolumeSub":
+		return device.VolumeSub()
+	case "ChannelAdd":
+		return device.ChannelAdd()
+	case "ChannelSub":
+		return device.ChannelSub()
+	case "SetChannel":
+		return device.SetChannel(parameter.Channel)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteTVDevice command parameter
+func (device *InfraredRemoteTVDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteTVDeviceCommandParameter{})
+}
