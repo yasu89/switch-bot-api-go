@@ -1376,3 +1376,167 @@ func Test_HumidifierDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_EvaporativeHumidifierDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.EvaporativeHumidifierDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_EvaporativeHumidifierDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetMode(Level4)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":1,"targetHumidity":50}}`,
+			parameter:    `{"command":"SetMode","mode":1,"targetHumidity":50}`,
+		},
+		{
+			name:         "SetMode(Level3)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":2,"targetHumidity":60}}`,
+			parameter:    `{"command":"SetMode","mode":2,"targetHumidity":60}`,
+		},
+		{
+			name:         "SetMode(Level2)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":3,"targetHumidity":70}}`,
+			parameter:    `{"command":"SetMode","mode":3,"targetHumidity":70}`,
+		},
+		{
+			name:         "SetMode(Level1)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":4,"targetHumidity":80}}`,
+			parameter:    `{"command":"SetMode","mode":4,"targetHumidity":80}`,
+		},
+		{
+			name:         "SetMode(Humidity mode)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":5,"targetHumidity":50}}`,
+			parameter:    `{"command":"SetMode","mode":5,"targetHumidity":50}`,
+		},
+		{
+			name:         "SetMode(Sleep mode)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":6,"targetHumidity":50}}`,
+			parameter:    `{"command":"SetMode","mode":6,"targetHumidity":50}`,
+		},
+		{
+			name:         "SetMode(Auto mode)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":7,"targetHumidity":50}}`,
+			parameter:    `{"command":"SetMode","mode":7,"targetHumidity":50}`,
+		},
+		{
+			name:         "SetMode(Drying mode)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":8,"targetHumidity":50}}`,
+			parameter:    `{"command":"SetMode","mode":8,"targetHumidity":50}`,
+		},
+		{
+			name:         "SetChildLock(true)",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": "true"}`,
+			parameter:    `{"command":"SetChildLock","childLock":true}`,
+		},
+		{
+			name:         "SetChildLock(false)",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": "false"}`,
+			parameter:    `{"command":"SetChildLock","childLock":false}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.EvaporativeHumidifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_EvaporativeHumidifierDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"Invalid"}`,
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, SetMode, SetChildLock",
+		},
+		{
+			name:         "SetMode(missing mode)",
+			parameter:    `{"command":"SetMode", "targetHumidity":50}`,
+			errorContain: "Required property 'mode' is missing",
+		},
+		{
+			name:         "SetMode(missing targetHumidity)",
+			parameter:    `{"command":"SetMode","mode":1}`,
+			errorContain: "Required property 'targetHumidity' is missing",
+		},
+		{
+			name:         "SetMode(invalid mode)",
+			parameter:    `{"command":"SetMode","mode":999,"targetHumidity":50}`,
+			errorContain: "999 should be at most 8",
+		},
+		{
+			name:         "SetMode(targetHumidity too low)",
+			parameter:    `{"command":"SetMode","mode":1,"targetHumidity":-1}`,
+			errorContain: "-1 should be at least 0",
+		},
+		{
+			name:         "SetMode(targetHumidity too high)",
+			parameter:    `{"command":"SetMode","mode":1,"targetHumidity":101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SetChildLock(missing childLock)",
+			parameter:    `{"command":"SetChildLock"}`,
+			errorContain: "Required property 'childLock' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.EvaporativeHumidifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}

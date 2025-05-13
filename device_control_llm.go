@@ -875,3 +875,81 @@ func (device *HumidifierDevice) ExecCommand(jsonString string) (*CommonResponse,
 func (device *HumidifierDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(HumidifierDeviceCommandParameter{})
 }
+
+// EvaporativeHumidifierDeviceCommandParameter is a struct that represents the command parameter for the EvaporativeHumidifierDevice
+type EvaporativeHumidifierDeviceCommandParameter struct {
+	Command        string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetMode,SetChildLock" description:"TurnOn:turn on device, TurnOff:turn off device, SetMode:set the mode, SetChildLock:set the child lock" required:"true"`
+	Mode           int      `json:"mode" title:"Mode" minimum:"1" maximum:"8" description:"1:Level 4, 2:Level 3, 3:Level 2, 4:Level 1, 5:humidity mode, 6:sleep mode, 7:auto mode, 8:drying mode"`
+	TargetHumidity int      `json:"targetHumidity" title:"TargetHumidity" minimum:"0" maximum:"100" description:"Target humidity level (0-100%)"`
+	ChildLock      bool     `json:"childLock" title:"ChildLock" description:"true:lock, false:unlock"`
+	_              struct{} `additionalProperties:"false"`
+}
+
+// EvaporativeHumidifierDeviceCommandSetModeIfExposer represents the SetMode command parameters
+type EvaporativeHumidifierDeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the EvaporativeHumidifierDevice command parameter for SetMode
+func (parameter *EvaporativeHumidifierDeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the EvaporativeHumidifierDevice command parameter for SetMode
+func (parameter *EvaporativeHumidifierDeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode           int `json:"mode" required:"true"`
+		TargetHumidity int `json:"targetHumidity" required:"true"`
+	}{}
+}
+
+// EvaporativeHumidifierDeviceCommandSetChildLockIfExposer represents the SetChildLock command parameters
+type EvaporativeHumidifierDeviceCommandSetChildLockIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the EvaporativeHumidifierDevice command parameter for SetChildLock
+func (parameter *EvaporativeHumidifierDeviceCommandSetChildLockIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetChildLock" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the EvaporativeHumidifierDevice command parameter for SetChildLock
+func (parameter *EvaporativeHumidifierDeviceCommandSetChildLockIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		ChildLock bool `json:"childLock" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the EvaporativeHumidifierDevice command parameter
+func (parameter *EvaporativeHumidifierDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&EvaporativeHumidifierDeviceCommandSetModeIfExposer{},
+		&EvaporativeHumidifierDeviceCommandSetChildLockIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the EvaporativeHumidifierDevice
+func (device *EvaporativeHumidifierDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter EvaporativeHumidifierDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetMode":
+		return device.SetMode(EvaporativeHumidifierMode(parameter.Mode), parameter.TargetHumidity)
+	case "SetChildLock":
+		return device.SetChildLock(parameter.ChildLock)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the EvaporativeHumidifierDevice command parameter
+func (device *EvaporativeHumidifierDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(EvaporativeHumidifierDeviceCommandParameter{})
+}
