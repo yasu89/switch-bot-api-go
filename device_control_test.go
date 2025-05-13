@@ -1,6 +1,7 @@
 package switchbot_test
 
 import (
+	"github.com/stretchr/testify/assert"
 	"github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 	"image/color"
@@ -16,17 +17,17 @@ func TestBotDevice(t *testing.T) {
 	}{
 		{
 			name:         "TurnOn",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
 			method:       func(device *switchbot.BotDevice) (*switchbot.CommonResponse, error) { return device.TurnOn() },
 		},
 		{
 			name:         "TurnOff",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
 			method:       func(device *switchbot.BotDevice) (*switchbot.CommonResponse, error) { return device.TurnOff() },
 		},
 		{
 			name:         "Press",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"press\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "press","parameter": "default"}`,
 			method:       func(device *switchbot.BotDevice) (*switchbot.CommonResponse, error) { return device.Press() },
 		},
 	}
@@ -48,9 +49,7 @@ func TestBotDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -65,24 +64,24 @@ func TestCurtainDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetPosition",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setPosition\",\"parameter\": \"0,ff,75\"}",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "0,ff,75"}`,
 			method: func(device *switchbot.CurtainDevice) (*switchbot.CommonResponse, error) {
 				return device.SetPosition(switchbot.CurtainPositionModeDefault, 75)
 			},
 		},
 		{
 			name:         "TurnOn",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
 			method:       func(device *switchbot.CurtainDevice) (*switchbot.CommonResponse, error) { return device.TurnOn() },
 		},
 		{
 			name:         "TurnOff",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
 			method:       func(device *switchbot.CurtainDevice) (*switchbot.CommonResponse, error) { return device.TurnOff() },
 		},
 		{
 			name:         "Pause",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"pause\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "pause","parameter": "default"}`,
 			method:       func(device *switchbot.CurtainDevice) (*switchbot.CommonResponse, error) { return device.Pause() },
 		},
 	}
@@ -104,9 +103,7 @@ func TestCurtainDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -121,7 +118,7 @@ func TestKeypadDevice(t *testing.T) {
 	}{
 		{
 			name:         "CreateKey(permanent)",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"createKey\",\"parameter\":{\"name\":\"testKey\",\"type\":\"permanent\",\"password\":\"123456\"}}",
+			expectedBody: `{"commandType":"command","command":"createKey","parameter":{"name":"testKey","type":"permanent","password":"123456"}}`,
 			method: func(device *switchbot.KeypadDevice) (*switchbot.CommonResponse, error) {
 				keypadKey, err := switchbot.NewKeypadKey("testKey", "permanent", "123456", 0, 0)
 				if err != nil {
@@ -132,7 +129,7 @@ func TestKeypadDevice(t *testing.T) {
 		},
 		{
 			name:         "CreateKey(timeLimit)",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"createKey\",\"parameter\":{\"name\":\"testKey\",\"type\":\"permanent\",\"password\":\"123456\",\"startTime\":1745080854,\"endTime\":1745167254}}",
+			expectedBody: `{"commandType":"command","command":"createKey","parameter":{"name":"testKey","type":"permanent","password":"123456","startTime":1745080854,"endTime":1745167254}}`,
 			method: func(device *switchbot.KeypadDevice) (*switchbot.CommonResponse, error) {
 				keypadKey, err := switchbot.NewKeypadKey("testKey", "permanent", "123456", 1745080854, 1745167254)
 				if err != nil {
@@ -143,7 +140,7 @@ func TestKeypadDevice(t *testing.T) {
 		},
 		{
 			name:         "DeleteKey",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"deleteKey\",\"parameter\":{\"id\":\"testKey\"}}",
+			expectedBody: `{"commandType":"command","command":"deleteKey","parameter":{"id":"testKey"}}`,
 			method: func(device *switchbot.KeypadDevice) (*switchbot.CommonResponse, error) {
 				return device.DeleteKey("testKey")
 			},
@@ -167,9 +164,7 @@ func TestKeypadDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -184,12 +179,12 @@ func TestLockDevice(t *testing.T) {
 	}{
 		{
 			name:         "Lock",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"lock\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "lock","parameter": "default"}`,
 			method:       func(device *switchbot.LockDevice) (*switchbot.CommonResponse, error) { return device.Lock() },
 		},
 		{
 			name:         "Unlock",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"unlock\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "unlock","parameter": "default"}`,
 			method:       func(device *switchbot.LockDevice) (*switchbot.CommonResponse, error) { return device.Unlock() },
 		},
 	}
@@ -211,9 +206,7 @@ func TestLockDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -228,29 +221,29 @@ func TestCeilingLightDevice(t *testing.T) {
 	}{
 		{
 			name:         "TurnOn",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
 			method:       func(device *switchbot.CeilingLightDevice) (*switchbot.CommonResponse, error) { return device.TurnOn() },
 		},
 		{
 			name:         "TurnOff",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
 			method:       func(device *switchbot.CeilingLightDevice) (*switchbot.CommonResponse, error) { return device.TurnOff() },
 		},
 		{
 			name:         "Toggle",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"toggle\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "default"}`,
 			method:       func(device *switchbot.CeilingLightDevice) (*switchbot.CommonResponse, error) { return device.Toggle() },
 		},
 		{
 			name:         "SetBrightness",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"50\"}",
+			expectedBody: `{"commandType": "command","command": "setBrightness","parameter": "50"}`,
 			method: func(device *switchbot.CeilingLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetBrightness(50)
 			},
 		},
 		{
 			name:         "SetColorTemperature",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColorTemperature\",\"parameter\": \"3500\"}",
+			expectedBody: `{"commandType": "command","command": "setColorTemperature","parameter": "3500"}`,
 			method: func(device *switchbot.CeilingLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColorTemperature(3500)
 			},
@@ -274,9 +267,7 @@ func TestCeilingLightDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -291,14 +282,14 @@ func TestStripLightDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetBrightness",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"55\"}",
+			expectedBody: `{"commandType": "command","command": "setBrightness","parameter": "55"}`,
 			method: func(device *switchbot.StripLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetBrightness(55)
 			},
 		},
 		{
 			name:         "SetColor",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColor\",\"parameter\": \"255:100:0\"}",
+			expectedBody: `{"commandType": "command","command": "setColor","parameter": "255:100:0"}`,
 			method: func(device *switchbot.StripLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColor(color.RGBA{R: 255, G: 100, B: 0, A: 0})
 			},
@@ -322,9 +313,7 @@ func TestStripLightDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -339,21 +328,21 @@ func TestColorBulbDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetBrightness",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"55\"}",
+			expectedBody: `{"commandType": "command","command": "setBrightness","parameter": "55"}`,
 			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
 				return device.SetBrightness(55)
 			},
 		},
 		{
 			name:         "SetColor",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColor\",\"parameter\": \"255:100:0\"}",
+			expectedBody: `{"commandType": "command","command": "setColor","parameter": "255:100:0"}`,
 			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColor(color.RGBA{R: 255, G: 100, B: 0, A: 0})
 			},
 		},
 		{
 			name:         "SetColorTemperature",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColorTemperature\",\"parameter\": \"5000\"}",
+			expectedBody: `{"commandType": "command","command": "setColorTemperature","parameter": "5000"}`,
 			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColorTemperature(5000)
 			},
@@ -377,9 +366,7 @@ func TestColorBulbDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -394,7 +381,7 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetPowerLevel",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"PowLevel\",\"parameter\": \"3\"}",
+			expectedBody: `{"commandType": "command","command": "PowLevel","parameter": "3"}`,
 			method: func(device *switchbot.RobotVacuumCleanerDevice) (*switchbot.CommonResponse, error) {
 				return device.SetPowerLevel(switchbot.RobotVacuumCleanerPowerLevelMax)
 			},
@@ -418,9 +405,7 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -435,7 +420,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 	}{
 		{
 			name:         "StartClean",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"startClean\",\"parameter\":{\"action\":\"sweep\",\"param\":{\"fanLevel\":1,\"waterLevel\":2,\"times\":100}}}",
+			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"sweep","param":{"fanLevel":1,"waterLevel":2,"times":100}}}`,
 			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
 				startFloorCleaningParam, err := switchbot.NewStartFloorCleaningParam(switchbot.FloorCleaningActionSweep, 1, 2, 100)
 				if err != nil {
@@ -446,21 +431,21 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 		},
 		{
 			name:         "SetVolume",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"setVolume\",\"parameter\":\"30\"}",
+			expectedBody: `{"commandType":"command","command":"setVolume","parameter":"30"}`,
 			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
 				return device.SetVolume(30)
 			},
 		},
 		{
 			name:         "SelfClean",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"selfClean\",\"parameter\":\"1\"}",
+			expectedBody: `{"commandType":"command","command":"selfClean","parameter":"1"}`,
 			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
 				return device.SelfClean(switchbot.WashMopSelfCleaningMode)
 			},
 		},
 		{
 			name:         "ChangeParam",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"changeParam\",\"parameter\":{\"fanLevel\":2,\"waterLevel\":1,\"times\":20000}}",
+			expectedBody: `{"commandType":"command","command":"changeParam","parameter":{"fanLevel":2,"waterLevel":1,"times":20000}}`,
 			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
 				floorCleaningParam, err := switchbot.NewFloorCleaningParam(2, 1, 20000)
 				if err != nil {
@@ -488,9 +473,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -505,14 +488,14 @@ func TestHumidifierDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetMode",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"102\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "102"}`,
 			method: func(device *switchbot.HumidifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.HumidifierModeMedium)
 			},
 		},
 		{
 			name:         "SetTargetHumidity",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"60\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "60"}`,
 			method: func(device *switchbot.HumidifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetTargetHumidity(60)
 			},
@@ -536,9 +519,7 @@ func TestHumidifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -553,14 +534,14 @@ func TestEvaporativeHumidifierDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetMode",
-			expectedBody: "{\"commandType\":\"command\",\"command\":\"setMode\",\"parameter\":{\"mode\":7,\"targetHumidity\":60}}",
+			expectedBody: `{"commandType":"command","command":"setMode","parameter":{"mode":7,"targetHumidity":60}}`,
 			method: func(device *switchbot.EvaporativeHumidifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.EvaporativeHumidifierModeAuto, 60)
 			},
 		},
 		{
 			name:         "SetChildLock",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setChildLock\",\"parameter\": \"true\"}",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": "true"}`,
 			method: func(device *switchbot.EvaporativeHumidifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetChildLock(true)
 			},
@@ -584,9 +565,7 @@ func TestEvaporativeHumidifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -601,21 +580,21 @@ func TestAirPurifierDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetMode(Normal)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": {\"mode\":1,\"fanGear\":3}}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":1,"fanGear":3}}`,
 			method: func(device *switchbot.AirPurifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.AirPurifierModeNormal, 3)
 			},
 		},
 		{
 			name:         "SetMode(Auto)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": {\"mode\":2}}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":2}}`,
 			method: func(device *switchbot.AirPurifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.AirPurifierModeAuto, 0)
 			},
 		},
 		{
 			name:         "SetChildLock",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setChildLock\",\"parameter\": 1}",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": 1}`,
 			method: func(device *switchbot.AirPurifierDevice) (*switchbot.CommonResponse, error) {
 				return device.SetChildLock(true)
 			},
@@ -639,9 +618,7 @@ func TestAirPurifierDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -656,14 +633,14 @@ func TestBlindTiltDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetPosition(up)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setPosition\",\"parameter\": \"up;50\"}",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "up;50"}`,
 			method: func(device *switchbot.BlindTiltDevice) (*switchbot.CommonResponse, error) {
 				return device.SetPosition("up", 50)
 			},
 		},
 		{
 			name:         "SetPosition(down)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setPosition\",\"parameter\": \"down;80\"}",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "down;80"}`,
 			method: func(device *switchbot.BlindTiltDevice) (*switchbot.CommonResponse, error) {
 				return device.SetPosition("down", 80)
 			},
@@ -687,9 +664,7 @@ func TestBlindTiltDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -704,21 +679,21 @@ func TestBatteryCirculatorFanDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetNightLightMode",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setNightLightMode\",\"parameter\": \"1\"}",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "1"}`,
 			method: func(device *switchbot.BatteryCirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetNightLightMode(switchbot.CirculatorNightLightModeTurnBright)
 			},
 		},
 		{
 			name:         "SetWindMode",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setWindMode\",\"parameter\": \"natural\"}",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "natural"}`,
 			method: func(device *switchbot.BatteryCirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetWindMode(switchbot.CirculatorWindModeNatural)
 			},
 		},
 		{
 			name:         "SetWindSpeed",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setWindSpeed\",\"parameter\": \"50\"}",
+			expectedBody: `{"commandType": "command","command": "setWindSpeed","parameter": "50"}`,
 			method: func(device *switchbot.BatteryCirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetWindSpeed(50)
 			},
@@ -742,9 +717,7 @@ func TestBatteryCirculatorFanDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -759,21 +732,21 @@ func TestCirculatorFanDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetNightLightMode",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setNightLightMode\",\"parameter\": \"2\"}",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "2"}`,
 			method: func(device *switchbot.CirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetNightLightMode(switchbot.CirculatorNightLightModeTurnDim)
 			},
 		},
 		{
 			name:         "SetWindMode",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setWindMode\",\"parameter\": \"sleep\"}",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "sleep"}`,
 			method: func(device *switchbot.CirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetWindMode(switchbot.CirculatorWindModeSleep)
 			},
 		},
 		{
 			name:         "SetWindSpeed",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setWindSpeed\",\"parameter\": \"75\"}",
+			expectedBody: `{"commandType": "command","command": "setWindSpeed","parameter": "75"}`,
 			method: func(device *switchbot.CirculatorFanDevice) (*switchbot.CommonResponse, error) {
 				return device.SetWindSpeed(75)
 			},
@@ -797,9 +770,7 @@ func TestCirculatorFanDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -814,7 +785,7 @@ func TestRollerShadeDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetPosition",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setPosition\",\"parameter\": \"50\"}",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "50"}`,
 			method: func(device *switchbot.RollerShadeDevice) (*switchbot.CommonResponse, error) {
 				return device.SetPosition(50)
 			},
@@ -838,9 +809,7 @@ func TestRollerShadeDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -855,14 +824,14 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetMode(Toggle)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"0\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "0"}`,
 			method: func(device *switchbot.RelaySwitch1PMDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.RelaySwitchModeToggle)
 			},
 		},
 		{
 			name:         "SetMode(Momentary)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"3\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "3"}`,
 			method: func(device *switchbot.RelaySwitch1PMDevice) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.RelaySwitchModeMomentary)
 			},
@@ -886,9 +855,7 @@ func TestRelaySwitch1PMDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -903,14 +870,14 @@ func TestRelaySwitch1Device(t *testing.T) {
 	}{
 		{
 			name:         "SetMode(Toggle)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"0\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "0"}`,
 			method: func(device *switchbot.RelaySwitch1Device) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.RelaySwitchModeToggle)
 			},
 		},
 		{
 			name:         "SetMode(Momentary)",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setMode\",\"parameter\": \"3\"}",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "3"}`,
 			method: func(device *switchbot.RelaySwitch1Device) (*switchbot.CommonResponse, error) {
 				return device.SetMode(switchbot.RelaySwitchModeMomentary)
 			},
@@ -934,9 +901,7 @@ func TestRelaySwitch1Device(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -951,21 +916,21 @@ func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 	}{
 		{
 			name:         "TurnOn",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
 			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
 				return device.TurnOn()
 			},
 		},
 		{
 			name:         "TurnOff",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
 			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
 				return device.TurnOff()
 			},
 		},
 		{
 			name:         "SetAll",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"setAll\",\"parameter\": \"25,2,4,on\"}",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "25,2,4,on"}`,
 			method: func(device *switchbot.InfraredRemoteAirConditionerDevice) (*switchbot.CommonResponse, error) {
 				return device.SetAll(25, switchbot.AirConditionerModeCool, switchbot.AirConditionerFanModeHigh, switchbot.AirConditionerPowerStateOn)
 			},
@@ -988,9 +953,7 @@ func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -1005,7 +968,7 @@ func TestInfraredRemoteTVDevice(t *testing.T) {
 	}{
 		{
 			name:         "SetChannel",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"SetChannel\",\"parameter\": \"5\"}",
+			expectedBody: `{"commandType": "command","command": "SetChannel","parameter": "5"}`,
 			method: func(device *switchbot.InfraredRemoteTVDevice) (*switchbot.CommonResponse, error) {
 				return device.SetChannel(5)
 			},
@@ -1028,9 +991,7 @@ func TestInfraredRemoteTVDevice(t *testing.T) {
 				},
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
@@ -1045,7 +1006,7 @@ func TestInfraredRemoteOthersDevice(t *testing.T) {
 	}{
 		{
 			name:         "CustomCommand",
-			expectedBody: "{\"commandType\": \"command\",\"command\": \"customize\",\"parameter\": \"testButton\"}",
+			expectedBody: `{"commandType": "command","command": "customize","parameter": "testButton"}`,
 			method: func(device *switchbot.InfraredRemoteOthersDevice) (*switchbot.CommonResponse, error) {
 				return device.CustomCommand("testButton")
 			},
@@ -1066,9 +1027,7 @@ func TestInfraredRemoteOthersDevice(t *testing.T) {
 				DeviceName: "Test Others",
 			}
 			response, err := testData.method(device)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})

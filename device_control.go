@@ -173,7 +173,7 @@ func (device *CeilingLightDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the CeilingLightDevice
 func (device *CeilingLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{
@@ -239,7 +239,7 @@ func (device *StripLightDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the StripLightDevice
 func (device *StripLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{
@@ -277,7 +277,7 @@ func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the ColorBulbDevice
 func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{
@@ -932,6 +932,11 @@ func (device *InfraredRemoteTVDevice) VolumeSub() (*CommonResponse, error) {
 // ChannelAdd sends a command to increase the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
 func (device *InfraredRemoteTVDevice) ChannelAdd() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "channelAdd")
+}
+
+// ChannelSub sends a command to decrease the channel of the InfraredRemoteTVDevice / InfraredRemoteStreamerDevice / InfraredRemoteSetTopBoxDevice
+func (device *InfraredRemoteTVDevice) ChannelSub() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "channelSub")
 }
 
 // SetMute sends a command to mute/unmute the InfraredRemoteDvdPlayerDevice / InfraredRemoteSpeakerDevice
