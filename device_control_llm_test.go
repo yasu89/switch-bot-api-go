@@ -2316,3 +2316,163 @@ func Test_RelaySwitch1PMDeviceExecCommand(t *testing.T) {
 		})
 	}
 }
+
+func Test_InfraredRemoteAirConditionerDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.InfraredRemoteAirConditionerDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_InfraredRemoteAirConditionerDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetAll(Auto,Auto,On)",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "25,1,1,on"}`,
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"fan":1,"powerState":"on"}`,
+		},
+		{
+			name:         "SetAll(Cool,Low,Off)",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "20,2,2,off"}`,
+			parameter:    `{"command":"SetAll","temperatureCelsius":20,"mode":2,"fan":2,"powerState":"off"}`,
+		},
+		{
+			name:         "SetAll(Dry,Medium,On)",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "22,3,3,on"}`,
+			parameter:    `{"command":"SetAll","temperatureCelsius":22,"mode":3,"fan":3,"powerState":"on"}`,
+		},
+		{
+			name:         "SetAll(Fan,High,Off)",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "24,4,4,off"}`,
+			parameter:    `{"command":"SetAll","temperatureCelsius":24,"mode":4,"fan":4,"powerState":"off"}`,
+		},
+		{
+			name:         "SetAll(Heat,Auto,On)",
+			expectedBody: `{"commandType": "command","command": "setAll","parameter": "28,5,1,on"}`,
+			parameter:    `{"command":"SetAll","temperatureCelsius":28,"mode":5,"fan":1,"powerState":"on"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteAirConditionerDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_InfraredRemoteAirConditionerDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "InvalidCommand",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: `Value InvalidCommand should be one of the allowed values`,
+		},
+		{
+			name:         "SetAllWithoutTemperature",
+			parameter:    `{"command":"SetAll","mode":1,"fan":1,"powerState":"on"}`,
+			errorContain: `Required property 'temperatureCelsius' is missing`,
+		},
+		{
+			name:         "SetAllWithoutMode",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"fan":1,"powerState":"on"}`,
+			errorContain: `Required property 'mode' is missing`,
+		},
+		{
+			name:         "SetAllWithoutFan",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"powerState":"on"}`,
+			errorContain: `Required property 'fan' is missing`,
+		},
+		{
+			name:         "SetAllWithoutPowerState",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"fan":1}`,
+			errorContain: `Required property 'powerState' is missing`,
+		},
+		{
+			name:         "SetAllWithInvalidTemperatureTooLow",
+			parameter:    `{"command":"SetAll","temperatureCelsius":-11,"mode":1,"fan":1,"powerState":"on"}`,
+			errorContain: `-11 should be at least -10`,
+		},
+		{
+			name:         "SetAllWithInvalidTemperatureTooHigh",
+			parameter:    `{"command":"SetAll","temperatureCelsius":41,"mode":1,"fan":1,"powerState":"on"}`,
+			errorContain: `41 should be at most 40`,
+		},
+		{
+			name:         "SetAllWithInvalidModeTooLow",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":0,"fan":1,"powerState":"on"}`,
+			errorContain: `0 should be at least 1`,
+		},
+		{
+			name:         "SetAllWithInvalidModeTooHigh",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":6,"fan":1,"powerState":"on"}`,
+			errorContain: `6 should be at most 5`,
+		},
+		{
+			name:         "SetAllWithInvalidFanTooLow",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"fan":0,"powerState":"on"}`,
+			errorContain: `0 should be at least 1`,
+		},
+		{
+			name:         "SetAllWithInvalidFanTooHigh",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"fan":5,"powerState":"on"}`,
+			errorContain: `5 should be at most 4`,
+		},
+		{
+			name:         "SetAllWithInvalidPowerState",
+			parameter:    `{"command":"SetAll","temperatureCelsius":25,"mode":1,"fan":1,"powerState":"invalid"}`,
+			errorContain: `Value invalid should be one of the allowed values`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteAirConditionerDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}

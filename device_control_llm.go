@@ -1347,3 +1347,69 @@ func (device *RelaySwitch1PMDevice) ExecCommand(jsonString string) (*CommonRespo
 func (device *RelaySwitch1PMDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(RelaySwitch1DeviceCommandParameter{})
 }
+
+// InfraredRemoteAirConditionerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteAirConditionerDevice
+type InfraredRemoteAirConditionerDeviceCommandParameter struct {
+	Command            string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetAll" description:"TurnOn:turn on the air conditioner, TurnOff:turn off the air conditioner, SetAll:configure all parameters of the air conditioner" required:"true"`
+	TemperatureCelsius int      `json:"temperatureCelsius" title:"Temperature (Celsius)" minimum:"-10" maximum:"40" description:"Temperature in Celsius (-10 to 40)"`
+	Mode               int      `json:"mode" title:"Mode" minimum:"1" maximum:"5" description:"Mode (1:auto, 2:cool, 3:dry, 4:fan, 5:heat)"`
+	Fan                int      `json:"fan" title:"Fan" minimum:"1" maximum:"4" description:"Fan mode (1:auto, 2:low, 3:medium, 4:high)"`
+	PowerState         string   `json:"powerState" title:"Power State" enum:"on,off" description:"Power state (on/off)"`
+	_                  struct{} `additionalProperties:"false"`
+}
+
+// InfraredRemoteAirConditionerDeviceCommandSetAllIfExposer represents the SetAll command parameters
+type InfraredRemoteAirConditionerDeviceCommandSetAllIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the InfraredRemoteAirConditionerDevice command parameter for SetAll
+func (parameter *InfraredRemoteAirConditionerDeviceCommandSetAllIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetAll" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the InfraredRemoteAirConditionerDevice command parameter for SetAll
+func (parameter *InfraredRemoteAirConditionerDeviceCommandSetAllIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		TemperatureCelsius int    `json:"temperatureCelsius" required:"true"`
+		Mode               int    `json:"mode" required:"true"`
+		Fan                int    `json:"fan" required:"true"`
+		PowerState         string `json:"powerState" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the InfraredRemoteAirConditionerDevice command parameter
+func (parameter *InfraredRemoteAirConditionerDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&InfraredRemoteAirConditionerDeviceCommandSetAllIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the InfraredRemoteAirConditionerDevice
+func (device *InfraredRemoteAirConditionerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteAirConditionerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetAll":
+		return device.SetAll(
+			parameter.TemperatureCelsius,
+			AirConditionerMode(parameter.Mode),
+			AirConditionerFanMode(parameter.Fan),
+			AirConditionerPowerState(parameter.PowerState),
+		)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteAirConditionerDevice command parameter
+func (device *InfraredRemoteAirConditionerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteAirConditionerDeviceCommandParameter{})
+}
