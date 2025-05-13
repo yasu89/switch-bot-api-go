@@ -953,3 +953,100 @@ func (device *EvaporativeHumidifierDevice) ExecCommand(jsonString string) (*Comm
 func (device *EvaporativeHumidifierDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(EvaporativeHumidifierDeviceCommandParameter{})
 }
+
+// AirPurifierDeviceCommandParameter is a struct that represents the command parameter for the AirPurifierDevice
+type AirPurifierDeviceCommandParameter struct {
+	Command   string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetMode,SetChildLock" description:"TurnOn:turn on device, TurnOff:turn off device, SetMode:set the mode, SetChildLock:set the child lock" required:"true"`
+	Mode      int      `json:"mode" title:"Mode" minimum:"1" maximum:"4" description:"1:Normal mode, 2:Auto mode, 3:Sleep mode, 4:Manual mode"`
+	FanLevel  int      `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"3" description:"Fan speed level (1-3) for Normal mode"`
+	ChildLock bool     `json:"childLock" title:"ChildLock" description:"true:lock, false:unlock"`
+	_         struct{} `additionalProperties:"false"`
+}
+
+// AirPurifierDeviceCommandSetModeIfExposer represents the SetMode command parameters
+type AirPurifierDeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the AirPurifierDevice command parameter for SetMode
+func (parameter *AirPurifierDeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the AirPurifierDevice command parameter for SetMode
+func (parameter *AirPurifierDeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode int `json:"mode" required:"true"`
+	}{}
+}
+
+// AirPurifierDeviceCommandSetNormalModeIfExposer represents the SetMode off NormalMode command parameters
+type AirPurifierDeviceCommandSetNormalModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the AirPurifierDevice command parameter for SetMode
+func (parameter *AirPurifierDeviceCommandSetNormalModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+		Mode    int    `json:"mode" const:"1" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the AirPurifierDevice command parameter for SetMode
+func (parameter *AirPurifierDeviceCommandSetNormalModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode     int `json:"mode" required:"true"`
+		FanLevel int `json:"fanLevel" required:"true"`
+	}{}
+}
+
+// AirPurifierDeviceCommandSetChildLockIfExposer represents the SetChildLock command parameters
+type AirPurifierDeviceCommandSetChildLockIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the AirPurifierDevice command parameter for SetChildLock
+func (parameter *AirPurifierDeviceCommandSetChildLockIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetChildLock" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the AirPurifierDevice command parameter for SetChildLock
+func (parameter *AirPurifierDeviceCommandSetChildLockIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		ChildLock bool `json:"childLock" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the AirPurifierDevice command parameter
+func (parameter *AirPurifierDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&AirPurifierDeviceCommandSetModeIfExposer{},
+		&AirPurifierDeviceCommandSetNormalModeIfExposer{},
+		&AirPurifierDeviceCommandSetChildLockIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the AirPurifierDevice
+func (device *AirPurifierDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter AirPurifierDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetMode":
+		return device.SetMode(AirPurifierMode(parameter.Mode), parameter.FanLevel)
+	case "SetChildLock":
+		return device.SetChildLock(parameter.ChildLock)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the AirPurifierDevice command parameter
+func (device *AirPurifierDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(AirPurifierDeviceCommandParameter{})
+}

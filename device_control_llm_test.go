@@ -1540,3 +1540,162 @@ func Test_EvaporativeHumidifierDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_AirPurifierDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.AirPurifierDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_AirPurifierDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetMode(Normal)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":1,"fanGear":1}}`,
+			parameter:    `{"command":"SetMode","mode":1,"fanLevel":1}`,
+		},
+		{
+			name:         "SetMode(Normal with fanLevel 2)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":1,"fanGear":2}}`,
+			parameter:    `{"command":"SetMode","mode":1,"fanLevel":2}`,
+		},
+		{
+			name:         "SetMode(Normal with fanLevel 3)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":1,"fanGear":3}}`,
+			parameter:    `{"command":"SetMode","mode":1,"fanLevel":3}`,
+		},
+		{
+			name:         "SetMode(Auto)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":2}}`,
+			parameter:    `{"command":"SetMode","mode":2}`,
+		},
+		{
+			name:         "SetMode(Sleep)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":3}}`,
+			parameter:    `{"command":"SetMode","mode":3}`,
+		},
+		{
+			name:         "SetMode(Manual)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": {"mode":4}}`,
+			parameter:    `{"command":"SetMode","mode":4}`,
+		},
+		{
+			name:         "SetChildLock(true)",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": 1}`,
+			parameter:    `{"command":"SetChildLock","childLock":true}`,
+		},
+		{
+			name:         "SetChildLock(false)",
+			expectedBody: `{"commandType": "command","command": "setChildLock","parameter": 0}`,
+			parameter:    `{"command":"SetChildLock","childLock":false}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.AirPurifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_AirPurifierDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"Invalid"}`,
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, SetMode, SetChildLock",
+		},
+		{
+			name:         "SetMode(missing mode)",
+			parameter:    `{"command":"SetMode"}`,
+			errorContain: "Required property 'mode' is missing",
+		},
+		{
+			name:         "SetMode(invalid mode too low)",
+			parameter:    `{"command":"SetMode","mode":0}`,
+			errorContain: "0 should be at least 1",
+		},
+		{
+			name:         "SetMode(invalid mode too high)",
+			parameter:    `{"command":"SetMode","mode":5}`,
+			errorContain: "5 should be at most 4",
+		},
+		{
+			name:         "SetMode(Normal missing fanLevel)",
+			parameter:    `{"command":"SetMode","mode":1}`,
+			errorContain: "Required property 'fanLevel' is missing",
+		},
+		{
+			name:         "SetMode(Normal invalid fanLevel too low)",
+			parameter:    `{"command":"SetMode","mode":1,"fanLevel":0}`,
+			errorContain: "0 should be at least 1",
+		},
+		{
+			name:         "SetMode(Normal invalid fanLevel too high)",
+			parameter:    `{"command":"SetMode","mode":1,"fanLevel":4}`,
+			errorContain: "4 should be at most 3",
+		},
+		{
+			name:         "SetChildLock(missing childLock)",
+			parameter:    `{"command":"SetChildLock"}`,
+			errorContain: "Required property 'childLock' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.AirPurifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
