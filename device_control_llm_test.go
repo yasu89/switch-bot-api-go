@@ -472,3 +472,174 @@ func Test_CeilingLightDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_PlugMiniDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.PlugMiniDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_PlugMiniDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOn\"}",
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOff\"}",
+		},
+		{
+			name:         "Toggle",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"toggle\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Toggle\"}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.PlugMiniDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_PlugMiniDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    "{\"command\":\"Invalid\"}",
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, Toggle",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.PlugMiniDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
+
+func Test_PlugDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.PlugDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_PlugDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOn\"}",
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOff\"}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.PlugDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_PlugDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    "{\"command\":\"Toggle\"}",
+			errorContain: "Value Toggle should be one of the allowed values: TurnOn, TurnOff",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.PlugDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}

@@ -343,3 +343,61 @@ func (device *CeilingLightDevice) ExecCommand(jsonString string) (*CommonRespons
 func (device *CeilingLightDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(CeilingLightDeviceCommandParameter{})
 }
+
+// PlugMiniDeviceCommandParameter is a struct that represents the command parameter for the PlugMiniDevice
+type PlugMiniDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle" description:"TurnOn:turn on the plug, TurnOff:turn off the plug, Toggle:toggle the plug state" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the PlugMiniDevice
+func (device *PlugMiniDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter PlugMiniDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "Toggle":
+		return device.Toggle()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the PlugMiniDevice command parameter
+func (device *PlugMiniDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(PlugMiniDeviceCommandParameter{})
+}
+
+// PlugDeviceCommandParameter is a struct that represents the command parameter for the PlugDevice
+type PlugDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff" description:"TurnOn:turn on the plug, TurnOff:turn off the plug" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the PlugDevice
+func (device *PlugDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter PlugDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the PlugDevice command parameter
+func (device *PlugDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(PlugDeviceCommandParameter{})
+}
