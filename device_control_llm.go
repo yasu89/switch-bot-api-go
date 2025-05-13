@@ -1568,3 +1568,41 @@ func (device *InfraredRemoteSpeakerDevice) ExecCommand(jsonString string) (*Comm
 func (device *InfraredRemoteSpeakerDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(InfraredRemoteSpeakerDeviceCommandParameter{})
 }
+
+// InfraredRemoteFanDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteFanDevice
+type InfraredRemoteFanDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Swing,Timer,LowSpeed,MiddleSpeed,HighSpeed" description:"TurnOn:turn on the fan, TurnOff:turn off the fan, Swing:enable/disable swing feature, Timer:set timer, LowSpeed:set fan speed to low, MiddleSpeed:set fan speed to middle, HighSpeed:set fan speed to high" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the InfraredRemoteFanDevice
+func (device *InfraredRemoteFanDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteFanDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "Swing":
+		return device.Swing()
+	case "Timer":
+		return device.Timer()
+	case "LowSpeed":
+		return device.LowSpeed()
+	case "MiddleSpeed":
+		return device.MiddleSpeed()
+	case "HighSpeed":
+		return device.HighSpeed()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteFanDevice command parameter
+func (device *InfraredRemoteFanDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteFanDeviceCommandParameter{})
+}

@@ -2845,3 +2845,108 @@ func Test_InfraredRemoteSpeakerDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_InfraredRemoteFanDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.InfraredRemoteFanDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_InfraredRemoteFanDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "Swing",
+			expectedBody: `{"commandType": "command","command": "swing","parameter": "default"}`,
+			parameter:    `{"command":"Swing"}`,
+		},
+		{
+			name:         "Timer",
+			expectedBody: `{"commandType": "command","command": "timer","parameter": "default"}`,
+			parameter:    `{"command":"Timer"}`,
+		},
+		{
+			name:         "LowSpeed",
+			expectedBody: `{"commandType": "command","command": "lowSpeed","parameter": "default"}`,
+			parameter:    `{"command":"LowSpeed"}`,
+		},
+		{
+			name:         "MiddleSpeed",
+			expectedBody: `{"commandType": "command","command": "middleSpeed","parameter": "default"}`,
+			parameter:    `{"command":"MiddleSpeed"}`,
+		},
+		{
+			name:         "HighSpeed",
+			expectedBody: `{"commandType": "command","command": "highSpeed","parameter": "default"}`,
+			parameter:    `{"command":"HighSpeed"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteFanDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_InfraredRemoteFanDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, Swing, Timer, LowSpeed, MiddleSpeed, HighSpeed",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteFanDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
