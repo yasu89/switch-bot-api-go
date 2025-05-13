@@ -944,7 +944,8 @@ func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
 			}
 
 			_, err := device.ExecCommand(testData.parameter)
-			assert.ErrorContains(t, err, testData.errorContain)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContain)
 		})
 	}
 }
@@ -1102,7 +1103,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 		},
 		{
 			name:         "ChangeParam",
-			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}`,
+			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}}`,
 			parameter:    `{"command":"ChangeParam","fanLevel":3,"waterLevel":2,"times":100}`,
 		},
 	}
@@ -1811,6 +1812,165 @@ func Test_BlindTiltDeviceExecCommandInvalid(t *testing.T) {
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 			device := &switchbot.BlindTiltDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
+
+func Test_BatteryCirculatorFanDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.BatteryCirculatorFanDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_BatteryCirculatorFanDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetNightLightMode(off)",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "off"}`,
+			parameter:    `{"command":"SetNightLightMode","nightLight":"off"}`,
+		},
+		{
+			name:         "SetNightLightMode(1)",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "1"}`,
+			parameter:    `{"command":"SetNightLightMode","nightLight":"1"}`,
+		},
+		{
+			name:         "SetNightLightMode(2)",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "2"}`,
+			parameter:    `{"command":"SetNightLightMode","nightLight":"2"}`,
+		},
+		{
+			name:         "SetWindMode(direct)",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "direct"}`,
+			parameter:    `{"command":"SetWindMode","windMode":"direct"}`,
+		},
+		{
+			name:         "SetWindMode(natural)",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "natural"}`,
+			parameter:    `{"command":"SetWindMode","windMode":"natural"}`,
+		},
+		{
+			name:         "SetWindMode(sleep)",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "sleep"}`,
+			parameter:    `{"command":"SetWindMode","windMode":"sleep"}`,
+		},
+		{
+			name:         "SetWindMode(baby)",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "baby"}`,
+			parameter:    `{"command":"SetWindMode","windMode":"baby"}`,
+		},
+		{
+			name:         "SetWindSpeed(50)",
+			expectedBody: `{"commandType": "command","command": "setWindSpeed","parameter": "50"}`,
+			parameter:    `{"command":"SetWindSpeed","windSpeed":50}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.BatteryCirculatorFanDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_BatteryCirculatorFanDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, SetNightLightMode, SetWindMode, SetWindSpeed",
+		},
+		{
+			name:         "Invalid night light mode",
+			parameter:    `{"command":"SetNightLightMode","nightLight":"invalid"}`,
+			errorContain: "Value invalid should be one of the allowed values: off, 1, 2",
+		},
+		{
+			name:         "Invalid wind mode",
+			parameter:    `{"command":"SetWindMode","windMode":"invalid"}`,
+			errorContain: "Value invalid should be one of the allowed values: direct, natural, sleep, baby",
+		},
+		{
+			name:         "Wind speed too low",
+			parameter:    `{"command":"SetWindSpeed","windSpeed":0}`,
+			errorContain: "0 should be at least 1",
+		},
+		{
+			name:         "Wind speed too high",
+			parameter:    `{"command":"SetWindSpeed","windSpeed":101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SetNightLightMode(without nightLight)",
+			parameter:    `{"command":"SetNightLightMode"}`,
+			errorContain: "Required property 'nightLight' is missing",
+		},
+		{
+			name:         "SetWindMode(without windMode)",
+			parameter:    `{"command":"SetWindMode"}`,
+			errorContain: "Required property 'windMode' is missing",
+		},
+		{
+			name:         "SetWindSpeed(without windSpeed)",
+			parameter:    `{"command":"SetWindSpeed"}`,
+			errorContain: "Required property 'windSpeed' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.BatteryCirculatorFanDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
