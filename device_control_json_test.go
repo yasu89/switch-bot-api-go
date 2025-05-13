@@ -1103,7 +1103,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 		},
 		{
 			name:         "ChangeParam",
-			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}}`,
+			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}`,
 			parameter:    `{"command":"ChangeParam","fanLevel":3,"waterLevel":2,"times":100}`,
 		},
 	}
