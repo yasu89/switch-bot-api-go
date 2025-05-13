@@ -779,3 +779,99 @@ func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*Comm
 func (device *RobotVacuumCleanerS10Device) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(RobotVacuumCleanerS10DeviceCommandParameter{})
 }
+
+// HumidifierDeviceCommandParameter is a struct that represents the command parameter for the HumidifierDevice
+type HumidifierDeviceCommandParameter struct {
+	Command        string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetMode,SetTargetHumidity" description:"TurnOn:turn on the humidifier, TurnOff:turn off the humidifier, SetMode:set the mode of the humidifier, SetTargetHumidity:set the target humidity" required:"true"`
+	Mode           string   `json:"mode" title:"Mode" enum:"Auto,Low,Medium,High" description:"Auto: auto mode, Low:34%, Medium:67%, High:100%"`
+	TargetHumidity int      `json:"targetHumidity" title:"TargetHumidity" minimum:"0" maximum:"100" description:"Target humidity level (0-100%)"`
+	_              struct{} `additionalProperties:"false"`
+}
+
+// HumidifierDeviceCommandSetModeIfExposer represents the SetMode command parameters
+type HumidifierDeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the HumidifierDevice command parameter for SetMode
+func (parameter *HumidifierDeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the HumidifierDevice command parameter for SetMode
+func (parameter *HumidifierDeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode string `json:"mode" required:"true"`
+	}{}
+}
+
+// HumidifierDeviceCommandSetTargetHumidityIfExposer represents the SetTargetHumidity command parameters
+type HumidifierDeviceCommandSetTargetHumidityIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the HumidifierDevice command parameter for SetTargetHumidity
+func (parameter *HumidifierDeviceCommandSetTargetHumidityIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetTargetHumidity" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the HumidifierDevice command parameter for SetTargetHumidity
+func (parameter *HumidifierDeviceCommandSetTargetHumidityIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		TargetHumidity int `json:"targetHumidity" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the HumidifierDevice command parameter
+func (parameter *HumidifierDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&HumidifierDeviceCommandSetModeIfExposer{},
+		&HumidifierDeviceCommandSetTargetHumidityIfExposer{},
+	}
+}
+
+// parseHumidifierMode parses a string into a HumidifierMode
+func parseHumidifierMode(s string) (HumidifierMode, error) {
+	switch s {
+	case "Auto":
+		return HumidifierModeAuto, nil
+	case "Low":
+		return HumidifierModeLow, nil
+	case "Medium":
+		return HumidifierModeMedium, nil
+	case "High":
+		return HumidifierModeHigh, nil
+	default:
+		return 0, fmt.Errorf("invalid humidifier mode: %s", s)
+	}
+}
+
+// ExecCommand sends a command to the HumidifierDevice
+func (device *HumidifierDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter HumidifierDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetMode":
+		mode, err := parseHumidifierMode(parameter.Mode)
+		if err != nil {
+			return nil, err
+		}
+		return device.SetMode(mode)
+	case "SetTargetHumidity":
+		return device.SetTargetHumidity(parameter.TargetHumidity)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the HumidifierDevice command parameter
+func (device *HumidifierDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(HumidifierDeviceCommandParameter{})
+}

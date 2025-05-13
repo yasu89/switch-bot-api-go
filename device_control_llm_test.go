@@ -1242,3 +1242,137 @@ func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_HumidifierDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.HumidifierDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_HumidifierDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetMode(Auto)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "0"}`,
+			parameter:    `{"command":"SetMode","mode":"Auto"}`,
+		},
+		{
+			name:         "SetMode(Low)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "101"}`,
+			parameter:    `{"command":"SetMode","mode":"Low"}`,
+		},
+		{
+			name:         "SetMode(Medium)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "102"}`,
+			parameter:    `{"command":"SetMode","mode":"Medium"}`,
+		},
+		{
+			name:         "SetMode(High)",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "103"}`,
+			parameter:    `{"command":"SetMode","mode":"High"}`,
+		},
+		{
+			name:         "SetTargetHumidity",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "50"}`,
+			parameter:    `{"command":"SetTargetHumidity","targetHumidity":50}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.HumidifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_HumidifierDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"Invalid"}`,
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, SetMode, SetTargetHumidity",
+		},
+		{
+			name:         "SetMode(missing mode)",
+			parameter:    `{"command":"SetMode"}`,
+			errorContain: "Required property 'mode' is missing",
+		},
+		{
+			name:         "SetMode(invalid mode)",
+			parameter:    `{"command":"SetMode","mode":"Invalid"}`,
+			errorContain: "Invalid should be one of the allowed values: Auto, Low, Medium, High",
+		},
+		{
+			name:         "SetTargetHumidity(missing targetHumidity)",
+			parameter:    `{"command":"SetTargetHumidity"}`,
+			errorContain: "Required property 'targetHumidity' is missing",
+		},
+		{
+			name:         "SetTargetHumidity(targetHumidity too low)",
+			parameter:    `{"command":"SetTargetHumidity","targetHumidity":-1}`,
+			errorContain: "-1 should be at least 0",
+		},
+		{
+			name:         "SetTargetHumidity(targetHumidity too high)",
+			parameter:    `{"command":"SetTargetHumidity","targetHumidity":101}`,
+			errorContain: "101 should be at most 100",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.HumidifierDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
