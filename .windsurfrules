@@ -18,7 +18,7 @@ This is a library that allows you to operate SwitchBot via its API using the Go 
 - `device_control.go`
   - Implements commands available for each device using `POST /v1.1/devices/{deviceId}/commands`
   - Only implements commands that can be used for each device
-- `device_control_llm.go`
+- `device_control_json.go`
   - Implements commands available for each device using `POST /v1.1/devices/{deviceId}/commands`
   - Unlike `device_control.go`, only `ExecCommand` is implemented for each device, and the operation changes depending on the arguments
   - The arguments for each device are defined as structs so that they can be expressed in JSON Schema
