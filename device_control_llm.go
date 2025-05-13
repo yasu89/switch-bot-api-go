@@ -1050,3 +1050,65 @@ func (device *AirPurifierDevice) ExecCommand(jsonString string) (*CommonResponse
 func (device *AirPurifierDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(AirPurifierDeviceCommandParameter{})
 }
+
+// BlindTiltDeviceCommandParameter is a struct that represents the command parameter for the BlindTiltDevice
+type BlindTiltDeviceCommandParameter struct {
+	Command   string   `json:"command" title:"Command" enum:"SetPosition,FullyOpen,CloseUp,CloseDown" description:"SetPosition:set the position of the blind, FullyOpen:fully open the blind, CloseUp:close up the blind, CloseDown:close down the blind" required:"true"`
+	Direction string   `json:"direction" title:"Direction" enum:"up,down" description:"Direction of the blind (up or down)"`
+	Position  int      `json:"position" title:"Position" minimum:"0" maximum:"100" description:"Position value (0-100, must be even number)"`
+	_         struct{} `additionalProperties:"false"`
+}
+
+// BlindTiltDeviceCommandSetPositionIfExposer represents the SetPosition command parameters
+type BlindTiltDeviceCommandSetPositionIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the BlindTiltDevice command parameter for SetPosition
+func (parameter *BlindTiltDeviceCommandSetPositionIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetPosition" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the BlindTiltDevice command parameter for SetPosition
+func (parameter *BlindTiltDeviceCommandSetPositionIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Direction string `json:"direction" required:"true"`
+		Position  int    `json:"position" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the BlindTiltDevice command parameter
+func (parameter *BlindTiltDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&BlindTiltDeviceCommandSetPositionIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the BlindTiltDevice
+func (device *BlindTiltDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter BlindTiltDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "SetPosition":
+		if parameter.Position%2 != 0 {
+			return nil, fmt.Errorf("position must be even: %d", parameter.Position)
+		}
+		return device.SetPosition(parameter.Direction, parameter.Position)
+	case "FullyOpen":
+		return device.FullyOpen()
+	case "CloseUp":
+		return device.CloseUp()
+	case "CloseDown":
+		return device.CloseDown()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the BlindTiltDevice command parameter
+func (device *BlindTiltDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(BlindTiltDeviceCommandParameter{})
+}

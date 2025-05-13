@@ -1699,3 +1699,127 @@ func Test_AirPurifierDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_BlindTiltDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.BlindTiltDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_BlindTiltDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "SetPosition(up, 50)",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "up;50"}`,
+			parameter:    `{"command":"SetPosition","direction":"up","position":50}`,
+		},
+		{
+			name:         "SetPosition(down, 80)",
+			expectedBody: `{"commandType": "command","command": "setPosition","parameter": "down;80"}`,
+			parameter:    `{"command":"SetPosition","direction":"down","position":80}`,
+		},
+		{
+			name:         "FullyOpen",
+			expectedBody: `{"commandType": "command","command": "fullyOpen","parameter": "default"}`,
+			parameter:    `{"command":"FullyOpen"}`,
+		},
+		{
+			name:         "CloseUp",
+			expectedBody: `{"commandType": "command","command": "closeUp","parameter": "default"}`,
+			parameter:    `{"command":"CloseUp"}`,
+		},
+		{
+			name:         "CloseDown",
+			expectedBody: `{"commandType": "command","command": "closeDown","parameter": "default"}`,
+			parameter:    `{"command":"CloseDown"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.BlindTiltDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_BlindTiltDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: SetPosition, FullyOpen, CloseUp, CloseDown",
+		},
+		{
+			name:         "Invalid direction",
+			parameter:    `{"command":"SetPosition","direction":"invalid","position":50}`,
+			errorContain: "Value invalid should be one of the allowed values: up, down",
+		},
+		{
+			name:         "Position too low",
+			parameter:    `{"command":"SetPosition","direction":"up","position":-10}`,
+			errorContain: "-10 should be at least 0",
+		},
+		{
+			name:         "Position too high",
+			parameter:    `{"command":"SetPosition","direction":"up","position":110}`,
+			errorContain: "110 should be at most 100",
+		},
+		{
+			name:         "Position not even",
+			parameter:    `{"command":"SetPosition","direction":"up","position":51}`,
+			errorContain: "position must be even: 51",
+		},
+		{
+			name:         "Missing required parameter",
+			parameter:    `{"command":"SetPosition"}`,
+			errorContain: "Required properties 'direction', 'position' are missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.BlindTiltDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
