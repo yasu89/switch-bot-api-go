@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.4.0](https://github.com/yasu89/switch-bot-api-go/compare/v0.3.9...v0.4.0) - 2025-05-13
+### Exciting New Features 🎉
+- Implement LLM friendly method by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/17
+### Other Changes
+- Add GitHub Actions workflow for gocredits automation by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/19
+
 ## [v0.3.9](https://github.com/yasu89/switch-bot-api-go/compare/v0.3.8...v0.3.9) - 2025-04-23
 ### Other Changes
 - Implements SwitchBot API mock helper. by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/11
