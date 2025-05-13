@@ -1606,3 +1606,35 @@ func (device *InfraredRemoteFanDevice) ExecCommand(jsonString string) (*CommonRe
 func (device *InfraredRemoteFanDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(InfraredRemoteFanDeviceCommandParameter{})
 }
+
+// InfraredRemoteLightDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteLightDevice
+type InfraredRemoteLightDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,BrightnessUp,BrightnessDown" description:"TurnOn:turn on the light, TurnOff:turn off the light, BrightnessUp:increase brightness, BrightnessDown:decrease brightness" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the InfraredRemoteLightDevice
+func (device *InfraredRemoteLightDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteLightDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "BrightnessUp":
+		return device.BrightnessUp()
+	case "BrightnessDown":
+		return device.BrightnessDown()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteLightDevice command parameter
+func (device *InfraredRemoteLightDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteLightDeviceCommandParameter{})
+}
