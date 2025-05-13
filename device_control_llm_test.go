@@ -948,3 +948,109 @@ func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_RobotVacuumCleanerDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RobotVacuumCleanerDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RobotVacuumCleanerDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "Start",
+			expectedBody: `{"commandType": "command","command": "start","parameter": "default"}`,
+			parameter:    `{"command":"Start"}`,
+		},
+		{
+			name:         "Stop",
+			expectedBody: `{"commandType": "command","command": "stop","parameter": "default"}`,
+			parameter:    `{"command":"Stop"}`,
+		},
+		{
+			name:         "Dock",
+			expectedBody: `{"commandType": "command","command": "dock","parameter": "default"}`,
+			parameter:    `{"command":"Dock"}`,
+		},
+		{
+			name:         "SetPowerLevel",
+			expectedBody: `{"commandType": "command","command": "PowLevel","parameter": "2"}`,
+			parameter:    `{"command":"SetPowerLevel","powerLevel":2}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+		})
+	}
+}
+
+func Test_RobotVacuumCleanerDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: Start, Stop, Dock, SetPowerLevel",
+		},
+		{
+			name:         "SetPowerLevel(without powerLevel)",
+			parameter:    `{"command":"SetPowerLevel"}`,
+			errorContain: "Required property 'powerLevel' is missing",
+		},
+		{
+			name:         "SetPowerLevel(invalid powerLevel)",
+			parameter:    `{"command":"SetPowerLevel","powerLevel":5}`,
+			errorContain: "5 should be at most 3",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := device.ExecCommand(testData.parameter)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContain)
+		})
+	}
+}

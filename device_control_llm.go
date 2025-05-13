@@ -587,3 +587,60 @@ func (device *ColorBulbDevice) ExecCommand(jsonString string) (*CommonResponse, 
 func (device *ColorBulbDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(ColorBulbDeviceCommandParameter{})
 }
+
+// RobotVacuumCleanerDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerDevice
+type RobotVacuumCleanerDeviceCommandParameter struct {
+	Command    string   `json:"command" title:"Command" enum:"Start,Stop,Dock,SetPowerLevel" description:"Start:start vacuuming, Stop:stop vacuuming, Dock:return to charging dock, SetPowerLevel:set the suction power level" required:"true"`
+	PowerLevel int      `json:"powerLevel" title:"PowerLevel" minimum:"0" maximum:"3" description:"Power level: 0:Quiet, 1:Standard, 2:Strong, 3:Max"`
+	_          struct{} `additionalProperties:"false"`
+}
+
+// RobotVacuumCleanerDeviceCommandSetPowerLevelIfExposer represents the SetPowerLevel command parameters
+type RobotVacuumCleanerDeviceCommandSetPowerLevelIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerDevice command parameter for SetPowerLevel
+func (parameter *RobotVacuumCleanerDeviceCommandSetPowerLevelIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetPowerLevel" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerDevice command parameter for SetPowerLevel
+func (parameter *RobotVacuumCleanerDeviceCommandSetPowerLevelIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		PowerLevel int `json:"powerLevel" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerDevice command parameter
+func (parameter *RobotVacuumCleanerDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RobotVacuumCleanerDeviceCommandSetPowerLevelIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RobotVacuumCleanerDevice
+func (device *RobotVacuumCleanerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "Start":
+		return device.Start()
+	case "Stop":
+		return device.Stop()
+	case "Dock":
+		return device.Dock()
+	case "SetPowerLevel":
+		return device.SetPowerLevel(RobotVacuumCleanerPowerLevel(parameter.PowerLevel))
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerDevice command parameter
+func (device *RobotVacuumCleanerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerDeviceCommandParameter{})
+}
