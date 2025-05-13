@@ -235,9 +235,9 @@ func (parameter *KeypadDeviceCommandDeleteKeyIfExposer) JSONSchemaThen() interfa
 // JSONSchemaAllOf returns the JSON schema allOf block for the KeypadDevice command parameter
 func (parameter *KeypadDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		KeypadDeviceCommandCreateNormalKeyIfExposer{},
-		KeypadDeviceCommandCreateTimeLimitKeyIfExposer{},
-		KeypadDeviceCommandDeleteKeyIfExposer{},
+		&KeypadDeviceCommandCreateNormalKeyIfExposer{},
+		&KeypadDeviceCommandCreateTimeLimitKeyIfExposer{},
+		&KeypadDeviceCommandDeleteKeyIfExposer{},
 	}
 }
 
@@ -312,8 +312,8 @@ func (parameter *CeilingLightDeviceCommandSetColorTemperatureIfExposer) JSONSche
 // JSONSchemaAllOf returns the JSON schema allOf block for the CeilingLightDevice command parameter
 func (parameter *CeilingLightDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		CeilingLightDeviceCommandSetBrightnessIfExposer{},
-		CeilingLightDeviceCommandSetColorTemperatureIfExposer{},
+		&CeilingLightDeviceCommandSetBrightnessIfExposer{},
+		&CeilingLightDeviceCommandSetColorTemperatureIfExposer{},
 	}
 }
 
