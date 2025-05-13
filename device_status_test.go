@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/test-go/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 )

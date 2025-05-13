@@ -7,7 +7,6 @@ require (
 	github.com/kaptinlin/jsonschema v0.2.3
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggest/jsonschema-go v0.3.74
-	github.com/test-go/testify v1.1.4
 )
 
 require (
