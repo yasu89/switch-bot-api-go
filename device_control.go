@@ -173,7 +173,7 @@ func (device *CeilingLightDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the CeilingLightDevice
 func (device *CeilingLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{

@@ -2,7 +2,6 @@ package switchbot_test
 
 import (
 	"github.com/yasu89/switch-bot-api-go/helpers"
-	"log"
 	"net/http"
 	"testing"
 
@@ -232,7 +231,6 @@ func Test_KeypadDeviceGetCommandParameterJSONSchema(t *testing.T) {
 	device := &switchbot.KeypadDevice{}
 	description, err := device.GetCommandParameterJSONSchema()
 	assert.NoError(t, err)
-	log.Println(description)
 	assert.NotEmpty(t, description)
 }
 
@@ -334,6 +332,134 @@ func Test_KeypadDeviceExecCommandInvalid(t *testing.T) {
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 			device := &switchbot.KeypadDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
+
+func Test_CeilingLightDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.CeilingLightDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_CeilingLightDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOn\"}",
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOff\"}",
+		},
+		{
+			name:         "Toggle",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"toggle\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Toggle\"}",
+		},
+		{
+			name:         "SetBrightness",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"50\"}",
+			parameter:    "{\"command\":\"SetBrightness\",\"brightness\":50}",
+		},
+		{
+			name:         "SetColorTemperature",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColorTemperature\",\"parameter\": \"3500\"}",
+			parameter:    "{\"command\":\"SetColorTemperature\",\"colorTemperature\":3500}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.CeilingLightDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_CeilingLightDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "SetBrightness(invalid brightness)",
+			parameter:    "{\"command\":\"SetBrightness\",\"brightness\":0}",
+			errorContain: "0 should be at least 1",
+		},
+		{
+			name:         "SetBrightness(brightness too high)",
+			parameter:    "{\"command\":\"SetBrightness\",\"brightness\":101}",
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SetBrightness(missing brightness)",
+			parameter:    "{\"command\":\"SetBrightness\"}",
+			errorContain: "Required property 'brightness' is missing",
+		},
+		{
+			name:         "SetColorTemperature(invalid colorTemperature too low)",
+			parameter:    "{\"command\":\"SetColorTemperature\",\"colorTemperature\":2000}",
+			errorContain: "2000 should be at least 2700",
+		},
+		{
+			name:         "SetColorTemperature(invalid colorTemperature too high)",
+			parameter:    "{\"command\":\"SetColorTemperature\",\"colorTemperature\":7000}",
+			errorContain: "7000 should be at most 6500",
+		},
+		{
+			name:         "SetColorTemperature(missing colorTemperature)",
+			parameter:    "{\"command\":\"SetColorTemperature\"}",
+			errorContain: "Required property 'colorTemperature' is missing",
+		},
+		{
+			name:         "Invalid command",
+			parameter:    "{\"command\":\"Invalid\"}",
+			errorContain: "Value Invalid should be one of the allowed values: TurnOn, TurnOff, Toggle, SetBrightness, SetColorTemperature",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.CeilingLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",

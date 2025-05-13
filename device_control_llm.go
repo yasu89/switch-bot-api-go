@@ -265,3 +265,81 @@ func (device *KeypadDevice) ExecCommand(jsonString string) (*CommonResponse, err
 func (device *KeypadDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(KeypadDeviceCommandParameter{})
 }
+
+// CeilingLightDeviceCommandParameter is a struct that represents the command parameter for the CeilingLightDevice
+type CeilingLightDeviceCommandParameter struct {
+	Command          string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetBrightness,SetColorTemperature" description:"TurnOn:turn on the ceiling light, TurnOff:turn off the ceiling light, Toggle:toggle the ceiling light, SetBrightness:set brightness, SetColorTemperature:set color temperature" required:"true"`
+	Brightness       int      `json:"brightness" title:"Brightness" minimum:"1" maximum:"100" description:"Brightness level (0-100)"`
+	ColorTemperature int      `json:"colorTemperature" title:"ColorTemperature" minimum:"2700" maximum:"6500" description:"Color temperature in Kelvin (2700-6500)"`
+	_                struct{} `additionalProperties:"false"`
+}
+
+// CeilingLightDeviceCommandSetBrightnessIfExposer represents the SetBrightness command parameters
+type CeilingLightDeviceCommandSetBrightnessIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the CeilingLightDevice command parameter for SetBrightness
+func (parameter *CeilingLightDeviceCommandSetBrightnessIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetBrightness" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the CeilingLightDevice command parameter for SetBrightness
+func (parameter *CeilingLightDeviceCommandSetBrightnessIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Brightness int `json:"brightness" required:"true"`
+	}{}
+}
+
+// CeilingLightDeviceCommandSetColorTemperatureIfExposer represents the SetColorTemperature command parameters
+type CeilingLightDeviceCommandSetColorTemperatureIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the CeilingLightDevice command parameter for SetColorTemperature
+func (parameter *CeilingLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetColorTemperature" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the CeilingLightDevice command parameter for SetColorTemperature
+func (parameter *CeilingLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		ColorTemperature int `json:"colorTemperature" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the CeilingLightDevice command parameter
+func (parameter *CeilingLightDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		CeilingLightDeviceCommandSetBrightnessIfExposer{},
+		CeilingLightDeviceCommandSetColorTemperatureIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the CeilingLightDevice
+func (device *CeilingLightDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter CeilingLightDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "Toggle":
+		return device.Toggle()
+	case "SetBrightness":
+		return device.SetBrightness(parameter.Brightness)
+	case "SetColorTemperature":
+		return device.SetColorTemperature(parameter.ColorTemperature)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the CeilingLightDevice command parameter
+func (device *CeilingLightDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(CeilingLightDeviceCommandParameter{})
+}
