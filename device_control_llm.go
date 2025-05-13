@@ -1520,3 +1520,51 @@ func (device *InfraredRemoteDvdPlayerDevice) ExecCommand(jsonString string) (*Co
 func (device *InfraredRemoteDvdPlayerDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(InfraredRemoteDvdPlayerDeviceCommandParameter{})
 }
+
+// InfraredRemoteSpeakerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteSpeakerDevice
+type InfraredRemoteSpeakerDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,VolumeAdd,VolumeSub,SetMute,FastForward,Rewind,Next,Previous,Pause,Play,Stop" description:"TurnOn:turn on the speaker, TurnOff:turn off the speaker, VolumeAdd:increase volume, VolumeSub:decrease volume, SetMute:mute/unmute, FastForward:fast forward, Rewind:rewind, Next:next track, Previous:previous track, Pause:pause, Play:start, Stop:stop" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the InfraredRemoteSpeakerDevice
+func (device *InfraredRemoteSpeakerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteSpeakerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "VolumeAdd":
+		return device.VolumeAdd()
+	case "VolumeSub":
+		return device.VolumeSub()
+	case "SetMute":
+		return device.SetMute()
+	case "FastForward":
+		return device.FastForward()
+	case "Rewind":
+		return device.Rewind()
+	case "Next":
+		return device.Next()
+	case "Previous":
+		return device.Previous()
+	case "Pause":
+		return device.Pause()
+	case "Play":
+		return device.Play()
+	case "Stop":
+		return device.Stop()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteSpeakerDevice command parameter
+func (device *InfraredRemoteSpeakerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteSpeakerDeviceCommandParameter{})
+}
