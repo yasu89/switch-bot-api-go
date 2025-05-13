@@ -1113,8 +1113,8 @@ func (device *BlindTiltDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(BlindTiltDeviceCommandParameter{})
 }
 
-// BatteryCirculatorFanDeviceCommandParameter is a struct that represents the command parameter for the BatteryCirculatorFanDevice
-type BatteryCirculatorFanDeviceCommandParameter struct {
+// CirculatorFanDeviceCommandParameter is a struct that represents the command parameter for the BatteryCirculatorFanDevice and CirculatorFanDevice
+type CirculatorFanDeviceCommandParameter struct {
 	Command    string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetNightLightMode,SetWindMode,SetWindSpeed" description:"TurnOn:turn on device, TurnOff:turn off device, SetNightLightMode:set night light mode, SetWindMode:set wind mode, SetWindSpeed:set wind speed" required:"true"`
 	NightLight string   `json:"nightLight" title:"NightLight" enum:"off,1,2" description:"Night light mode: off:turn off, 1:bright, 2:dim"`
 	WindMode   string   `json:"windMode" title:"WindMode" enum:"direct,natural,sleep,baby" description:"Wind mode: direct:direct wind, natural:natural wind, sleep:sleep wind, baby:ultra quiet mode"`
@@ -1122,69 +1122,69 @@ type BatteryCirculatorFanDeviceCommandParameter struct {
 	_          struct{} `additionalProperties:"false"`
 }
 
-// BatteryCirculatorFanDeviceCommandSetNightLightModeIfExposer represents the SetNightLightMode command parameters
-type BatteryCirculatorFanDeviceCommandSetNightLightModeIfExposer struct{}
+// CirculatorFanDeviceCommandSetNightLightModeIfExposer represents the SetNightLightMode command parameters
+type CirculatorFanDeviceCommandSetNightLightModeIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice command parameter for SetNightLightMode
-func (parameter *BatteryCirculatorFanDeviceCommandSetNightLightModeIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetNightLightMode
+func (parameter *CirculatorFanDeviceCommandSetNightLightModeIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetNightLightMode" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice command parameter for SetNightLightMode
-func (parameter *BatteryCirculatorFanDeviceCommandSetNightLightModeIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetNightLightMode
+func (parameter *CirculatorFanDeviceCommandSetNightLightModeIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		NightLight string `json:"nightLight" required:"true"`
 	}{}
 }
 
-// BatteryCirculatorFanDeviceCommandSetWindModeIfExposer represents the SetWindMode command parameters
-type BatteryCirculatorFanDeviceCommandSetWindModeIfExposer struct{}
+// CirculatorFanDeviceCommandSetWindModeIfExposer represents the SetWindMode command parameters
+type CirculatorFanDeviceCommandSetWindModeIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice command parameter for SetWindMode
-func (parameter *BatteryCirculatorFanDeviceCommandSetWindModeIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetWindMode
+func (parameter *CirculatorFanDeviceCommandSetWindModeIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetWindMode" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice command parameter for SetWindMode
-func (parameter *BatteryCirculatorFanDeviceCommandSetWindModeIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetWindMode
+func (parameter *CirculatorFanDeviceCommandSetWindModeIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		WindMode string `json:"windMode" required:"true"`
 	}{}
 }
 
-// BatteryCirculatorFanDeviceCommandSetWindSpeedIfExposer represents the SetWindSpeed command parameters
-type BatteryCirculatorFanDeviceCommandSetWindSpeedIfExposer struct{}
+// CirculatorFanDeviceCommandSetWindSpeedIfExposer represents the SetWindSpeed command parameters
+type CirculatorFanDeviceCommandSetWindSpeedIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice command parameter for SetWindSpeed
-func (parameter *BatteryCirculatorFanDeviceCommandSetWindSpeedIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetWindSpeed
+func (parameter *CirculatorFanDeviceCommandSetWindSpeedIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetWindSpeed" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice command parameter for SetWindSpeed
-func (parameter *BatteryCirculatorFanDeviceCommandSetWindSpeedIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter for SetWindSpeed
+func (parameter *CirculatorFanDeviceCommandSetWindSpeedIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		WindSpeed int `json:"windSpeed" required:"true"`
 	}{}
 }
 
-// JSONSchemaAllOf returns the JSON schema allOf block for the BatteryCirculatorFanDevice command parameter
-func (parameter *BatteryCirculatorFanDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+// JSONSchemaAllOf returns the JSON schema allOf block for the BatteryCirculatorFanDevice and CirculatorFanDevice command parameter
+func (parameter *CirculatorFanDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		&BatteryCirculatorFanDeviceCommandSetNightLightModeIfExposer{},
-		&BatteryCirculatorFanDeviceCommandSetWindModeIfExposer{},
-		&BatteryCirculatorFanDeviceCommandSetWindSpeedIfExposer{},
+		&CirculatorFanDeviceCommandSetNightLightModeIfExposer{},
+		&CirculatorFanDeviceCommandSetWindModeIfExposer{},
+		&CirculatorFanDeviceCommandSetWindSpeedIfExposer{},
 	}
 }
 
 // ExecCommand sends a command to the BatteryCirculatorFanDevice
 func (device *BatteryCirculatorFanDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
-	var parameter BatteryCirculatorFanDeviceCommandParameter
+	var parameter CirculatorFanDeviceCommandParameter
 	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
@@ -1207,5 +1207,33 @@ func (device *BatteryCirculatorFanDevice) ExecCommand(jsonString string) (*Commo
 
 // GetCommandParameterJSONSchema returns the JSON schema for the BatteryCirculatorFanDevice command parameter
 func (device *BatteryCirculatorFanDevice) GetCommandParameterJSONSchema() (string, error) {
-	return reflectJSONSchema(BatteryCirculatorFanDeviceCommandParameter{})
+	return reflectJSONSchema(CirculatorFanDeviceCommandParameter{})
+}
+
+// ExecCommand sends a command to the CirculatorFanDevice
+func (device *CirculatorFanDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter CirculatorFanDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetNightLightMode":
+		return device.SetNightLightMode(CirculatorNightLightMode(parameter.NightLight))
+	case "SetWindMode":
+		return device.SetWindMode(CirculatorWindMode(parameter.WindMode))
+	case "SetWindSpeed":
+		return device.SetWindSpeed(parameter.WindSpeed)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the CirculatorFanDevice command parameter
+func (device *CirculatorFanDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(CirculatorFanDeviceCommandParameter{})
 }

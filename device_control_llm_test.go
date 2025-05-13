@@ -1983,3 +1983,68 @@ func Test_BatteryCirculatorFanDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_CirculatorFanDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.CirculatorFanDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_CirculatorFanDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetNightLightMode(off)",
+			expectedBody: `{"commandType": "command","command": "setNightLightMode","parameter": "off"}`,
+			parameter:    `{"command":"SetNightLightMode","nightLight":"off"}`,
+		},
+		{
+			name:         "SetWindMode(direct)",
+			expectedBody: `{"commandType": "command","command": "setWindMode","parameter": "direct"}`,
+			parameter:    `{"command":"SetWindMode","windMode":"direct"}`,
+		},
+		{
+			name:         "SetWindSpeed(50)",
+			expectedBody: `{"commandType": "command","command": "setWindSpeed","parameter": "50"}`,
+			parameter:    `{"command":"SetWindSpeed","windSpeed":50}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.CirculatorFanDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
