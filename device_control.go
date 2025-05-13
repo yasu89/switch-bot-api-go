@@ -239,7 +239,7 @@ func (device *StripLightDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the StripLightDevice
 func (device *StripLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{
@@ -277,7 +277,7 @@ func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
 
 // SetBrightness sends a command to set the brightness of the ColorBulbDevice
 func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
-	if brightness < 0 || brightness > 100 {
+	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
 	request := ControlRequest{

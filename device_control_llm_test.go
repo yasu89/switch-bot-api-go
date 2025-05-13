@@ -643,3 +643,308 @@ func Test_PlugDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_StripLightDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.StripLightDevice{}
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_StripLightDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOn\"}",
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOff\"}",
+		},
+		{
+			name:         "Toggle",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"toggle\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Toggle\"}",
+		},
+		{
+			name:         "SetBrightness",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"50\"}",
+			parameter:    "{\"command\":\"SetBrightness\", \"brightness\": 50}",
+		},
+		{
+			name:         "SetColor",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColor\",\"parameter\": \"255:0:0\"}",
+			parameter:    "{\"command\":\"SetColor\", \"red\": 255, \"green\": 0, \"blue\": 0}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.StripLightDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_StripLightDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, Toggle, SetBrightness, SetColor",
+		},
+		{
+			name:         "SetBrightness(without brightness)",
+			parameter:    `{"command": "SetBrightness"}`,
+			errorContain: "Required property 'brightness' is missing",
+		},
+		{
+			name:         "SetBrightness(invalid brightness)",
+			parameter:    `{"command": "SetBrightness", "brightness": 101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SetColor(without red)",
+			parameter:    `{"command": "SetColor", "green": 0, "blue": 0}`,
+			errorContain: "Required property 'red' is missing",
+		},
+		{
+			name:         "SetColor(without green)",
+			parameter:    `{"command": "SetColor", "red": 255, "blue": 0}`,
+			errorContain: "Required property 'green' is missing",
+		},
+		{
+			name:         "SetColor(without blue)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 0}`,
+			errorContain: "Required property 'blue' is missing",
+		},
+		{
+			name:         "SetColor(invalid red)",
+			parameter:    `{"command": "SetColor", "red": 256, "green": 0, "blue": 0}`,
+			errorContain: "256 should be at most 255",
+		},
+		{
+			name:         "SetColor(invalid green)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 256, "blue": 0}`,
+			errorContain: "256 should be at most 255",
+		},
+		{
+			name:         "SetColor(invalid blue)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 0, "blue": 256}`,
+			errorContain: "256 should be at most 255",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.StripLightDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
+
+func Test_ColorBulbDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.ColorBulbDevice{}
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_ColorBulbDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOn\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOn\"}",
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"turnOff\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"TurnOff\"}",
+		},
+		{
+			name:         "Toggle",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"toggle\",\"parameter\": \"default\"}",
+			parameter:    "{\"command\":\"Toggle\"}",
+		},
+		{
+			name:         "SetBrightness",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setBrightness\",\"parameter\": \"50\"}",
+			parameter:    "{\"command\":\"SetBrightness\", \"brightness\": 50}",
+		},
+		{
+			name:         "SetColor",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColor\",\"parameter\": \"255:0:0\"}",
+			parameter:    "{\"command\":\"SetColor\", \"red\": 255, \"green\": 0, \"blue\": 0}",
+		},
+		{
+			name:         "SetColorTemperature",
+			expectedBody: "{\"commandType\": \"command\",\"command\": \"setColorTemperature\",\"parameter\": \"3000\"}",
+			parameter:    "{\"command\":\"SetColorTemperature\", \"colorTemperature\": 3000}",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.ColorBulbDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, Toggle, SetBrightness, SetColor, SetColorTemperature",
+		},
+		{
+			name:         "SetBrightness(without brightness)",
+			parameter:    `{"command": "SetBrightness"}`,
+			errorContain: "Required property 'brightness' is missing",
+		},
+		{
+			name:         "SetBrightness(invalid brightness)",
+			parameter:    `{"command": "SetBrightness", "brightness": 101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SetBrightness(too low brightness)",
+			parameter:    `{"command": "SetBrightness", "brightness": 0}`,
+			errorContain: "0 should be at least 1",
+		},
+		{
+			name:         "SetColor(without red)",
+			parameter:    `{"command": "SetColor", "green": 0, "blue": 0}`,
+			errorContain: "Required property 'red' is missing",
+		},
+		{
+			name:         "SetColor(without green)",
+			parameter:    `{"command": "SetColor", "red": 255, "blue": 0}`,
+			errorContain: "Required property 'green' is missing",
+		},
+		{
+			name:         "SetColor(without blue)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 0}`,
+			errorContain: "Required property 'blue' is missing",
+		},
+		{
+			name:         "SetColor(invalid red)",
+			parameter:    `{"command": "SetColor", "red": 256, "green": 0, "blue": 0}`,
+			errorContain: "256 should be at most 255",
+		},
+		{
+			name:         "SetColor(invalid green)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 256, "blue": 0}`,
+			errorContain: "256 should be at most 255",
+		},
+		{
+			name:         "SetColor(invalid blue)",
+			parameter:    `{"command": "SetColor", "red": 255, "green": 0, "blue": 256}`,
+			errorContain: "256 should be at most 255",
+		},
+		{
+			name:         "SetColorTemperature(without colorTemperature)",
+			parameter:    `{"command": "SetColorTemperature"}`,
+			errorContain: "Required property 'colorTemperature' is missing",
+		},
+		{
+			name:         "SetColorTemperature(too low colorTemperature)",
+			parameter:    `{"command": "SetColorTemperature", "colorTemperature": 2699}`,
+			errorContain: "2699 should be at least 2700",
+		},
+		{
+			name:         "SetColorTemperature(too high colorTemperature)",
+			parameter:    `{"command": "SetColorTemperature", "colorTemperature": 6501}`,
+			errorContain: "6501 should be at most 6500",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.ColorBulbDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
