@@ -1476,3 +1476,47 @@ func (device *InfraredRemoteTVDevice) ExecCommand(jsonString string) (*CommonRes
 func (device *InfraredRemoteTVDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(InfraredRemoteTVDeviceCommandParameter{})
 }
+
+// InfraredRemoteDvdPlayerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteDvdPlayerDevice
+type InfraredRemoteDvdPlayerDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetMute,FastForward,Rewind,Next,Previous,Pause,Play,Stop" description:"TurnOn:turn on the DVD player, TurnOff:turn off the DVD player, SetMute:mute/unmute, FastForward:fast forward, Rewind:rewind, Next:next track, Previous:previous track, Pause:pause, Play:start, Stop:stop" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the InfraredRemoteDvdPlayerDevice
+func (device *InfraredRemoteDvdPlayerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter InfraredRemoteDvdPlayerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	case "SetMute":
+		return device.SetMute()
+	case "FastForward":
+		return device.FastForward()
+	case "Rewind":
+		return device.Rewind()
+	case "Next":
+		return device.Next()
+	case "Previous":
+		return device.Previous()
+	case "Pause":
+		return device.Pause()
+	case "Play":
+		return device.Play()
+	case "Stop":
+		return device.Stop()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the InfraredRemoteDvdPlayerDevice command parameter
+func (device *InfraredRemoteDvdPlayerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(InfraredRemoteDvdPlayerDeviceCommandParameter{})
+}

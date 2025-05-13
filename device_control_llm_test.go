@@ -2591,3 +2591,123 @@ func Test_InfraredRemoteTVDeviceExecCommandInvalid(t *testing.T) {
 		})
 	}
 }
+
+func Test_InfraredRemoteDvdPlayerDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.InfraredRemoteDvdPlayerDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_InfraredRemoteDvdPlayerDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+		{
+			name:         "SetMute",
+			expectedBody: `{"commandType": "command","command": "setMute","parameter": "default"}`,
+			parameter:    `{"command":"SetMute"}`,
+		},
+		{
+			name:         "FastForward",
+			expectedBody: `{"commandType": "command","command": "fastForward","parameter": "default"}`,
+			parameter:    `{"command":"FastForward"}`,
+		},
+		{
+			name:         "Rewind",
+			expectedBody: `{"commandType": "command","command": "Rewind","parameter": "default"}`,
+			parameter:    `{"command":"Rewind"}`,
+		},
+		{
+			name:         "Next",
+			expectedBody: `{"commandType": "command","command": "Next","parameter": "default"}`,
+			parameter:    `{"command":"Next"}`,
+		},
+		{
+			name:         "Previous",
+			expectedBody: `{"commandType": "command","command": "Previous","parameter": "default"}`,
+			parameter:    `{"command":"Previous"}`,
+		},
+		{
+			name:         "Pause",
+			expectedBody: `{"commandType": "command","command": "Pause","parameter": "default"}`,
+			parameter:    `{"command":"Pause"}`,
+		},
+		{
+			name:         "Play",
+			expectedBody: `{"commandType": "command","command": "Play","parameter": "default"}`,
+			parameter:    `{"command":"Play"}`,
+		},
+		{
+			name:         "Stop",
+			expectedBody: `{"commandType": "command","command": "Stop","parameter": "default"}`,
+			parameter:    `{"command":"Stop"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteDvdPlayerDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_InfraredRemoteDvdPlayerDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "InvalidCommand",
+			parameter:    `{"command":"InvalidCommand"}`,
+			errorContain: `Value InvalidCommand should be one of the allowed values`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.InfraredRemoteDvdPlayerDevice{
+				InfraredRemoteDevice: switchbot.InfraredRemoteDevice{
+					Client:   client,
+					DeviceID: "ABCDEF123456",
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
+		})
+	}
+}
