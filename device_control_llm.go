@@ -644,3 +644,138 @@ func (device *RobotVacuumCleanerDevice) ExecCommand(jsonString string) (*CommonR
 func (device *RobotVacuumCleanerDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(RobotVacuumCleanerDeviceCommandParameter{})
 }
+
+// RobotVacuumCleanerS10DeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerS10Device
+type RobotVacuumCleanerS10DeviceCommandParameter struct {
+	Command    string   `json:"command" title:"Command" enum:"StartClean,AddWaterForHumi,Pause,Dock,SetVolume,SelfClean,ChangeParam" description:"StartClean:start cleaning, AddWaterForHumi:refill the humidifier, Pause:pause cleaning, Dock:return to charging dock, SetVolume:set volume level, SelfClean:start self-cleaning, ChangeParam:change cleaning parameters" required:"true"`
+	Action     string   `json:"action" title:"Action" enum:"sweep,sweep_mop" description:"sweep:sweep only, sweep_mop:sweep and mop"`
+	FanLevel   int      `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"4" description:"Fan level (1-4)"`
+	WaterLevel int      `json:"waterLevel" title:"WaterLevel" minimum:"1" maximum:"2" description:"Water level (1-2)"`
+	Times      int      `json:"times" title:"Times" minimum:"1" maximum:"2639999" description:"the number of cycles"`
+	Volume     int      `json:"volume" title:"Volume" minimum:"0" maximum:"100" description:"Volume level (0-100)"`
+	Mode       int      `json:"mode" title:"Mode" minimum:"1" maximum:"3" description:"Self-cleaning mode: 1:wash mop, 2:dry, 3:terminate"`
+	_          struct{} `additionalProperties:"false"`
+}
+
+// RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer represents the StartClean command parameters
+type RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for StartClean
+func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"StartClean" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for StartClean
+func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Action     string `json:"action" required:"true"`
+		FanLevel   int    `json:"fanLevel" required:"true"`
+		WaterLevel int    `json:"waterLevel" required:"true"`
+		Times      int    `json:"times" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer represents the SetVolume command parameters
+type RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SetVolume
+func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetVolume" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SetVolume
+func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Volume int `json:"volume" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer represents the SelfClean command parameters
+type RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SelfClean
+func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SelfClean" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SelfClean
+func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode int `json:"mode" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer represents the ChangeParam command parameters
+type RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"ChangeParam" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		FanLevel   int `json:"fanLevel" required:"true"`
+		WaterLevel int `json:"waterLevel" required:"true"`
+		Times      int `json:"times" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerS10Device command parameter
+func (parameter *RobotVacuumCleanerS10DeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer{},
+		&RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer{},
+		&RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer{},
+		&RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RobotVacuumCleanerS10Device
+func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerS10DeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "StartClean":
+		startParam, err := NewStartFloorCleaningParam(FloorCleaningAction(parameter.Action), parameter.FanLevel, parameter.WaterLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.StartClean(startParam)
+	case "AddWaterForHumi":
+		return device.AddWaterForHumi()
+	case "Pause":
+		return device.Pause()
+	case "Dock":
+		return device.Dock()
+	case "SetVolume":
+		return device.SetVolume(parameter.Volume)
+	case "SelfClean":
+		return device.SelfClean(SelfCleaningMode(parameter.Mode))
+	case "ChangeParam":
+		floorParam, err := NewFloorCleaningParam(parameter.FanLevel, parameter.WaterLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.ChangeParam(floorParam)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerS10Device command parameter
+func (device *RobotVacuumCleanerS10Device) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerS10DeviceCommandParameter{})
+}

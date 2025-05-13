@@ -1004,7 +1004,8 @@ func Test_RobotVacuumCleanerDeviceExecCommand(t *testing.T) {
 
 			response, err := device.ExecCommand(testData.parameter)
 			assert.NoError(t, err)
-			assert.NotNil(t, response)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
 }
@@ -1040,6 +1041,193 @@ func Test_RobotVacuumCleanerDeviceExecCommandInvalid(t *testing.T) {
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 			device := &switchbot.RobotVacuumCleanerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := device.ExecCommand(testData.parameter)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContain)
+		})
+	}
+}
+
+func Test_RobotVacuumCleanerS10DeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RobotVacuumCleanerS10Device{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "StartClean",
+			expectedBody: `{"commandType": "command","command": "startClean","parameter": {"action":"sweep_mop","param":{"fanLevel":2,"waterLevel":1,"times":1}}}`,
+			parameter:    `{"command":"StartClean","action":"sweep_mop","fanLevel":2,"waterLevel":1,"times":1}`,
+		},
+		{
+			name:         "AddWaterForHumi",
+			expectedBody: `{"commandType": "command","command": "addWaterForHumi","parameter": "default"}`,
+			parameter:    `{"command":"AddWaterForHumi"}`,
+		},
+		{
+			name:         "Pause",
+			expectedBody: `{"commandType": "command","command": "pause","parameter": "default"}`,
+			parameter:    `{"command":"Pause"}`,
+		},
+		{
+			name:         "Dock",
+			expectedBody: `{"commandType": "command","command": "dock","parameter": "default"}`,
+			parameter:    `{"command":"Dock"}`,
+		},
+		{
+			name:         "SetVolume",
+			expectedBody: `{"commandType": "command","command": "setVolume","parameter": "50"}`,
+			parameter:    `{"command":"SetVolume","volume":50}`,
+		},
+		{
+			name:         "SelfClean",
+			expectedBody: `{"commandType": "command","command": "selfClean","parameter": "1"}`,
+			parameter:    `{"command":"SelfClean","mode":1}`,
+		},
+		{
+			name:         "ChangeParam",
+			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}`,
+			parameter:    `{"command":"ChangeParam","fanLevel":3,"waterLevel":2,"times":100}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerS10Device{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: StartClean, AddWaterForHumi, Pause, Dock, SetVolume, SelfClean, ChangeParam",
+		},
+		{
+			name:         "StartClean(without action)",
+			parameter:    `{"command":"StartClean","fanLevel":2,"waterLevel":1,"times":1}`,
+			errorContain: "Required property 'action' is missing",
+		},
+		{
+			name:         "StartClean(without fanLevel)",
+			parameter:    `{"command":"StartClean","action":"sweep","waterLevel":1,"times":1}`,
+			errorContain: "Required property 'fanLevel' is missing",
+		},
+		{
+			name:         "StartClean(without waterLevel)",
+			parameter:    `{"command":"StartClean","action":"sweep","fanLevel":2,"times":1}`,
+			errorContain: "Required property 'waterLevel' is missing",
+		},
+		{
+			name:         "StartClean(without times)",
+			parameter:    `{"command":"StartClean","action":"sweep","fanLevel":2,"waterLevel":1}`,
+			errorContain: "Required property 'times' is missing",
+		},
+		{
+			name:         "StartClean(invalid action)",
+			parameter:    `{"command":"StartClean","action":"invalid","fanLevel":2,"waterLevel":1,"times":1}`,
+			errorContain: "Value invalid should be one of the allowed values: sweep, sweep_mop",
+		},
+		{
+			name:         "StartClean(invalid fanLevel)",
+			parameter:    `{"command":"StartClean","action":"sweep","fanLevel":5,"waterLevel":1,"times":1}`,
+			errorContain: "5 should be at most 4",
+		},
+		{
+			name:         "StartClean(invalid waterLevel)",
+			parameter:    `{"command":"StartClean","action":"sweep","fanLevel":2,"waterLevel":3,"times":1}`,
+			errorContain: "3 should be at most 2",
+		},
+		{
+			name:         "StartClean(invalid times)",
+			parameter:    `{"command":"StartClean","action":"sweep","fanLevel":2,"waterLevel":1,"times":2640000}`,
+			errorContain: "2640000 should be at most 2639999",
+		},
+		{
+			name:         "SetVolume(without volume)",
+			parameter:    `{"command":"SetVolume"}`,
+			errorContain: "Required property 'volume' is missing",
+		},
+		{
+			name:         "SetVolume(invalid volume)",
+			parameter:    `{"command":"SetVolume","volume":101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "SelfClean(without mode)",
+			parameter:    `{"command":"SelfClean"}`,
+			errorContain: "Required property 'mode' is missing",
+		},
+		{
+			name:         "SelfClean(invalid mode)",
+			parameter:    `{"command":"SelfClean","mode":4}`,
+			errorContain: "4 should be at most 3",
+		},
+		{
+			name:         "ChangeParam(without fanLevel)",
+			parameter:    `{"command":"ChangeParam","waterLevel":1,"times":1}`,
+			errorContain: "Required property 'fanLevel' is missing",
+		},
+		{
+			name:         "ChangeParam(without waterLevel)",
+			parameter:    `{"command":"ChangeParam","fanLevel":2,"times":1}`,
+			errorContain: "Required property 'waterLevel' is missing",
+		},
+		{
+			name:         "ChangeParam(without times)",
+			parameter:    `{"command":"ChangeParam","fanLevel":2,"waterLevel":1}`,
+			errorContain: "Required property 'times' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerS10Device{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
