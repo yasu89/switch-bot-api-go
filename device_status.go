@@ -114,6 +114,39 @@ func (device *Hub2Device) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
+type Hub3DeviceStatusBody struct {
+	CommonDevice
+	Temperature  float64 `json:"temperature"`
+	LightLevel   int     `json:"lightLevel"`
+	Version      string  `json:"version"`
+	Humidity     int     `json:"humidity"`
+	MoveDetected bool    `json:"moveDetected"`
+	Online       string  `json:"online"`
+}
+
+type Hub3DeviceStatusResponse struct {
+	CommonResponse
+	Body *Hub3DeviceStatusBody `json:"body"`
+}
+
+func (device *Hub3Device) GetStatus() (*Hub3DeviceStatusResponse, error) {
+	response := &Hub3DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *Hub3Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type MeterDeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`

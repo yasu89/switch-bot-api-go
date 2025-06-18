@@ -51,7 +51,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Hub Plus                              |   ✅   |    -    |   -    |      |
 | Hub Mini                              |   ✅   |    -    |   -    |  ✅   |
 | Hub 2                                 |   ✅   |    ✅    |   -    |  ✅   |
-| Hub 3                                 |   ❌   |    ❌    |   ❌    |      |
+| Hub 3                                 |   ✅   |    ✅    |   -    |      |
 | Meter                                 |   ✅   |    ✅    |   -    |  ✅   |
 | Meter Plus                            |   ✅   |    ✅    |   -    |      |
 | Outdoor Meter                         |   ✅   |    ✅    |   -    |      |

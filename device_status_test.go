@@ -165,6 +165,60 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assertBody(t, anyStatus, expectedBody)
 	})
 
+	t.Run("Hub3Device", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":     "ABCDEF123456",
+			"deviceType":   "Hub 3",
+			"hubDeviceId":  "123456789",
+			"temperature":  23.5,
+			"lightLevel":   400,
+			"version":      "1.3",
+			"humidity":     65,
+			"moveDetected": true,
+			"online":       "online",
+		})
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		device := &switchbot.Hub3Device{
+			CommonDeviceListItem: switchbot.CommonDeviceListItem{
+				CommonDevice: switchbot.CommonDevice{
+					DeviceID: "ABCDEF123456",
+				},
+				Client: client,
+			},
+		}
+		status, err := device.GetStatus()
+		assert.NoError(t, err)
+
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
+
+		expectedBody := &switchbot.Hub3DeviceStatusBody{
+			CommonDevice: switchbot.CommonDevice{
+				DeviceID:    "ABCDEF123456",
+				DeviceType:  "Hub 3",
+				HubDeviceId: "123456789",
+			},
+			Temperature:  23.5,
+			LightLevel:   400,
+			Version:      "1.3",
+			Humidity:     65,
+			MoveDetected: true,
+			Online:       "online",
+		}
+
+		assertResponse(t, &status.CommonResponse)
+		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		assert.NoError(t, err)
+		assertBody(t, anyStatus, expectedBody)
+	})
+
 	t.Run("MeterDevice", func(t *testing.T) {
 		switchBotMock := helpers.NewSwitchBotMock(t)
 		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{

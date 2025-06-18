@@ -57,6 +57,10 @@ type Hub2Device struct {
 	CommonDeviceListItem
 }
 
+type Hub3Device struct {
+	CommonDeviceListItem
+}
+
 type MeterDevice struct {
 	CommonDeviceListItem
 }
@@ -317,6 +321,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Hub 2":
 				parsed = &Hub2Device{}
 				parsed.(*Hub2Device).Client = client
+			case "Hub 3":
+				parsed = &Hub3Device{}
+				parsed.(*Hub3Device).Client = client
 			case "Meter", "MeterPlus", "WoIOSensor", "MeterPro":
 				parsed = &MeterDevice{}
 				parsed.(*MeterDevice).Client = client
