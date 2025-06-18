@@ -41,6 +41,22 @@ This is a Go library for the SwitchBot API v1.1 that provides type-safe access t
 - **Dynamic Type Resolution**: The `GetDevicesResponseParser` dynamically creates appropriate device structs based on `deviceType` and `remoteType` fields
 - **Client Injection**: All device structs contain a `*Client` field for API operations
 - **Response Parsing**: Custom response parsers handle the complex JSON unmarshaling for different device types
+- **Shared Device Support**: Some devices with identical functionality share the same struct (e.g., Lock Ultra uses LockDevice, S10/S20 robots use RobotVacuumCleanerSDevice)
+
+### Implementation Guidelines
+
+**API Documentation Compliance**:
+- **ALWAYS** refer to the official SwitchBot API documentation at https://raw.githubusercontent.com/OpenWonderLabs/SwitchBotAPI/main/README.md when implementing new device support
+- Device status fields, command parameters, and data types must match the official API specification exactly
+- When adding new devices, verify the device type strings and supported operations from the official documentation
+- Status response structures should reflect the exact JSON schema provided in the API docs
+
+**Device Implementation Process**:
+1. Check the official API documentation for device specifications
+2. Verify device type strings and available commands
+3. Implement status structures with correct field names and data types
+4. Add device to the parser with the exact `deviceType` string from the API
+5. Update README.md and README_ja.md to reflect support status
 
 ### Authentication
 The library uses SwitchBot API v1.1 authentication requiring:
