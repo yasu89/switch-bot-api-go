@@ -330,7 +330,7 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "MeterPro(CO2)":
 				parsed = &MeterProCo2Device{}
 				parsed.(*MeterProCo2Device).Client = client
-			case "Smart Lock", "Smart Lock Pro":
+			case "Smart Lock", "Smart Lock Pro", "Smart Lock Ultra":
 				parsed = &LockDevice{}
 				parsed.(*LockDevice).Client = client
 			case "Keypad", "Keypad Touch":

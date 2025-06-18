@@ -59,7 +59,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Meter Pro CO2                         |   ✅   |    ✅    |   -    |      |
 | Lock                                  |   ✅   |    ✅    |   ✅    |      |
 | Lock Pro                              |   ✅   |    ✅    |   ✅    |      |
-| Lock Ultra                            |   ❌   |    ❌    |   ❌    |      |
+| Lock Ultra                            |   ✅   |    ✅    |   ✅    |      |
 | Keypad                                |   ✅   |    ✅    |   ✅    |      |
 | Keypad Touch                          |   ✅   |    ✅    |   ✅    |      |
 | Remote                                |   ✅   |    -    |   -    |      |
