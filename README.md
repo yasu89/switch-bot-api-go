@@ -37,63 +37,75 @@ This design promotes both safety and simplicity for users.
 $ go get github.com/yasu89/switch-bot-api-go
 ```
 
-## Current Support Status (2025/04/12)
+## Current Support Status (2025/06/18)
 
 - A ✅ in the “Verification” column indicates that the feature has been tested and verified using an actual device.
 
 ### Physical Devices
 
-| Device                               | Struct Definition | Get Status | Send Command | Verification |
-|:-------------------------------------|:-----------------:|:----------:|:------------:|:------------:|
-| Bot                                  |         ✅         |     ✅      |      ✅       |      ✅       |
-| Curtain                              |         ✅         |     ✅      |      ✅       |              |
-| Curtain 3                            |         ✅         |     ✅      |      ✅       |              |
-| Hub                                  |        ✅️         |     -      |      -       |              |
-| Hub Plus                             |         ✅         |     -      |      -       |              |
-| Hub Mini                             |         ✅         |     -      |      -       |      ✅       |
-| Hub 2                                |         ✅         |     ✅      |      -       |      ✅       |
-| Meter                                |         ✅         |     ✅      |      -       |      ✅       |
-| Meter Plus                           |         ✅         |     ✅      |      -       |              |
-| Outdoor Meter                        |         ✅         |     ✅      |      -       |              |
-| Meter Pro                            |         ✅         |     ✅      |      -       |              |
-| Meter Pro CO2                        |         ✅         |     ✅      |      -       |              |
-| Lock                                 |         ✅         |     ✅      |      ✅       |              |
-| Lock Pro                             |         ✅         |     ✅      |      ✅       |              |
-| Keypad                               |         ✅         |     ✅      |      ✅       |              |
-| Keypad Touch                         |         ✅         |     ✅      |      ✅       |              |
-| Remote                               |         ✅         |     -      |      -       |              |
-| Motion Sensor                        |         ✅         |     ✅      |      -       |              |
-| Contact Sensor                       |         ✅         |     ✅      |      -       |              |
-| Water Leak Detector                  |         ✅         |     ✅      |      -       |              |
-| Ceiling Light                        |         ✅         |     ✅      |      ✅       |              |
-| Ceiling Light Pro                    |         ✅         |     ✅      |      ✅       |              |
-| Plug Mini (US)                       |         ✅         |     ✅      |      ✅       |              |
-| Plug Mini (JP)                       |         ✅         |     ✅      |      ✅       |              |
-| Plug                                 |         ✅         |     ✅      |      ✅       |              |
-| Strip Light                          |         ✅         |     ✅      |      ✅       |              |
-| Color Bulb                           |         ✅         |     ✅      |      ✅       |              |
-| Robot Vacuum Cleaner S1              |         ✅         |     ✅      |      ✅       |              |
-| Robot Vacuum Cleaner S1 Plus         |         ✅         |     ✅      |      ✅       |              |
-| Mini Robot Vacuum K10+               |         ✅         |     ✅      |      ✅       |              |
-| Mini Robot Vacuum K10+ Pro           |         ✅         |     ✅      |      ✅       |              |
-| K10+ Pro Combo                       |         ✅         |     ✅      |      ✅       |              |
-| Floor Cleaning Robot S10             |         ✅         |     ✅      |      ✅       |              |
-| Humidifier                           |         ✅         |     ✅      |      ✅       |              |
-| Evaporative Humidifier               |         ✅         |     ✅      |      ✅       |              |
-| Evaporative Humidifier (Auto-refill) |         ✅         |     ✅      |      ✅       |              |
-| Air Purifier VOC                     |         ✅         |     ✅      |      ✅       |              |
-| Air Purifier Table VOC               |         ✅         |     ✅      |      ✅       |              |
-| Air Purifier PM2.5                   |         ✅         |     ✅      |      ✅       |              |
-| Air Purifier Table PM2.5             |         ✅         |     ✅      |      ✅       |              |
-| Indoor Cam                           |         ✅         |     -      |      -       |              |
-| Pan/Tilt Cam                         |         ✅         |     -      |      -       |              |
-| Pan/Tilt Cam 2K                      |         ✅         |     -      |      -       |              |
-| Blind Tilt                           |         ✅         |     ✅      |      ✅       |              |
-| Battery Circulator Fan               |         ✅         |     ✅      |      ✅       |              |
-| Circulator Fan                       |         ✅         |     ✅      |      ✅       |              |
-| Roller Shade                         |         ✅         |     ✅      |      ✅       |              |
-| Relay Switch 1PM                     |         ✅         |     ✅      |      ✅       |              |
-| Relay Switch 1                       |         ✅         |     ✅      |      ✅       |              |
+| Device                                | Struct Definition | Get Status | Send Command | Verification |
+|:--------------------------------------|:-----------------:|:----------:|:------------:|:------------:|
+| Bot                                   |         ✅         |     ✅      |      ✅       |      ✅       |
+| Curtain                               |         ✅         |     ✅      |      ✅       |              |
+| Curtain 3                             |         ✅         |     ✅      |      ✅       |              |
+| Hub                                   |        ✅️         |     -      |      -       |              |
+| Hub Plus                              |         ✅         |     -      |      -       |              |
+| Hub Mini                              |         ✅         |     -      |      -       |      ✅       |
+| Hub 2                                 |         ✅         |     ✅      |      -       |      ✅       |
+| Hub 3                                 |         ❌         |     ❌      |      ❌       |              |
+| Meter                                 |         ✅         |     ✅      |      -       |      ✅       |
+| Meter Plus                            |         ✅         |     ✅      |      -       |              |
+| Outdoor Meter                         |         ✅         |     ✅      |      -       |              |
+| Meter Pro                             |         ✅         |     ✅      |      -       |              |
+| Meter Pro CO2                         |         ✅         |     ✅      |      -       |              |
+| Lock                                  |         ✅         |     ✅      |      ✅       |              |
+| Lock Pro                              |         ✅         |     ✅      |      ✅       |              |
+| Lock Ultra                            |         ❌         |     ❌      |      ❌       |              |
+| Keypad                                |         ✅         |     ✅      |      ✅       |              |
+| Keypad Touch                          |         ✅         |     ✅      |      ✅       |              |
+| Remote                                |         ✅         |     -      |      -       |              |
+| Motion Sensor                         |         ✅         |     ✅      |      -       |              |
+| Contact Sensor                        |         ✅         |     ✅      |      -       |              |
+| Water Leak Detector                   |         ✅         |     ✅      |      -       |              |
+| Ceiling Light                         |         ✅         |     ✅      |      ✅       |              |
+| Ceiling Light Pro                     |         ✅         |     ✅      |      ✅       |              |
+| Plug Mini (US)                        |         ✅         |     ✅      |      ✅       |              |
+| Plug Mini (JP)                        |         ✅         |     ✅      |      ✅       |              |
+| Plug                                  |         ✅         |     ✅      |      ✅       |              |
+| Strip Light                           |         ✅         |     ✅      |      ✅       |              |
+| Color Bulb                            |         ✅         |     ✅      |      ✅       |              |
+| Robot Vacuum Cleaner S1               |         ✅         |     ✅      |      ✅       |              |
+| Robot Vacuum Cleaner S1 Plus          |         ✅         |     ✅      |      ✅       |              |
+| Mini Robot Vacuum K10+                |         ✅         |     ✅      |      ✅       |              |
+| Mini Robot Vacuum K10+ Pro            |         ✅         |     ✅      |      ✅       |              |
+| K10+ Pro Combo                        |         ✅         |     ✅      |      ✅       |              |
+| Floor Cleaning Robot S10              |         ✅         |     ✅      |      ✅       |              |
+| Floor Cleaning Robot S20              |         ❌         |     ❌      |      ❌       |              |
+| Multitasking Household Robot K20+ Pro |         ❌         |     ❌      |      ❌       |              |
+| Humidifier                            |         ✅         |     ✅      |      ✅       |              |
+| Evaporative Humidifier                |         ✅         |     ✅      |      ✅       |              |
+| Evaporative Humidifier (Auto-refill)  |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier VOC                      |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier Table VOC                |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier PM2.5                    |         ✅         |     ✅      |      ✅       |              |
+| Air Purifier Table PM2.5              |         ✅         |     ✅      |      ✅       |              |
+| Indoor Cam                            |         ✅         |     -      |      -       |              |
+| Pan/Tilt Cam                          |         ✅         |     -      |      -       |              |
+| Pan/Tilt Cam 2K                       |         ✅         |     -      |      -       |              |
+| Blind Tilt                            |         ✅         |     ✅      |      ✅       |              |
+| Battery Circulator Fan                |         ✅         |     ✅      |      ✅       |              |
+| Circulator Fan                        |         ✅         |     ✅      |      ✅       |              |
+| Roller Shade                          |         ✅         |     ✅      |      ✅       |              |
+| Relay Switch 1PM                      |         ✅         |     ✅      |      ✅       |              |
+| Relay Switch 1                        |         ✅         |     ✅      |      ✅       |              |
+| Relay Switch 2PM                      |         ❌         |     ❌      |      ❌       |              |
+| Garage Door Opener                    |         ❌         |     ❌      |      ❌       |              |
+| Floor Lamp                            |         ❌         |     ❌      |      ❌       |              |
+| LED　Strip Light 3                     |         ❌         |     ❌      |      ❌       |              |
+| Lock Lite                             |         ❌         |     ❌      |      ❌       |              |
+| Video Doorbell                        |         ❌         |     ❌      |      ❌       |              |
+| Keypad Vision                         |         ❌         |     ❌      |      ❌       |              |
+
 
 ### Virtual Infrared Remote Devices
 
