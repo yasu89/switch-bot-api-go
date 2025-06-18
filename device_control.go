@@ -400,8 +400,8 @@ func NewFloorCleaningParam(fanLevel int, waterLevel int, times int) (*FloorClean
 	}, nil
 }
 
-// StartClean sends a command to start cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam *StartFloorCleaningParam) (*CommonResponse, error) {
+// StartClean sends a command to start cleaning the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) StartClean(startFloorCleaningParam *StartFloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "startClean",
@@ -410,23 +410,23 @@ func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam *S
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// AddWaterForHumi sends a command to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) AddWaterForHumi() (*CommonResponse, error) {
+// AddWaterForHumi sends a command to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) AddWaterForHumi() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "addWaterForHumi")
 }
 
-// Pause sends a command to pause the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) Pause() (*CommonResponse, error) {
+// Pause sends a command to pause the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) Pause() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "pause")
 }
 
-// Dock sends a command to return the RobotVacuumCleanerS10Device to its charging dock.
-func (device *RobotVacuumCleanerS10Device) Dock() (*CommonResponse, error) {
+// Dock sends a command to return the RobotVacuumCleanerSDevice to its charging dock.
+func (device *RobotVacuumCleanerSDevice) Dock() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "dock")
 }
 
-// SetVolume sends a command to set the volume of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SetVolume(volume int) (*CommonResponse, error) {
+// SetVolume sends a command to set the volume of the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) SetVolume(volume int) (*CommonResponse, error) {
 	if volume < 0 || volume > 100 {
 		return nil, fmt.Errorf("invalid volume: %d", volume)
 	}
@@ -446,8 +446,8 @@ const (
 	TerminateSelfCleaningMode = SelfCleaningMode(3)
 )
 
-// SelfClean sends a command to start self-cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*CommonResponse, error) {
+// SelfClean sends a command to start self-cleaning the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) SelfClean(mode SelfCleaningMode) (*CommonResponse, error) {
 	if mode < 1 || mode > 3 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
@@ -459,8 +459,8 @@ func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*Co
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
+// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "changeParam",

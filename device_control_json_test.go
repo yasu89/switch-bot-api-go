@@ -1057,15 +1057,15 @@ func Test_RobotVacuumCleanerDeviceExecCommandInvalid(t *testing.T) {
 	}
 }
 
-func Test_RobotVacuumCleanerS10DeviceGetCommandParameterJSONSchema(t *testing.T) {
-	device := &switchbot.RobotVacuumCleanerS10Device{}
+func Test_RobotVacuumCleanerSDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RobotVacuumCleanerSDevice{}
 
 	description, err := device.GetCommandParameterJSONSchema()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, description)
 }
 
-func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
+func Test_RobotVacuumCleanerSDeviceExecCommand(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
@@ -1116,7 +1116,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -1133,7 +1133,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 	}
 }
 
-func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
+func Test_RobotVacuumCleanerSDeviceExecCommandInvalid(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		parameter    string
@@ -1228,7 +1228,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",

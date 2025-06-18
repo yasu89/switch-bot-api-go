@@ -412,16 +412,16 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 	}
 }
 
-func TestRobotVacuumCleanerS10Device(t *testing.T) {
+func TestRobotVacuumCleanerSDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
-		method       func(*switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error)
+		method       func(*switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error)
 	}{
 		{
 			name:         "StartClean",
 			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"sweep","param":{"fanLevel":1,"waterLevel":2,"times":100}}}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				startFloorCleaningParam, err := switchbot.NewStartFloorCleaningParam(switchbot.FloorCleaningActionSweep, 1, 2, 100)
 				if err != nil {
 					return nil, err
@@ -432,21 +432,21 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 		{
 			name:         "SetVolume",
 			expectedBody: `{"commandType":"command","command":"setVolume","parameter":"30"}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				return device.SetVolume(30)
 			},
 		},
 		{
 			name:         "SelfClean",
 			expectedBody: `{"commandType":"command","command":"selfClean","parameter":"1"}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				return device.SelfClean(switchbot.WashMopSelfCleaningMode)
 			},
 		},
 		{
 			name:         "ChangeParam",
 			expectedBody: `{"commandType":"command","command":"changeParam","parameter":{"fanLevel":2,"waterLevel":1,"times":20000}}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				floorCleaningParam, err := switchbot.NewFloorCleaningParam(2, 1, 20000)
 				if err != nil {
 					return nil, err
@@ -464,7 +464,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",

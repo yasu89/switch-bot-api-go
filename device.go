@@ -133,7 +133,7 @@ type RobotVacuumCleanerDevice struct {
 	CommonDeviceListItem
 }
 
-type RobotVacuumCleanerS10Device struct {
+type RobotVacuumCleanerSDevice struct {
 	CommonDeviceListItem
 }
 
@@ -366,9 +366,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro", "Robot Vacuum Cleaner K10+ Pro Combo":
 				parsed = &RobotVacuumCleanerDevice{}
 				parsed.(*RobotVacuumCleanerDevice).Client = client
-			case "Robot Vacuum Cleaner S10":
-				parsed = &RobotVacuumCleanerS10Device{}
-				parsed.(*RobotVacuumCleanerS10Device).Client = client
+			case "Robot Vacuum Cleaner S10", "Robot Vacuum Cleaner S20":
+				parsed = &RobotVacuumCleanerSDevice{}
+				parsed.(*RobotVacuumCleanerSDevice).Client = client
 			case "Humidifier":
 				parsed = &HumidifierDevice{}
 				parsed.(*HumidifierDevice).Client = client

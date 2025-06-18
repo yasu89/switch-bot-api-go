@@ -80,7 +80,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Mini Robot Vacuum K10+ Pro            |         ✅         |     ✅      |      ✅       |              |
 | K10+ Pro Combo                        |         ✅         |     ✅      |      ✅       |              |
 | Floor Cleaning Robot S10              |         ✅         |     ✅      |      ✅       |              |
-| Floor Cleaning Robot S20              |         ❌         |     ❌      |      ❌       |              |
+| Floor Cleaning Robot S20              |         ✅         |     ✅      |      ✅       |              |
 | Multitasking Household Robot K20+ Pro |         ❌         |     ❌      |      ❌       |              |
 | Humidifier                            |         ✅         |     ✅      |      ✅       |              |
 | Evaporative Humidifier                |         ✅         |     ✅      |      ✅       |              |

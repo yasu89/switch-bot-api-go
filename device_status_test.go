@@ -865,7 +865,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assertBody(t, anyStatus, expectedBody)
 	})
 
-	t.Run("RobotVacuumCleanerS10Device", func(t *testing.T) {
+	t.Run("RobotVacuumCleanerSDevice", func(t *testing.T) {
 		switchBotMock := helpers.NewSwitchBotMock(t)
 		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
 			"deviceId":         "ABCDEF123456",
@@ -882,7 +882,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
-		device := &switchbot.RobotVacuumCleanerS10Device{
+		device := &switchbot.RobotVacuumCleanerSDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
 					DeviceID: "ABCDEF123456",
@@ -895,7 +895,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
-		expectedBody := &switchbot.RobotVacuumCleanerS10DeviceStatusBody{
+		expectedBody := &switchbot.RobotVacuumCleanerSDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
 				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Robot Vacuum Cleaner S10",

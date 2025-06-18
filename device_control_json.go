@@ -645,8 +645,8 @@ func (device *RobotVacuumCleanerDevice) GetCommandParameterJSONSchema() (string,
 	return reflectJSONSchema(RobotVacuumCleanerDeviceCommandParameter{})
 }
 
-// RobotVacuumCleanerS10DeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerS10Device
-type RobotVacuumCleanerS10DeviceCommandParameter struct {
+// RobotVacuumCleanerSDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerSDevice
+type RobotVacuumCleanerSDeviceCommandParameter struct {
 	Command    string   `json:"command" title:"Command" enum:"StartClean,AddWaterForHumi,Pause,Dock,SetVolume,SelfClean,ChangeParam" description:"StartClean:start cleaning, AddWaterForHumi:refill the humidifier, Pause:pause cleaning, Dock:return to charging dock, SetVolume:set volume level, SelfClean:start self-cleaning, ChangeParam:change cleaning parameters" required:"true"`
 	Action     string   `json:"action" title:"Action" enum:"sweep,sweep_mop" description:"sweep:sweep only, sweep_mop:sweep and mop"`
 	FanLevel   int      `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"4" description:"Fan level (1-4)"`
@@ -657,18 +657,18 @@ type RobotVacuumCleanerS10DeviceCommandParameter struct {
 	_          struct{} `additionalProperties:"false"`
 }
 
-// RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer represents the StartClean command parameters
-type RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandStartCleanIfExposer represents the StartClean command parameters
+type RobotVacuumCleanerSDeviceCommandStartCleanIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for StartClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for StartClean
+func (parameter *RobotVacuumCleanerSDeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"StartClean" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for StartClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for StartClean
+func (parameter *RobotVacuumCleanerSDeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Action     string `json:"action" required:"true"`
 		FanLevel   int    `json:"fanLevel" required:"true"`
@@ -677,52 +677,52 @@ func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSche
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer represents the SetVolume command parameters
-type RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer represents the SetVolume command parameters
+type RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SetVolume
-func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for SetVolume
+func (parameter *RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetVolume" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SetVolume
-func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for SetVolume
+func (parameter *RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Volume int `json:"volume" required:"true"`
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer represents the SelfClean command parameters
-type RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer represents the SelfClean command parameters
+type RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SelfClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for SelfClean
+func (parameter *RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SelfClean" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SelfClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for SelfClean
+func (parameter *RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Mode int `json:"mode" required:"true"`
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer represents the ChangeParam command parameters
-type RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandChangeParamIfExposer represents the ChangeParam command parameters
+type RobotVacuumCleanerSDeviceCommandChangeParamIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
-func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerSDeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"ChangeParam" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
-func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerSDeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		FanLevel   int `json:"fanLevel" required:"true"`
 		WaterLevel int `json:"waterLevel" required:"true"`
@@ -730,19 +730,19 @@ func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSch
 	}{}
 }
 
-// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerS10Device command parameter
-func (parameter *RobotVacuumCleanerS10DeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerSDevice command parameter
+func (parameter *RobotVacuumCleanerSDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		&RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandStartCleanIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandChangeParamIfExposer{},
 	}
 }
 
-// ExecCommand sends a command to the RobotVacuumCleanerS10Device
-func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*CommonResponse, error) {
-	var parameter RobotVacuumCleanerS10DeviceCommandParameter
+// ExecCommand sends a command to the RobotVacuumCleanerSDevice
+func (device *RobotVacuumCleanerSDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerSDeviceCommandParameter
 	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
@@ -775,9 +775,9 @@ func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*Comm
 	}
 }
 
-// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerS10Device command parameter
-func (device *RobotVacuumCleanerS10Device) GetCommandParameterJSONSchema() (string, error) {
-	return reflectJSONSchema(RobotVacuumCleanerS10DeviceCommandParameter{})
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerSDevice command parameter
+func (device *RobotVacuumCleanerSDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerSDeviceCommandParameter{})
 }
 
 // HumidifierDeviceCommandParameter is a struct that represents the command parameter for the HumidifierDevice

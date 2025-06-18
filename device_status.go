@@ -548,7 +548,7 @@ func (device *RobotVacuumCleanerDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
-type RobotVacuumCleanerS10DeviceStatusBody struct {
+type RobotVacuumCleanerSDeviceStatusBody struct {
 	CommonDevice
 	WorkingStatus    string `json:"workingStatus"`
 	OnlineStatus     string `json:"onlineStatus"`
@@ -557,13 +557,13 @@ type RobotVacuumCleanerS10DeviceStatusBody struct {
 	TaskType         string `json:"taskType"`
 }
 
-type RobotVacuumCleanerS10DeviceStatusResponse struct {
+type RobotVacuumCleanerSDeviceStatusResponse struct {
 	CommonResponse
-	Body *RobotVacuumCleanerS10DeviceStatusBody `json:"body"`
+	Body *RobotVacuumCleanerSDeviceStatusBody `json:"body"`
 }
 
-func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10DeviceStatusResponse, error) {
-	response := &RobotVacuumCleanerS10DeviceStatusResponse{}
+func (device *RobotVacuumCleanerSDevice) GetStatus() (*RobotVacuumCleanerSDeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerSDeviceStatusResponse{}
 	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
 	if err != nil {
 		return nil, err
@@ -572,7 +572,7 @@ func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10De
 }
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
-func (device *RobotVacuumCleanerS10Device) GetAnyStatusBody() (any, error) {
+func (device *RobotVacuumCleanerSDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err
