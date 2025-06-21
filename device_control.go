@@ -1024,6 +1024,16 @@ func validate2PMDeviceSwitchNumber(switchNumber int) error {
 	return nil
 }
 
+// TurnOn sends a command to turn on the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) TurnOn() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")
+}
+
+// TurnOff sends a command to turn off the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) TurnOff() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOff")
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")

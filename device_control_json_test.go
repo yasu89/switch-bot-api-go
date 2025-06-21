@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/yasu89/switch-bot-api-go/helpers"
-
 	"github.com/stretchr/testify/assert"
 	switchbot "github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func Test_BotDeviceGetCommandParameterJSONSchema(t *testing.T) {
@@ -2612,6 +2611,95 @@ func Test_RelaySwitch2PMDeviceExecCommandInvalid(t *testing.T) {
 			_, err := device.ExecCommand(testData.parameter)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), testData.errorContains)
+		})
+	}
+}
+
+func Test_GarageDoorOpenerDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.GarageDoorOpenerDevice{}
+
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_GarageDoorOpenerDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_GarageDoorOpenerDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name      string
+		parameter string
+		errMsg    string
+	}{
+		{
+			name:      "InvalidCommand",
+			parameter: `{"command":"InvalidCommand"}`,
+			errMsg:    "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), testData.errMsg)
+			}
+			assert.Nil(t, response)
 		})
 	}
 }

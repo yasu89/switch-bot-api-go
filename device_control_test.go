@@ -1091,6 +1091,53 @@ func TestRelaySwitch2PMDevice(t *testing.T) {
 	}
 }
 
+func TestGarageDoorOpenerDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			method: func(device *switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn()
+			},
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			method: func(device *switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff()
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
 func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string

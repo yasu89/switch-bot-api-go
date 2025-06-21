@@ -202,6 +202,11 @@ type RelaySwitch2PMDevice struct {
 	CommonDeviceListItem
 }
 
+// GarageDoorOpenerDevice represents a SwitchBot Garage Door Opener device
+type GarageDoorOpenerDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`

@@ -1529,6 +1529,54 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
+
+	t.Run("GarageDoorOpenerDevice", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Garage Door Opener",
+			"hubDeviceId": "123456789",
+			"doorStatus":  0,
+			"online":      true,
+			"version":     "V3.1-6.3",
+		})
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		device := &switchbot.GarageDoorOpenerDevice{
+			CommonDeviceListItem: switchbot.CommonDeviceListItem{
+				CommonDevice: switchbot.CommonDevice{
+					DeviceID: "ABCDEF123456",
+				},
+				Client: client,
+			},
+		}
+		status, err := device.GetStatus()
+		assert.NoError(t, err)
+
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
+
+		expectedBody := &switchbot.GarageDoorOpenerDeviceStatusBody{
+			CommonDevice: switchbot.CommonDevice{
+				DeviceID:    "ABCDEF123456",
+				DeviceType:  "Garage Door Opener",
+				HubDeviceId: "123456789",
+			},
+			DoorStatus: 0,
+			Online:     true,
+			Version:    "V3.1-6.3",
+		}
+
+		assertResponse(t, &status.CommonResponse)
+		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		assert.NoError(t, err)
+		assertBody(t, anyStatus, expectedBody)
+	})
 }
 
 func assertResponse(t *testing.T, response *switchbot.CommonResponse) {

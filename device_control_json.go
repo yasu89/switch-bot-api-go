@@ -1519,6 +1519,34 @@ func (device *RelaySwitch2PMDevice) GetCommandParameterJSONSchema() (string, err
 	return reflectJSONSchema(RelaySwitch2PMDeviceCommandParameter{})
 }
 
+// GarageDoorOpenerDeviceCommandParameter is a struct that represents the command parameter for the GarageDoorOpenerDevice
+type GarageDoorOpenerDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff" description:"TurnOn:open the garage door, TurnOff:close the garage door" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter GarageDoorOpenerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the GarageDoorOpenerDevice command parameter
+func (device *GarageDoorOpenerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(GarageDoorOpenerDeviceCommandParameter{})
+}
+
 // InfraredRemoteAirConditionerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteAirConditionerDevice
 type InfraredRemoteAirConditionerDeviceCommandParameter struct {
 	Command            string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetAll" description:"TurnOn:turn on the air conditioner, TurnOff:turn off the air conditioner, SetAll:configure all parameters of the air conditioner" required:"true"`
