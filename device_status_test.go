@@ -1457,6 +1457,78 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
+
+	t.Run("RelaySwitch2PMDevice", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":               "ABCDEF123456",
+			"deviceType":             "Relay Switch 2PM",
+			"hubDeviceId":            "123456789",
+			"online":                 true,
+			"switch1Status":          1,
+			"switch2Status":          0,
+			"switch1voltage":         120,
+			"switch2voltage":         0,
+			"version":                "V3.1-6.3",
+			"switch1power":           50,
+			"switch2power":           0,
+			"switch1usedElectricity": 1000,
+			"switch2usedElectricity": 0,
+			"switch1electricCurrent": 500,
+			"switch2electricCurrent": 0,
+			"calibrate":              true,
+			"position":               50,
+			"isStuck":                "false",
+		})
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		device := &switchbot.RelaySwitch2PMDevice{
+			CommonDeviceListItem: switchbot.CommonDeviceListItem{
+				CommonDevice: switchbot.CommonDevice{
+					DeviceID: "ABCDEF123456",
+				},
+				Client: client,
+			},
+		}
+		status, err := device.GetStatus()
+		assert.NoError(t, err)
+
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
+
+		expectedBody := &switchbot.RelaySwitch2PMDeviceStatusBody{
+			CommonDevice: switchbot.CommonDevice{
+				DeviceID:    "ABCDEF123456",
+				DeviceType:  "Relay Switch 2PM",
+				HubDeviceId: "123456789",
+			},
+			Online:                 true,
+			Switch1Status:          1,
+			Switch2Status:          0,
+			Switch1Voltage:         120,
+			Switch2Voltage:         0,
+			Version:                "V3.1-6.3",
+			Switch1Power:           50,
+			Switch2Power:           0,
+			Switch1UsedElectricity: 1000,
+			Switch2UsedElectricity: 0,
+			Switch1ElectricCurrent: 500,
+			Switch2ElectricCurrent: 0,
+			Calibrate:              true,
+			Position:               50,
+			IsStuck:                "false",
+		}
+
+		assertResponse(t, &status.CommonResponse)
+		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		assert.NoError(t, err)
+		assertBody(t, anyStatus, expectedBody)
+	})
 }
 
 func assertResponse(t *testing.T, response *switchbot.CommonResponse) {

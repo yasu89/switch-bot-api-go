@@ -1,12 +1,13 @@
 package switchbot_test
 
 import (
-	"github.com/yasu89/switch-bot-api-go/helpers"
 	"net/http"
 	"testing"
 
+	"github.com/yasu89/switch-bot-api-go/helpers"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/yasu89/switch-bot-api-go"
+	switchbot "github.com/yasu89/switch-bot-api-go"
 )
 
 func Test_BotDeviceGetCommandParameterJSONSchema(t *testing.T) {
@@ -2475,6 +2476,142 @@ func Test_RelaySwitch1PMDeviceExecCommand(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RelaySwitch2PMDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RelaySwitch2PMDevice{}
+
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_RelaySwitch2PMDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn Switch 1",
+			expectedBody: `{"commandType":"command","command":"turnOn","parameter":"1"}`,
+			parameter:    `{"command":"TurnOn","switch":1}`,
+		},
+		{
+			name:         "TurnOff Switch 2",
+			expectedBody: `{"commandType":"command","command":"turnOff","parameter":"2"}`,
+			parameter:    `{"command":"TurnOff","switch":2}`,
+		},
+		{
+			name:         "Toggle Switch 1",
+			expectedBody: `{"commandType":"command","command":"toggle","parameter":"1"}`,
+			parameter:    `{"command":"Toggle","switch":1}`,
+		},
+		{
+			name:         "SetMode Switch 2",
+			expectedBody: `{"commandType":"command","command":"setMode","parameter":"2,2"}`,
+			parameter:    `{"command":"SetMode","switch":2,"mode":2}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RelaySwitch2PMDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name          string
+		parameter     string
+		errorContains string
+	}{
+		{
+			name:          "Invalid command",
+			parameter:     `{"command":"InvalidCommand"}`,
+			errorContains: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, Toggle, SetMode",
+		},
+		{
+			name:          "Missing switch for TurnOn",
+			parameter:     `{"command":"TurnOn"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for TurnOff",
+			parameter:     `{"command":"TurnOff"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for Toggle",
+			parameter:     `{"command":"Toggle"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for SetMode",
+			parameter:     `{"command":"SetMode"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Invalid switch value (too low)",
+			parameter:     `{"command":"TurnOn","switch":0}`,
+			errorContains: "0 should be at least 1",
+		},
+		{
+			name:          "Invalid switch value (too high)",
+			parameter:     `{"command":"TurnOff","switch":3}`,
+			errorContains: "3 should be at most 2",
+		},
+		{
+			name:          "SetMode missing mode",
+			parameter:     `{"command":"SetMode","switch":1}`,
+			errorContains: "Required property 'mode' is missing",
+		},
+		{
+			name:          "Invalid mode value (too low)",
+			parameter:     `{"command":"SetMode","switch":1,"mode":-1}`,
+			errorContains: "-1 should be at least 0",
+		},
+		{
+			name:          "Invalid mode value (too high)",
+			parameter:     `{"command":"SetMode","switch":1,"mode":4}`,
+			errorContains: "4 should be at most 3",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			client := switchbot.NewClient("secret", "token")
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContains)
 		})
 	}
 }

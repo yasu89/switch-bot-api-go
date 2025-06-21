@@ -197,6 +197,11 @@ type RelaySwitch1Device struct {
 	CommonDeviceListItem
 }
 
+// RelaySwitch2PMDevice represents a SwitchBot Relay Switch 2PM device
+type RelaySwitch2PMDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -409,6 +414,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Relay Switch 1":
 				parsed = &RelaySwitch1Device{}
 				parsed.(*RelaySwitch1Device).Client = client
+			case "Relay Switch 2PM":
+				parsed = &RelaySwitch2PMDevice{}
+				parsed.(*RelaySwitch2PMDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

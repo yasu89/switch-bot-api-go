@@ -915,3 +915,48 @@ func (device *RelaySwitch1Device) GetAnyStatusBody() (any, error) {
 	}
 	return status.Body, nil
 }
+
+// RelaySwitch2PMDeviceStatusBody represents the status of a Relay Switch 2PM device
+type RelaySwitch2PMDeviceStatusBody struct {
+	CommonDevice
+	Online                 bool   `json:"online"`
+	Switch1Status          int    `json:"switch1Status"`
+	Switch2Status          int    `json:"switch2Status"`
+	Switch1Voltage         int    `json:"switch1voltage"`
+	Switch2Voltage         int    `json:"switch2voltage"`
+	Version                string `json:"version"`
+	Switch1Power           int    `json:"switch1power"`
+	Switch2Power           int    `json:"switch2power"`
+	Switch1UsedElectricity int    `json:"switch1usedElectricity"`
+	Switch2UsedElectricity int    `json:"switch2usedElectricity"`
+	Switch1ElectricCurrent int    `json:"switch1electricCurrent"`
+	Switch2ElectricCurrent int    `json:"switch2electricCurrent"`
+	Calibrate              bool   `json:"calibrate"`
+	Position               int    `json:"position"`
+	IsStuck                string `json:"isStuck"`
+}
+
+// RelaySwitch2PMDeviceStatusResponse represents the response from getting the status of a Relay Switch 2PM device
+type RelaySwitch2PMDeviceStatusResponse struct {
+	CommonResponse
+	Body *RelaySwitch2PMDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the current status of the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) GetStatus() (*RelaySwitch2PMDeviceStatusResponse, error) {
+	response := &RelaySwitch2PMDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RelaySwitch2PMDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}

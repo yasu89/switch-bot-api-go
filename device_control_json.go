@@ -1461,6 +1461,64 @@ func (device *RelaySwitch1PMDevice) GetCommandParameterJSONSchema() (string, err
 	return reflectJSONSchema(RelaySwitch1DeviceCommandParameter{})
 }
 
+// RelaySwitch2PMDeviceCommandParameter is a struct that represents the command parameter for the RelaySwitch2PMDevice
+type RelaySwitch2PMDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetMode" description:"TurnOn:turn on the relay switch, TurnOff:turn off the relay switch, Toggle:toggle the relay switch state, SetMode:set the mode of the relay switch" required:"true"`
+	Switch  int      `json:"switch" title:"Switch" minimum:"1" maximum:"2" description:"Switch number (1 or 2)" required:"true"`
+	Mode    int      `json:"mode" title:"Mode" minimum:"0" maximum:"3" description:"Mode (0:toggle mode, 1:edge switch mode, 2:detached switch mode, 3:momentary switch mode)"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// RelaySwitch2PMDeviceCommandSetModeIfExposer represents the SetMode command parameters
+type RelaySwitch2PMDeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RelaySwitch2PMDevice command parameter for SetMode
+func (parameter *RelaySwitch2PMDeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RelaySwitch2PMDevice command parameter for SetMode
+func (parameter *RelaySwitch2PMDeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode int `json:"mode" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RelaySwitch2PMDevice command parameter
+func (parameter *RelaySwitch2PMDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RelaySwitch2PMDeviceCommandSetModeIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RelaySwitch2PMDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn(parameter.Switch)
+	case "TurnOff":
+		return device.TurnOff(parameter.Switch)
+	case "Toggle":
+		return device.Toggle(parameter.Switch)
+	case "SetMode":
+		return device.SetMode(parameter.Switch, RelaySwitchMode(parameter.Mode))
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RelaySwitch2PMDevice command parameter
+func (device *RelaySwitch2PMDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RelaySwitch2PMDeviceCommandParameter{})
+}
+
 // InfraredRemoteAirConditionerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteAirConditionerDevice
 type InfraredRemoteAirConditionerDeviceCommandParameter struct {
 	Command            string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetAll" description:"TurnOn:turn on the air conditioner, TurnOff:turn off the air conditioner, SetAll:configure all parameters of the air conditioner" required:"true"`

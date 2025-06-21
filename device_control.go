@@ -961,6 +961,69 @@ func (device *RelaySwitch1Device) SetMode(mode RelaySwitchMode) (*CommonResponse
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// TurnOn sends a command to turn on the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) TurnOn(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// TurnOff sends a command to turn off the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) TurnOff(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// Toggle sends a command to toggle the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) Toggle(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// SetMode sends a command to set the mode of the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) SetMode(switchNum int, mode RelaySwitchMode) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	if mode < 0 || mode > 3 {
+		return nil, fmt.Errorf("invalid mode: %d, must be between 0 and 3", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d,%d", switchNum, mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// validate2PMDeviceSwitchNumber checks if the switch number is valid (1 or 2)
+func validate2PMDeviceSwitchNumber(switchNumber int) error {
+	if switchNumber < 1 || switchNumber > 2 {
+		return fmt.Errorf("invalid switch number: %d, must be 1 or 2", switchNumber)
+	}
+	return nil
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")

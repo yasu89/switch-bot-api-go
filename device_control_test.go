@@ -996,6 +996,101 @@ func TestRelaySwitch1Device(t *testing.T) {
 	}
 }
 
+func TestRelaySwitch2PMDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "TurnOn switch 1",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn(1)
+			},
+		},
+		{
+			name:         "TurnOn switch 2",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn(2)
+			},
+		},
+		{
+			name:         "TurnOff switch 1",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff(1)
+			},
+		},
+		{
+			name:         "TurnOff switch 2",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff(2)
+			},
+		},
+		{
+			name:         "Toggle switch 1",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.Toggle(1)
+			},
+		},
+		{
+			name:         "Toggle switch 2",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.Toggle(2)
+			},
+		},
+		{
+			name:         "SetMode(Toggle) switch 1",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "1,0"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(1, switchbot.RelaySwitchModeToggle)
+			},
+		},
+		{
+			name:         "SetMode(Momentary) switch 1",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "1,3"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(1, switchbot.RelaySwitchModeMomentary)
+			},
+		},
+		{
+			name:         "SetMode(Detached) switch 2",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "2,2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(2, switchbot.RelaySwitchModeDetached)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
 func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string

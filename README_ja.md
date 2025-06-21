@@ -97,7 +97,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Roller Shade                          |   ✅   |    ✅    |   ✅    |      |
 | Relay Switch 1PM                      |   ✅   |    ✅    |   ✅    |      |
 | Relay Switch 1                        |   ✅   |    ✅    |   ✅    |      |
-| Relay Switch 2PM                      |   ❌   |    ❌    |   ❌    |      |
+| Relay Switch 2PM                      |   ✅   |    ✅    |   ✅    |      |
 | Garage Door Opener                    |   ❌   |    ❌    |   ❌    |      |
 | Floor Lamp                            |   ❌   |    ❌    |   ❌    |      |
 | LED Strip Light 3                     |   ❌   |    ❌    |   ❌    |      |
