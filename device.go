@@ -125,7 +125,7 @@ type StripLightDevice struct {
 	CommonDeviceListItem
 }
 
-type ColorBulbDevice struct {
+type ColorLightDevice struct {
 	CommonDeviceListItem
 }
 
@@ -375,8 +375,8 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 				parsed = &StripLightDevice{}
 				parsed.(*StripLightDevice).Client = client
 			case "Color Bulb":
-				parsed = &ColorBulbDevice{}
-				parsed.(*ColorBulbDevice).Client = client
+				parsed = &ColorLightDevice{}
+				parsed.(*ColorLightDevice).Client = client
 			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro":
 				parsed = &RobotVacuumCleanerDevice{}
 				parsed.(*RobotVacuumCleanerDevice).Client = client

@@ -765,7 +765,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assertBody(t, anyStatus, expectedBody)
 	})
 
-	t.Run("ColorBulbDevice", func(t *testing.T) {
+	t.Run("ColorLightDevice", func(t *testing.T) {
 		switchBotMock := helpers.NewSwitchBotMock(t)
 		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
 			"deviceId":         "ABCDEF123456",
@@ -782,7 +782,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
 
-		device := &switchbot.ColorBulbDevice{
+		device := &switchbot.ColorLightDevice{
 			CommonDeviceListItem: switchbot.CommonDeviceListItem{
 				CommonDevice: switchbot.CommonDevice{
 					DeviceID: "ABCDEF123456",
@@ -795,7 +795,7 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 
 		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
 
-		expectedBody := &switchbot.ColorBulbDeviceStatusBody{
+		expectedBody := &switchbot.ColorLightDeviceStatusBody{
 			CommonDevice: switchbot.CommonDevice{
 				DeviceID:    "ABCDEF123456",
 				DeviceType:  "Color Bulb",

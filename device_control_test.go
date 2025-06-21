@@ -321,30 +321,30 @@ func TestStripLightDevice(t *testing.T) {
 	}
 }
 
-func TestColorBulbDevice(t *testing.T) {
+func TestColorLightDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
-		method       func(*switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error)
+		method       func(*switchbot.ColorLightDevice) (*switchbot.CommonResponse, error)
 	}{
 		{
 			name:         "SetBrightness",
 			expectedBody: `{"commandType": "command","command": "setBrightness","parameter": "55"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetBrightness(55)
 			},
 		},
 		{
 			name:         "SetColor",
 			expectedBody: `{"commandType": "command","command": "setColor","parameter": "255:100:0"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColor(color.RGBA{R: 255, G: 100, B: 0, A: 0})
 			},
 		},
 		{
 			name:         "SetColorTemperature",
 			expectedBody: `{"commandType": "command","command": "setColorTemperature","parameter": "5000"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColorTemperature(5000)
 			},
 		},
@@ -358,7 +358,7 @@ func TestColorBulbDevice(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",

@@ -485,9 +485,9 @@ func (device *StripLightDevice) GetCommandParameterJSONSchema() (string, error) 
 	return reflectJSONSchema(StripLightDeviceCommandParameter{})
 }
 
-// ColorBulbDeviceCommandParameter is a struct that represents the command parameter for the ColorBulbDevice
-type ColorBulbDeviceCommandParameter struct {
-	Command          string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetBrightness,SetColor,SetColorTemperature" description:"TurnOn:turn on the bulb, TurnOff:turn off the bulb, Toggle:toggle the bulb, SetBrightness:set brightness, SetColor:set color, SetColorTemperature:set color temperature" required:"true"`
+// ColorLightDeviceCommandParameter is a struct that represents the command parameter for the ColorLightDevice
+type ColorLightDeviceCommandParameter struct {
+	Command          string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetBrightness,SetColor,SetColorTemperature" description:"TurnOn:turn on the light, TurnOff:turn off the light, Toggle:toggle the light, SetBrightness:set brightness, SetColor:set color, SetColorTemperature:set color temperature" required:"true"`
 	Brightness       int      `json:"brightness" title:"Brightness" minimum:"1" maximum:"100" description:"Brightness level (1-100)"`
 	Red              int      `json:"red" title:"Red" minimum:"0" maximum:"255" description:"Red color value (0-255)"`
 	Green            int      `json:"green" title:"Green" minimum:"0" maximum:"255" description:"Green color value (0-255)"`
@@ -496,35 +496,35 @@ type ColorBulbDeviceCommandParameter struct {
 	_                struct{} `additionalProperties:"false"`
 }
 
-// ColorBulbDeviceCommandSetBrightnessIfExposer represents the SetBrightness command parameters
-type ColorBulbDeviceCommandSetBrightnessIfExposer struct{}
+// ColorLightDeviceCommandSetBrightnessIfExposer represents the SetBrightness command parameters
+type ColorLightDeviceCommandSetBrightnessIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetBrightness
-func (parameter *ColorBulbDeviceCommandSetBrightnessIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetBrightness
+func (parameter *ColorLightDeviceCommandSetBrightnessIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetBrightness" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetBrightness
-func (parameter *ColorBulbDeviceCommandSetBrightnessIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetBrightness
+func (parameter *ColorLightDeviceCommandSetBrightnessIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Brightness int `json:"brightness" required:"true"`
 	}{}
 }
 
-// ColorBulbDeviceCommandSetColorIfExposer represents the SetColor command parameters
-type ColorBulbDeviceCommandSetColorIfExposer struct{}
+// ColorLightDeviceCommandSetColorIfExposer represents the SetColor command parameters
+type ColorLightDeviceCommandSetColorIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetColor
-func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetColor
+func (parameter *ColorLightDeviceCommandSetColorIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetColor" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetColor
-func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetColor
+func (parameter *ColorLightDeviceCommandSetColorIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Red   int `json:"red" required:"true"`
 		Green int `json:"green" required:"true"`
@@ -532,35 +532,35 @@ func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaThen() inter
 	}{}
 }
 
-// ColorBulbDeviceCommandSetColorTemperatureIfExposer represents the SetColorTemperature command parameters
-type ColorBulbDeviceCommandSetColorTemperatureIfExposer struct{}
+// ColorLightDeviceCommandSetColorTemperatureIfExposer represents the SetColorTemperature command parameters
+type ColorLightDeviceCommandSetColorTemperatureIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetColorTemperature
-func (parameter *ColorBulbDeviceCommandSetColorTemperatureIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetColorTemperature
+func (parameter *ColorLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetColorTemperature" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetColorTemperature
-func (parameter *ColorBulbDeviceCommandSetColorTemperatureIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetColorTemperature
+func (parameter *ColorLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		ColorTemperature int `json:"colorTemperature" required:"true"`
 	}{}
 }
 
-// JSONSchemaAllOf returns the JSON schema allOf block for the ColorBulbDevice command parameter
-func (parameter *ColorBulbDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+// JSONSchemaAllOf returns the JSON schema allOf block for the ColorLightDevice command parameter
+func (parameter *ColorLightDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		&ColorBulbDeviceCommandSetBrightnessIfExposer{},
-		&ColorBulbDeviceCommandSetColorIfExposer{},
-		&ColorBulbDeviceCommandSetColorTemperatureIfExposer{},
+		&ColorLightDeviceCommandSetBrightnessIfExposer{},
+		&ColorLightDeviceCommandSetColorIfExposer{},
+		&ColorLightDeviceCommandSetColorTemperatureIfExposer{},
 	}
 }
 
-// ExecCommand sends a command to the ColorBulbDevice
-func (device *ColorBulbDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
-	var parameter ColorBulbDeviceCommandParameter
+// ExecCommand sends a command to the ColorLightDevice
+func (device *ColorLightDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter ColorLightDeviceCommandParameter
 	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
@@ -583,9 +583,9 @@ func (device *ColorBulbDevice) ExecCommand(jsonString string) (*CommonResponse, 
 	}
 }
 
-// GetCommandParameterJSONSchema returns the JSON schema for the ColorBulbDevice command parameter
-func (device *ColorBulbDevice) GetCommandParameterJSONSchema() (string, error) {
-	return reflectJSONSchema(ColorBulbDeviceCommandParameter{})
+// GetCommandParameterJSONSchema returns the JSON schema for the ColorLightDevice command parameter
+func (device *ColorLightDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(ColorLightDeviceCommandParameter{})
 }
 
 // RobotVacuumCleanerDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerDevice

@@ -784,14 +784,14 @@ func Test_StripLightDeviceExecCommandInvalid(t *testing.T) {
 	}
 }
 
-func Test_ColorBulbDeviceGetCommandParameterJSONSchema(t *testing.T) {
-	device := &switchbot.ColorBulbDevice{}
+func Test_ColorLightDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.ColorLightDevice{}
 	schema, err := device.GetCommandParameterJSONSchema()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, schema)
 }
 
-func Test_ColorBulbDeviceExecCommand(t *testing.T) {
+func Test_ColorLightDeviceExecCommand(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
@@ -837,7 +837,7 @@ func Test_ColorBulbDeviceExecCommand(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -854,7 +854,7 @@ func Test_ColorBulbDeviceExecCommand(t *testing.T) {
 	}
 }
 
-func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
+func Test_ColorLightDeviceExecCommandInvalid(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		parameter    string
@@ -934,7 +934,7 @@ func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",

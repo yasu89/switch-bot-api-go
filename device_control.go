@@ -260,23 +260,23 @@ func (device *StripLightDevice) SetColor(color color.RGBA) (*CommonResponse, err
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// TurnOn sends a command to turn on the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOn() (*CommonResponse, error) {
+// TurnOn sends a command to turn on the ColorLightDevice
+func (device *ColorLightDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")
 }
 
-// TurnOff sends a command to turn off the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOff() (*CommonResponse, error) {
+// TurnOff sends a command to turn off the ColorLightDevice
+func (device *ColorLightDevice) TurnOff() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOff")
 }
 
-// Toggle sends a command to toggle the ColorBulbDevice
-func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
+// Toggle sends a command to toggle the ColorLightDevice
+func (device *ColorLightDevice) Toggle() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "toggle")
 }
 
-// SetBrightness sends a command to set the brightness of the ColorBulbDevice
-func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+// SetBrightness sends a command to set the brightness of the ColorLightDevice
+func (device *ColorLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
 	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
@@ -288,8 +288,8 @@ func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, e
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetColor sends a command to set the color of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
+// SetColor sends a command to set the color of the ColorLightDevice
+func (device *ColorLightDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "setColor",
@@ -298,8 +298,8 @@ func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, erro
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetColorTemperature sends a command to set the color temperature of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+// SetColorTemperature sends a command to set the color temperature of the ColorLightDevice
+func (device *ColorLightDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
 	if colorTemperature < 2700 || colorTemperature > 6500 {
 		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
 	}

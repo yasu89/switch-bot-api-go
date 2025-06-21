@@ -486,7 +486,7 @@ func (device *StripLightDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
-type ColorBulbDeviceStatusBody struct {
+type ColorLightDeviceStatusBody struct {
 	CommonDevice
 	Power            string `json:"power"`
 	Brightness       int    `json:"brightness"`
@@ -495,13 +495,13 @@ type ColorBulbDeviceStatusBody struct {
 	ColorTemperature int    `json:"colorTemperature"`
 }
 
-type ColorBulbDeviceStatusResponse struct {
+type ColorLightDeviceStatusResponse struct {
 	CommonResponse
-	Body *ColorBulbDeviceStatusBody `json:"body"`
+	Body *ColorLightDeviceStatusBody `json:"body"`
 }
 
-func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, error) {
-	response := &ColorBulbDeviceStatusResponse{}
+func (device *ColorLightDevice) GetStatus() (*ColorLightDeviceStatusResponse, error) {
+	response := &ColorLightDeviceStatusResponse{}
 	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
 	if err != nil {
 		return nil, err
@@ -510,7 +510,7 @@ func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, erro
 }
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
-func (device *ColorBulbDevice) GetAnyStatusBody() (any, error) {
+func (device *ColorLightDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err
