@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.5.0](https://github.com/yasu89/switch-bot-api-go/compare/v0.4.0...v0.5.0) - 2025-06-21
+### Exciting New Features 🎉
+- Add Support for New SwitchBot Devices by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/22
+### Other Changes
+- Update Document by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/20
+
 ## [v0.4.0](https://github.com/yasu89/switch-bot-api-go/compare/v0.3.9...v0.4.0) - 2025-05-13
 ### Exciting New Features 🎉
 - Implement LLM friendly method by @yasu89 in https://github.com/yasu89/switch-bot-api-go/pull/17
