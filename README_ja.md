@@ -80,7 +80,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | K10+ Pro Combo                        |   ✅   |    ✅    |   ✅    |      |
 | Floor Cleaning Robot S10              |   ✅   |    ✅    |   ✅    |      |
 | Floor Cleaning Robot S20              |   ✅   |    ✅    |   ✅    |      |
-| Multitasking Household Robot K20+ Pro |   ❌   |    ❌    |   ❌    |      |
+| Multitasking Household Robot K20+ Pro |   ✅   |    ✅    |   ✅    |      |
 | Humidifier                            |   ✅   |    ✅    |   ✅    |      |
 | Evaporative Humidifier                |   ✅   |    ✅    |   ✅    |      |
 | Evaporative Humidifier (Auto-refill)  |   ✅   |    ✅    |   ✅    |      |

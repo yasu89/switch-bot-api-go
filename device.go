@@ -370,7 +370,7 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro":
 				parsed = &RobotVacuumCleanerDevice{}
 				parsed.(*RobotVacuumCleanerDevice).Client = client
-			case "Robot Vacuum Cleaner K10+ Pro Combo":
+			case "Robot Vacuum Cleaner K10+ Pro Combo", "Robot Vacuum Cleaner K20 Plus Pro":
 				parsed = &RobotVacuumCleanerComboDevice{}
 				parsed.(*RobotVacuumCleanerComboDevice).Client = client
 			case "Robot Vacuum Cleaner S10", "Robot Vacuum Cleaner S20":
