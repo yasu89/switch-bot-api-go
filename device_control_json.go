@@ -780,6 +780,119 @@ func (device *RobotVacuumCleanerSDevice) GetCommandParameterJSONSchema() (string
 	return reflectJSONSchema(RobotVacuumCleanerSDeviceCommandParameter{})
 }
 
+// RobotVacuumCleanerComboDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerComboDevice
+type RobotVacuumCleanerComboDeviceCommandParameter struct {
+	Command    string `json:"command" title:"Command" enum:"startClean,pause,dock,setVolume,changeParam" description:"startClean:start cleaning, pause:pause cleaning, dock:return to charging dock, setVolume:set volume level, changeParam:change cleaning parameters" required:"true"`
+	Action     string `json:"action" title:"Action" enum:"sweep,mop" description:"sweep:sweep only, mop:mop only"`
+	FanLevel   int    `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"4" description:"Fan level (1-4)"`
+	WaterLevel int    `json:"waterLevel" title:"WaterLevel" minimum:"1" maximum:"2" description:"Water level (1-2)"`
+	Times      int    `json:"times" title:"Times" minimum:"1" maximum:"2639999" description:"the number of cycles"`
+	Volume     int    `json:"volume" title:"Volume" minimum:"0" maximum:"100" description:"Volume level (0-100)"`
+
+	_ struct{} `additionalProperties:"false"`
+}
+
+// RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer represents the startClean command parameters
+type RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for startClean
+func (parameter *RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"startClean" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for startClean
+func (parameter *RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Action   string `json:"action" required:"true"`
+		FanLevel int    `json:"fanLevel" required:"true"`
+		Times    int    `json:"times" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer represents the setVolume command parameters
+type RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for setVolume
+func (parameter *RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"setVolume" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for setVolume
+func (parameter *RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Volume int `json:"volume" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer represents the changeParam command parameters
+type RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for changeParam
+func (parameter *RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"changeParam" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for changeParam
+func (parameter *RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		FanLevel   int `json:"fanLevel" required:"true"`
+		WaterLevel int `json:"waterLevel" required:"true"`
+		Times      int `json:"times" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerComboDevice command parameter
+func (parameter *RobotVacuumCleanerComboDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer{},
+		&RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer{},
+		&RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RobotVacuumCleanerComboDevice
+func (device *RobotVacuumCleanerComboDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerComboDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "startClean":
+		action := FloorCleaningActionCombo(parameter.Action)
+		startParam, err := NewStartFloorCleaningComboParam(action, parameter.FanLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.StartClean(startParam)
+	case "pause":
+		return device.Pause()
+	case "dock":
+		return device.Dock()
+	case "setVolume":
+		return device.SetVolume(parameter.Volume)
+	case "changeParam":
+		floorParam, err := NewFloorCleaningParam(parameter.FanLevel, parameter.WaterLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.ChangeParam(floorParam)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerComboDevice command parameter
+func (device *RobotVacuumCleanerComboDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerComboDeviceCommandParameter{})
+}
+
 // HumidifierDeviceCommandParameter is a struct that represents the command parameter for the HumidifierDevice
 type HumidifierDeviceCommandParameter struct {
 	Command        string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,SetMode,SetTargetHumidity" description:"TurnOn:turn on the humidifier, TurnOff:turn off the humidifier, SetMode:set the mode of the humidifier, SetTargetHumidity:set the target humidity" required:"true"`

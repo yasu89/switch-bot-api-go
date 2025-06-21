@@ -469,6 +469,109 @@ func (device *RobotVacuumCleanerSDevice) ChangeParam(floorCleaningParam *FloorCl
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
+// FloorCleaningActionCombo represents the action to be performed in floor cleaning mode for Combo devices.
+type FloorCleaningActionCombo string
+
+const (
+	FloorCleaningActionSweepCombo FloorCleaningActionCombo = "sweep"
+	FloorCleaningActionMopCombo   FloorCleaningActionCombo = "mop"
+)
+
+// FloorCleaningComboParam represents the parameters for floor cleaning mode for Combo devices.
+type FloorCleaningComboParam struct {
+	FanLevel int `json:"fanLevel"`
+	Times    int `json:"times"`
+}
+
+// StartFloorCleaningComboParam represents the parameters for starting floor cleaning mode for Combo devices.
+type StartFloorCleaningComboParam struct {
+	Action FloorCleaningActionCombo `json:"action"`
+	Param  FloorCleaningComboParam  `json:"param"`
+}
+
+// NewFloorCleaningComboParam creates a new FloorCleaningComboParam instance with validation.
+func NewFloorCleaningComboParam(fanLevel int, times int) (*FloorCleaningComboParam, error) {
+	if fanLevel < 1 || fanLevel > 4 {
+		return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
+	}
+
+	if times < 1 || times > 2639999 {
+		return nil, fmt.Errorf("invalid times: %d", times)
+	}
+
+	return &FloorCleaningComboParam{
+		FanLevel: fanLevel,
+		Times:    times,
+	}, nil
+}
+
+// NewStartFloorCleaningComboParam creates a new StartFloorCleaningComboParam instance with validation.
+func NewStartFloorCleaningComboParam(action FloorCleaningActionCombo, fanLevel int, times int) (*StartFloorCleaningComboParam, error) {
+	param, err := NewFloorCleaningComboParam(fanLevel, times)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StartFloorCleaningComboParam{
+		Action: action,
+		Param:  *param,
+	}, nil
+}
+
+// StartClean sends a command to start cleaning the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) StartClean(startFloorCleaningParam *StartFloorCleaningComboParam) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "startClean",
+		Parameter:   startFloorCleaningParam,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Pause sends a command to pause the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) Pause() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "pause",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Dock sends a command to return the RobotVacuumCleanerComboDevice to its charging dock.
+func (device *RobotVacuumCleanerComboDevice) Dock() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "dock",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetVolume sends a command to set the volume of the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) SetVolume(volume int) (*CommonResponse, error) {
+	if volume < 0 || volume > 100 {
+		return nil, fmt.Errorf("volume must be between 0 and 100")
+	}
+
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setVolume",
+		Parameter:   fmt.Sprintf("%d", volume),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "changeParam",
+		Parameter:   floorCleaningParam,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the HumidifierDevice
 func (device *HumidifierDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")

@@ -580,6 +580,40 @@ func (device *RobotVacuumCleanerSDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
+// RobotVacuumCleanerComboDeviceStatusBody represents the status body of a Robot Vacuum Cleaner Combo device
+type RobotVacuumCleanerComboDeviceStatusBody struct {
+	CommonDevice
+	WorkingStatus string `json:"workingStatus"`
+	OnlineStatus  string `json:"onlineStatus"`
+	Battery       int    `json:"battery"`
+	TaskType      string `json:"taskType"`
+}
+
+// RobotVacuumCleanerComboDeviceStatusResponse represents the status response for a Robot Vacuum Cleaner Combo device
+type RobotVacuumCleanerComboDeviceStatusResponse struct {
+	CommonResponse
+	Body *RobotVacuumCleanerComboDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the status of the RobotVacuumCleanerComboDevice
+func (device *RobotVacuumCleanerComboDevice) GetStatus() (*RobotVacuumCleanerComboDeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerComboDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RobotVacuumCleanerComboDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type HumidifierDeviceStatusBody struct {
 	CommonDevice
 	Power                  string `json:"power"`

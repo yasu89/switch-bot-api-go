@@ -1,12 +1,13 @@
 package switchbot_test
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/yasu89/switch-bot-api-go"
-	"github.com/yasu89/switch-bot-api-go/helpers"
 	"image/color"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	switchbot "github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func TestBotDevice(t *testing.T) {
@@ -475,6 +476,93 @@ func TestRobotVacuumCleanerSDevice(t *testing.T) {
 			response, err := testData.method(device)
 			assert.NoError(t, err)
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func TestRobotVacuumCleanerComboDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "StartClean with sweep action",
+			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"sweep","param":{"fanLevel":2,"times":3600}}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param, err := switchbot.NewStartFloorCleaningComboParam(switchbot.FloorCleaningActionSweepCombo, 2, 3600)
+				if err != nil {
+					return nil, err
+				}
+				return device.StartClean(param)
+			},
+		},
+		{
+			name:         "StartClean with mop action",
+			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"mop","param":{"fanLevel":1,"times":1800}}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param, err := switchbot.NewStartFloorCleaningComboParam(switchbot.FloorCleaningActionMopCombo, 1, 1800)
+				if err != nil {
+					return nil, err
+				}
+				return device.StartClean(param)
+			},
+		},
+		{
+			name:         "Pause",
+			expectedBody: `{"commandType":"command","command":"pause","parameter":"default"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.Pause()
+			},
+		},
+		{
+			name:         "Dock",
+			expectedBody: `{"commandType":"command","command":"dock","parameter":"default"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.Dock()
+			},
+		},
+		{
+			name:         "SetVolume",
+			expectedBody: `{"commandType":"command","command":"setVolume","parameter":"50"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.SetVolume(50)
+			},
+		},
+		{
+			name:         "ChangeParam",
+			expectedBody: `{"commandType":"command","command":"changeParam","parameter":{"fanLevel":3,"waterLevel":2,"times":7200}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param := &switchbot.FloorCleaningParam{
+					FanLevel:   3,
+					WaterLevel: 2,
+					Times:      7200,
+				}
+				return device.ChangeParam(param)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerComboDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := testData.method(device)
+			assert.NoError(t, err)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}

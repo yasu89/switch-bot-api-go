@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yasu89/switch-bot-api-go"
+	switchbot "github.com/yasu89/switch-bot-api-go"
 	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
@@ -906,6 +906,55 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			Battery:          50,
 			WaterBaseBattery: 80,
 			TaskType:         "mop",
+		}
+
+		assertResponse(t, &status.CommonResponse)
+		assertBody(t, status.Body, expectedBody)
+
+		// Test GetAnyStatusBody() method
+		anyStatus, err := device.GetAnyStatusBody()
+		assert.NoError(t, err)
+		assertBody(t, anyStatus, expectedBody)
+	})
+
+	t.Run("RobotVacuumCleanerComboDevice", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":      "ABCDEF123456",
+			"deviceType":    "Robot Vacuum Cleaner K10+ Pro Combo",
+			"hubDeviceId":   "123456789",
+			"workingStatus": "Clearing",
+			"onlineStatus":  "online",
+			"battery":       80,
+			"taskType":      "backToCharge",
+		})
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		device := &switchbot.RobotVacuumCleanerComboDevice{
+			CommonDeviceListItem: switchbot.CommonDeviceListItem{
+				CommonDevice: switchbot.CommonDevice{
+					DeviceID: "ABCDEF123456",
+				},
+				Client: client,
+			},
+		}
+
+		status, err := device.GetStatus()
+		assert.NoError(t, err)
+
+		expectedBody := &switchbot.RobotVacuumCleanerComboDeviceStatusBody{
+			CommonDevice: switchbot.CommonDevice{
+				DeviceID:    "ABCDEF123456",
+				DeviceType:  "Robot Vacuum Cleaner K10+ Pro Combo",
+				HubDeviceId: "123456789",
+			},
+			WorkingStatus: "Clearing",
+			OnlineStatus:  "online",
+			Battery:       80,
+			TaskType:      "backToCharge",
 		}
 
 		assertResponse(t, &status.CommonResponse)
