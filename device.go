@@ -363,7 +363,7 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Smart Lock Lite":
 				parsed = &LockLiteDevice{}
 				parsed.(*LockLiteDevice).Client = client
-			case "Keypad", "Keypad Touch":
+			case "Keypad", "Keypad Touch", "Keypad Vision":
 				parsed = &KeypadDevice{}
 				parsed.(*KeypadDevice).Client = client
 			case "Remote":

@@ -104,7 +104,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | LED Strip Light 3                     |         ✅         |     ✅      |      ✅       |              |
 | Lock Lite                             |         ✅         |     ✅      |      ✅       |              |
 | Video Doorbell                        |         ✅         |     ✅      |      ✅       |              |
-| Keypad Vision                         |         ❌         |     ❌      |      ❌       |              |
+| Keypad Vision                         |         ✅         |     ✅      |      ✅       |              |
 
 
 ### Virtual Infrared Remote Devices
