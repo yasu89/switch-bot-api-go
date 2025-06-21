@@ -94,6 +94,16 @@ func (device *LockDevice) Unlock() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "unlock")
 }
 
+// Lock sends a command to lock the LockLiteDevice
+func (device *LockLiteDevice) Lock() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "lock")
+}
+
+// Unlock sends a command to unlock the LockLiteDevice
+func (device *LockLiteDevice) Unlock() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "unlock")
+}
+
 type KeypadKey struct {
 	Name      string `json:"name"`
 	Type      string `json:"type"`

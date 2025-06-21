@@ -214,6 +214,48 @@ func TestLockDevice(t *testing.T) {
 	}
 }
 
+func TestLockLiteDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.LockLiteDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "Lock",
+			expectedBody: `{"commandType": "command","command": "lock","parameter": "default"}`,
+			method:       func(device *switchbot.LockLiteDevice) (*switchbot.CommonResponse, error) { return device.Lock() },
+		},
+		{
+			name:         "Unlock",
+			expectedBody: `{"commandType": "command","command": "unlock","parameter": "default"}`,
+			method:       func(device *switchbot.LockLiteDevice) (*switchbot.CommonResponse, error) { return device.Unlock() },
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.LockLiteDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
 func TestCeilingLightDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string

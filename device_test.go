@@ -152,6 +152,54 @@ func TestGetPhysicalDevices(t *testing.T) {
 		})
 	})
 
+	t.Run("LockLiteDevice", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterDevicesMock(
+			[]interface{}{
+				map[string]interface{}{
+					"deviceId":           "ABCDEF123456",
+					"deviceType":         "Smart Lock Lite",
+					"hubDeviceId":        "123456789",
+					"deviceName":         "LockLiteDevice",
+					"enableCloudService": true,
+					"group":              true,
+					"master":             false,
+					"groupName":          "LockLiteGroup",
+					"lockDevicesIds":     []string{"BBBBBBBB"},
+				},
+			},
+			[]interface{}{},
+		)
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		response, err := client.GetDevices()
+		assert.NoError(t, err)
+
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices", 1)
+
+		assertDevices(t, response, []interface{}{
+			&switchbot.LockLiteDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID:    "ABCDEF123456",
+						DeviceType:  "Smart Lock Lite",
+						HubDeviceId: "123456789",
+					},
+					Client:             client,
+					DeviceName:         "LockLiteDevice",
+					EnableCloudService: true,
+				},
+				Group:          true,
+				Master:         false,
+				GroupName:      "LockLiteGroup",
+				LockDevicesIds: []string{"BBBBBBBB"},
+			},
+		})
+	})
+
 	t.Run("KeypadDevice", func(t *testing.T) {
 		switchBotMock := helpers.NewSwitchBotMock(t)
 		switchBotMock.RegisterDevicesMock(

@@ -77,6 +77,14 @@ type LockDevice struct {
 	LockDevicesIds []string `json:"lockDevicesIds"`
 }
 
+type LockLiteDevice struct {
+	CommonDeviceListItem
+	Group          bool     `json:"group"`
+	Master         bool     `json:"master"`
+	GroupName      string   `json:"groupName"`
+	LockDevicesIds []string `json:"lockDevicesIds"`
+}
+
 type KeyListItem struct {
 	Id         int    `json:"id"`
 	Name       string `json:"name"`
@@ -347,6 +355,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Smart Lock", "Smart Lock Pro", "Smart Lock Ultra":
 				parsed = &LockDevice{}
 				parsed.(*LockDevice).Client = client
+			case "Smart Lock Lite":
+				parsed = &LockLiteDevice{}
+				parsed.(*LockLiteDevice).Client = client
 			case "Keypad", "Keypad Touch":
 				parsed = &KeypadDevice{}
 				parsed.(*KeypadDevice).Client = client

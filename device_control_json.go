@@ -163,6 +163,34 @@ func (device *LockDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(LockDeviceCommandParameter{})
 }
 
+// LockLiteDeviceCommandParameter is a struct that represents the command parameter for the LockLiteDevice
+type LockLiteDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"Lock,Unlock" description:"Lock:rotate to locked position, Unlock:rotate to unlocked position" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the LockLiteDevice
+func (device *LockLiteDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter LockLiteDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "Lock":
+		return device.Lock()
+	case "Unlock":
+		return device.Unlock()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the LockLiteDevice command parameter
+func (device *LockLiteDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(LockLiteDeviceCommandParameter{})
+}
+
 // KeypadDeviceCommandParameter is a struct that represents the command parameter for the KeypadDevice
 type KeypadDeviceCommandParameter struct {
 	Command   string   `json:"command" title:"Command" enum:"CreateKey,DeleteKey" required:"true" description:"CreateKey:create a new passcode, DeleteKey:delete an existing passcode"`

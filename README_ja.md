@@ -101,7 +101,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Garage Door Opener                    |   ✅   |    ✅    |   ✅    |      |
 | Floor Lamp                            |   ✅   |    ✅    |   ✅    |      |
 | LED Strip Light 3                     |   ✅   |    ✅    |   ✅    |      |
-| Lock Lite                             |   ❌   |    ❌    |   ❌    |      |
+| Lock Lite                             |   ✅   |    ✅    |   ✅    |      |
 | Video Doorbell                        |   ❌   |    ❌    |   ❌    |      |
 | Keypad Vision                         |   ❌   |    ❌    |   ❌    |      |
 

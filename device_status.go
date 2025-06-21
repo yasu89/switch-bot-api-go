@@ -242,6 +242,37 @@ func (device *LockDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
+type LockLiteDeviceStatusBody struct {
+	CommonDevice
+	Battery   int    `json:"battery"`
+	Version   string `json:"version"`
+	LockState string `json:"lockState"`
+	Calibrate bool   `json:"calibrate"`
+}
+
+type LockLiteDeviceStatusResponse struct {
+	CommonResponse
+	Body *LockLiteDeviceStatusBody `json:"body"`
+}
+
+func (device *LockLiteDevice) GetStatus() (*LockLiteDeviceStatusResponse, error) {
+	response := &LockLiteDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *LockLiteDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type KeypadDeviceStatusBody struct {
 	CommonDevice
 }
