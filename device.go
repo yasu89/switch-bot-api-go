@@ -215,6 +215,11 @@ type GarageDoorOpenerDevice struct {
 	CommonDeviceListItem
 }
 
+// VideoDoorbellDevice represents a SwitchBot Video Doorbell device
+type VideoDoorbellDevice struct {
+	CommonDeviceListItem
+}
+
 type InfraredRemoteDevice struct {
 	Client      *Client
 	DeviceID    string `json:"deviceId"`
@@ -433,6 +438,9 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Relay Switch 2PM":
 				parsed = &RelaySwitch2PMDevice{}
 				parsed.(*RelaySwitch2PMDevice).Client = client
+			case "Video Doorbell":
+				parsed = &VideoDoorbellDevice{}
+				parsed.(*VideoDoorbellDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

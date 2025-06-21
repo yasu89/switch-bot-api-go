@@ -103,7 +103,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Floor Lamp                            |         ✅         |     ✅      |      ✅       |              |
 | LED Strip Light 3                     |         ✅         |     ✅      |      ✅       |              |
 | Lock Lite                             |         ✅         |     ✅      |      ✅       |              |
-| Video Doorbell                        |         ❌         |     ❌      |      ❌       |              |
+| Video Doorbell                        |         ✅         |     ✅      |      ✅       |              |
 | Keypad Vision                         |         ❌         |     ❌      |      ❌       |              |
 
 

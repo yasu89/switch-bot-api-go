@@ -1627,6 +1627,54 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 		assert.NoError(t, err)
 		assertBody(t, anyStatus, expectedBody)
 	})
+
+	t.Run("VideoDoorbellDevice", func(t *testing.T) {
+		switchBotMock := helpers.NewSwitchBotMock(t)
+		switchBotMock.RegisterStatusMock("ABCDEF123456", map[string]interface{}{
+			"deviceId":    "ABCDEF123456",
+			"deviceType":  "Video Doorbell",
+			"hubDeviceId": "123456789",
+			"online":      true,
+			"battery":     90,
+			"version":     "1.0",
+		})
+		testServer := switchBotMock.NewTestServer()
+		defer testServer.Close()
+
+		client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+
+		device := &switchbot.VideoDoorbellDevice{
+			CommonDeviceListItem: switchbot.CommonDeviceListItem{
+				CommonDevice: switchbot.CommonDevice{
+					DeviceID: "ABCDEF123456",
+				},
+				Client: client,
+			},
+		}
+
+		status, err := device.GetStatus()
+		assert.NoError(t, err)
+
+		switchBotMock.AssertCallCount(http.MethodGet, "/devices/ABCDEF123456/status", 1)
+
+		expectedBody := &switchbot.VideoDoorbellDeviceStatusBody{
+			CommonDevice: switchbot.CommonDevice{
+				DeviceID:    "ABCDEF123456",
+				DeviceType:  "Video Doorbell",
+				HubDeviceId: "123456789",
+			},
+			Online:  true,
+			Battery: 90,
+			Version: "1.0",
+		}
+
+		assert.Equal(t, expectedBody, status.Body)
+
+		// Test GetAnyStatusBody
+		anyStatus, err := device.GetAnyStatusBody()
+		assert.NoError(t, err)
+		assertBody(t, anyStatus, expectedBody)
+	})
 }
 
 func assertResponse(t *testing.T, response *switchbot.CommonResponse) {

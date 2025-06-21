@@ -1044,6 +1044,26 @@ func (device *GarageDoorOpenerDevice) TurnOff() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOff")
 }
 
+// EnableMotionDetection enables motion detection on the Video Doorbell
+func (device *VideoDoorbellDevice) EnableMotionDetection() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "enableMotionDetection",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// DisableMotionDetection disables motion detection on the Video Doorbell
+func (device *VideoDoorbellDevice) DisableMotionDetection() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "disableMotionDetection",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
 // TurnOn sends a command to turn on the InfraredRemoteDevice
 func (device *InfraredRemoteDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")

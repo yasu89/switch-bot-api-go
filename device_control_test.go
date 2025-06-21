@@ -1179,6 +1179,52 @@ func TestGarageDoorOpenerDevice(t *testing.T) {
 		})
 	}
 }
+func TestVideoDoorbellDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "EnableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "enableMotionDetection","parameter": "default"}`,
+			method: func(device *switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error) {
+				return device.EnableMotionDetection()
+			},
+		},
+		{
+			name:         "DisableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "disableMotionDetection","parameter": "default"}`,
+			method: func(device *switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error) {
+				return device.DisableMotionDetection()
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := testData.method(device)
+			assert.NoError(t, err)
+
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
 
 func TestInfraredRemoteAirConditionerDevice(t *testing.T) {
 	testDataList := []struct {

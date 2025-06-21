@@ -2787,6 +2787,101 @@ func Test_GarageDoorOpenerDeviceExecCommandInvalid(t *testing.T) {
 	}
 }
 
+func Test_VideoDoorbellDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.VideoDoorbellDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_VideoDoorbellDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "EnableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "enableMotionDetection","parameter": "default"}`,
+			parameter:    `{"command":"EnableMotionDetection"}`,
+		},
+		{
+			name:         "DisableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "disableMotionDetection","parameter": "default"}`,
+			parameter:    `{"command":"DisableMotionDetection"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_VideoDoorbellDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name      string
+		parameter string
+		errMsg    string
+	}{
+		{
+			name:      "EmptyCommand",
+			parameter: `{}`,
+			errMsg:    "Required property 'command' is missing",
+		},
+		{
+			name:      "InvalidCommand",
+			parameter: `{"command":"InvalidCommand"}`,
+			errMsg:    "Value InvalidCommand should be one of the allowed values: EnableMotionDetection, DisableMotionDetection",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), testData.errMsg)
+			}
+			assert.Nil(t, response)
+		})
+	}
+}
+
 func Test_InfraredRemoteAirConditionerDeviceGetCommandParameterJSONSchema(t *testing.T) {
 	device := &switchbot.InfraredRemoteAirConditionerDevice{}
 

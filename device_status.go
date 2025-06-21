@@ -992,6 +992,39 @@ func (device *RelaySwitch2PMDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
+// VideoDoorbellDeviceStatusBody represents the status body of a Video Doorbell device
+type VideoDoorbellDeviceStatusBody struct {
+	CommonDevice
+	Online  bool   `json:"online"`
+	Battery int    `json:"battery"`
+	Version string `json:"version"`
+}
+
+// VideoDoorbellDeviceStatusResponse represents the status response for a Video Doorbell device
+type VideoDoorbellDeviceStatusResponse struct {
+	CommonResponse
+	Body *VideoDoorbellDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the current status of the VideoDoorbellDevice
+func (device *VideoDoorbellDevice) GetStatus() (*VideoDoorbellDeviceStatusResponse, error) {
+	response := &VideoDoorbellDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *VideoDoorbellDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 // GarageDoorOpenerDeviceStatusBody represents the status of a Garage Door Opener device
 type GarageDoorOpenerDeviceStatusBody struct {
 	CommonDevice
