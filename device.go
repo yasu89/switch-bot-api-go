@@ -374,7 +374,7 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Strip Light":
 				parsed = &StripLightDevice{}
 				parsed.(*StripLightDevice).Client = client
-			case "Color Bulb":
+			case "Color Bulb", "Floor Lamp", "Strip Light 3":
 				parsed = &ColorLightDevice{}
 				parsed.(*ColorLightDevice).Client = client
 			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro":

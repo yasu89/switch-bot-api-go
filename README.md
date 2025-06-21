@@ -100,8 +100,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Relay Switch 1                        |         ✅         |     ✅      |      ✅       |              |
 | Relay Switch 2PM                      |         ✅         |     ✅      |      ✅       |              |
 | Garage Door Opener                    |         ✅         |     ✅      |      ✅       |              |
-| Floor Lamp                            |         ❌         |     ❌      |      ❌       |              |
-| LED Strip Light 3                     |         ❌         |     ❌      |      ❌       |              |
+| Floor Lamp                            |         ✅         |     ✅      |      ✅       |              |
+| LED Strip Light 3                     |         ✅         |     ✅      |      ✅       |              |
 | Lock Lite                             |         ❌         |     ❌      |      ❌       |              |
 | Video Doorbell                        |         ❌         |     ❌      |      ❌       |              |
 | Keypad Vision                         |         ❌         |     ❌      |      ❌       |              |
