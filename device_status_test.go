@@ -1668,7 +1668,8 @@ func TestGetStatusAndGetAnyStatusBody(t *testing.T) {
 			Version: "1.0",
 		}
 
-		assert.Equal(t, expectedBody, status.Body)
+		assertResponse(t, &status.CommonResponse)
+		assertBody(t, status.Body, expectedBody)
 
 		// Test GetAnyStatusBody
 		anyStatus, err := device.GetAnyStatusBody()
