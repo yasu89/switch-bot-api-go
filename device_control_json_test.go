@@ -1,12 +1,12 @@
 package switchbot_test
 
 import (
-	"github.com/yasu89/switch-bot-api-go/helpers"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yasu89/switch-bot-api-go"
+	switchbot "github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func Test_BotDeviceGetCommandParameterJSONSchema(t *testing.T) {
@@ -223,6 +223,89 @@ func Test_LockDeviceExecCommand(t *testing.T) {
 			assert.NoError(t, err)
 			assertResponse(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_LockLiteDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.LockLiteDevice{}
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_LockLiteDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "Lock",
+			expectedBody: `{"commandType": "command","command": "lock","parameter": "default"}`,
+			parameter:    `{"command":"Lock"}`,
+		},
+		{
+			name:         "Unlock",
+			expectedBody: `{"commandType": "command","command": "unlock","parameter": "default"}`,
+			parameter:    `{"command":"Unlock"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.LockLiteDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_LockLiteDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid command",
+			parameter:    `{"command":"Invalid"}`,
+			errorContain: "Value Invalid should be one of the allowed values: Lock, Unlock",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.LockLiteDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.ErrorContains(t, err, testData.errorContain)
 		})
 	}
 }
@@ -784,14 +867,14 @@ func Test_StripLightDeviceExecCommandInvalid(t *testing.T) {
 	}
 }
 
-func Test_ColorBulbDeviceGetCommandParameterJSONSchema(t *testing.T) {
-	device := &switchbot.ColorBulbDevice{}
+func Test_ColorLightDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.ColorLightDevice{}
 	schema, err := device.GetCommandParameterJSONSchema()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, schema)
 }
 
-func Test_ColorBulbDeviceExecCommand(t *testing.T) {
+func Test_ColorLightDeviceExecCommand(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
@@ -837,7 +920,7 @@ func Test_ColorBulbDeviceExecCommand(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -854,7 +937,7 @@ func Test_ColorBulbDeviceExecCommand(t *testing.T) {
 	}
 }
 
-func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
+func Test_ColorLightDeviceExecCommandInvalid(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		parameter    string
@@ -934,7 +1017,7 @@ func Test_ColorBulbDeviceExecCommandInvalid(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -1057,15 +1140,15 @@ func Test_RobotVacuumCleanerDeviceExecCommandInvalid(t *testing.T) {
 	}
 }
 
-func Test_RobotVacuumCleanerS10DeviceGetCommandParameterJSONSchema(t *testing.T) {
-	device := &switchbot.RobotVacuumCleanerS10Device{}
+func Test_RobotVacuumCleanerSDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RobotVacuumCleanerSDevice{}
 
 	description, err := device.GetCommandParameterJSONSchema()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, description)
 }
 
-func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
+func Test_RobotVacuumCleanerSDeviceExecCommand(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
@@ -1116,7 +1199,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -1133,7 +1216,7 @@ func Test_RobotVacuumCleanerS10DeviceExecCommand(t *testing.T) {
 	}
 }
 
-func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
+func Test_RobotVacuumCleanerSDeviceExecCommandInvalid(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		parameter    string
@@ -1228,7 +1311,169 @@ func Test_RobotVacuumCleanerS10DeviceExecCommandInvalid(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := device.ExecCommand(testData.parameter)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContain)
+		})
+	}
+}
+
+func Test_RobotVacuumCleanerComboDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RobotVacuumCleanerComboDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_RobotVacuumCleanerComboDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "startClean with sweep",
+			expectedBody: `{"commandType": "command","command": "startClean","parameter": {"action":"sweep","param":{"fanLevel":2,"times":1}}}`,
+			parameter:    `{"command":"startClean","action":"sweep","fanLevel":2,"times":1}`,
+		},
+		{
+			name:         "startClean with mop",
+			expectedBody: `{"commandType": "command","command": "startClean","parameter": {"action":"mop","param":{"fanLevel":3,"times":2}}}`,
+			parameter:    `{"command":"startClean","action":"mop","fanLevel":3,"times":2}`,
+		},
+		{
+			name:         "pause",
+			expectedBody: `{"commandType": "command","command": "pause","parameter": "default"}`,
+			parameter:    `{"command":"pause"}`,
+		},
+		{
+			name:         "dock",
+			expectedBody: `{"commandType": "command","command": "dock","parameter": "default"}`,
+			parameter:    `{"command":"dock"}`,
+		},
+		{
+			name:         "setVolume",
+			expectedBody: `{"commandType": "command","command": "setVolume","parameter": "50"}`,
+			parameter:    `{"command":"setVolume","volume":50}`,
+		},
+		{
+			name:         "changeParam",
+			expectedBody: `{"commandType": "command","command": "changeParam","parameter": {"fanLevel":3,"waterLevel":2,"times":100}}`,
+			parameter:    `{"command":"changeParam","fanLevel":3,"waterLevel":2,"times":100}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerComboDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RobotVacuumCleanerComboDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		parameter    string
+		errorContain string
+	}{
+		{
+			name:         "Invalid Command",
+			parameter:    `{"command": "InvalidCommand"}`,
+			errorContain: "Value InvalidCommand should be one of the allowed values: startClean, pause, dock, setVolume, changeParam",
+		},
+		{
+			name:         "startClean(without action)",
+			parameter:    `{"command":"startClean","fanLevel":2,"times":1}`,
+			errorContain: "Required property 'action' is missing",
+		},
+		{
+			name:         "startClean(without fanLevel)",
+			parameter:    `{"command":"startClean","action":"sweep","times":1}`,
+			errorContain: "Required property 'fanLevel' is missing",
+		},
+		{
+			name:         "startClean(without times)",
+			parameter:    `{"command":"startClean","action":"sweep","fanLevel":2}`,
+			errorContain: "Required property 'times' is missing",
+		},
+		{
+			name:         "startClean(invalid action)",
+			parameter:    `{"command":"startClean","action":"invalid","fanLevel":2,"times":1}`,
+			errorContain: "Value invalid should be one of the allowed values: sweep, mop",
+		},
+		{
+			name:         "startClean(invalid fanLevel)",
+			parameter:    `{"command":"startClean","action":"sweep","fanLevel":5,"times":1}`,
+			errorContain: "5 should be at most 4",
+		},
+		{
+			name:         "startClean(invalid times)",
+			parameter:    `{"command":"startClean","action":"sweep","fanLevel":2,"times":2640000}`,
+			errorContain: "2640000 should be at most 2639999",
+		},
+		{
+			name:         "setVolume(without volume)",
+			parameter:    `{"command":"setVolume"}`,
+			errorContain: "Required property 'volume' is missing",
+		},
+		{
+			name:         "setVolume(invalid volume)",
+			parameter:    `{"command":"setVolume","volume":101}`,
+			errorContain: "101 should be at most 100",
+		},
+		{
+			name:         "changeParam(without fanLevel)",
+			parameter:    `{"command":"changeParam","waterLevel":1,"times":1}`,
+			errorContain: "Required property 'fanLevel' is missing",
+		},
+		{
+			name:         "changeParam(without waterLevel)",
+			parameter:    `{"command":"changeParam","fanLevel":2,"times":1}`,
+			errorContain: "Required property 'waterLevel' is missing",
+		},
+		{
+			name:         "changeParam(without times)",
+			parameter:    `{"command":"changeParam","fanLevel":2,"waterLevel":1}`,
+			errorContain: "Required property 'times' is missing",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerComboDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -2313,6 +2558,326 @@ func Test_RelaySwitch1PMDeviceExecCommand(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, response)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RelaySwitch2PMDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.RelaySwitch2PMDevice{}
+
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_RelaySwitch2PMDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn Switch 1",
+			expectedBody: `{"commandType":"command","command":"turnOn","parameter":"1"}`,
+			parameter:    `{"command":"TurnOn","switch":1}`,
+		},
+		{
+			name:         "TurnOff Switch 2",
+			expectedBody: `{"commandType":"command","command":"turnOff","parameter":"2"}`,
+			parameter:    `{"command":"TurnOff","switch":2}`,
+		},
+		{
+			name:         "Toggle Switch 1",
+			expectedBody: `{"commandType":"command","command":"toggle","parameter":"1"}`,
+			parameter:    `{"command":"Toggle","switch":1}`,
+		},
+		{
+			name:         "SetMode Switch 2",
+			expectedBody: `{"commandType":"command","command":"setMode","parameter":"2,2"}`,
+			parameter:    `{"command":"SetMode","switch":2,"mode":2}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_RelaySwitch2PMDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name          string
+		parameter     string
+		errorContains string
+	}{
+		{
+			name:          "Invalid command",
+			parameter:     `{"command":"InvalidCommand"}`,
+			errorContains: "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff, Toggle, SetMode",
+		},
+		{
+			name:          "Missing switch for TurnOn",
+			parameter:     `{"command":"TurnOn"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for TurnOff",
+			parameter:     `{"command":"TurnOff"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for Toggle",
+			parameter:     `{"command":"Toggle"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Missing switch for SetMode",
+			parameter:     `{"command":"SetMode"}`,
+			errorContains: "Required property 'switch' is missing",
+		},
+		{
+			name:          "Invalid switch value (too low)",
+			parameter:     `{"command":"TurnOn","switch":0}`,
+			errorContains: "0 should be at least 1",
+		},
+		{
+			name:          "Invalid switch value (too high)",
+			parameter:     `{"command":"TurnOff","switch":3}`,
+			errorContains: "3 should be at most 2",
+		},
+		{
+			name:          "SetMode missing mode",
+			parameter:     `{"command":"SetMode","switch":1}`,
+			errorContains: "Required property 'mode' is missing",
+		},
+		{
+			name:          "Invalid mode value (too low)",
+			parameter:     `{"command":"SetMode","switch":1,"mode":-1}`,
+			errorContains: "-1 should be at least 0",
+		},
+		{
+			name:          "Invalid mode value (too high)",
+			parameter:     `{"command":"SetMode","switch":1,"mode":4}`,
+			errorContains: "4 should be at most 3",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			client := switchbot.NewClient("secret", "token")
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			_, err := device.ExecCommand(testData.parameter)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), testData.errorContains)
+		})
+	}
+}
+
+func Test_GarageDoorOpenerDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.GarageDoorOpenerDevice{}
+
+	schema, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, schema)
+}
+
+func Test_GarageDoorOpenerDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			parameter:    `{"command":"TurnOn"}`,
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			parameter:    `{"command":"TurnOff"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_GarageDoorOpenerDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name      string
+		parameter string
+		errMsg    string
+	}{
+		{
+			name:      "InvalidCommand",
+			parameter: `{"command":"InvalidCommand"}`,
+			errMsg:    "Value InvalidCommand should be one of the allowed values: TurnOn, TurnOff",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), testData.errMsg)
+			}
+			assert.Nil(t, response)
+		})
+	}
+}
+
+func Test_VideoDoorbellDeviceGetCommandParameterJSONSchema(t *testing.T) {
+	device := &switchbot.VideoDoorbellDevice{}
+
+	description, err := device.GetCommandParameterJSONSchema()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, description)
+}
+
+func Test_VideoDoorbellDeviceExecCommand(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		parameter    string
+	}{
+		{
+			name:         "EnableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "enableMotionDetection","parameter": "default"}`,
+			parameter:    `{"command":"EnableMotionDetection"}`,
+		},
+		{
+			name:         "DisableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "disableMotionDetection","parameter": "default"}`,
+			parameter:    `{"command":"DisableMotionDetection"}`,
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			assert.NoError(t, err)
+			assert.NotNil(t, response)
+
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func Test_VideoDoorbellDeviceExecCommandInvalid(t *testing.T) {
+	testDataList := []struct {
+		name      string
+		parameter string
+		errMsg    string
+	}{
+		{
+			name:      "EmptyCommand",
+			parameter: `{}`,
+			errMsg:    "Required property 'command' is missing",
+		},
+		{
+			name:      "InvalidCommand",
+			parameter: `{"command":"InvalidCommand"}`,
+			errMsg:    "Value InvalidCommand should be one of the allowed values: EnableMotionDetection, DisableMotionDetection",
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := device.ExecCommand(testData.parameter)
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), testData.errMsg)
+			}
+			assert.Nil(t, response)
 		})
 	}
 }

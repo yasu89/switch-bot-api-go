@@ -51,7 +51,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Hub Plus                              |   ✅   |    -    |   -    |      |
 | Hub Mini                              |   ✅   |    -    |   -    |  ✅   |
 | Hub 2                                 |   ✅   |    ✅    |   -    |  ✅   |
-| Hub 3                                 |   ❌   |    ❌    |   ❌    |      |
+| Hub 3                                 |   ✅   |    ✅    |   -    |      |
 | Meter                                 |   ✅   |    ✅    |   -    |  ✅   |
 | Meter Plus                            |   ✅   |    ✅    |   -    |      |
 | Outdoor Meter                         |   ✅   |    ✅    |   -    |      |
@@ -59,7 +59,7 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Meter Pro CO2                         |   ✅   |    ✅    |   -    |      |
 | Lock                                  |   ✅   |    ✅    |   ✅    |      |
 | Lock Pro                              |   ✅   |    ✅    |   ✅    |      |
-| Lock Ultra                            |   ❌   |    ❌    |   ❌    |      |
+| Lock Ultra                            |   ✅   |    ✅    |   ✅    |      |
 | Keypad                                |   ✅   |    ✅    |   ✅    |      |
 | Keypad Touch                          |   ✅   |    ✅    |   ✅    |      |
 | Remote                                |   ✅   |    -    |   -    |      |
@@ -79,8 +79,8 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Mini Robot Vacuum K10+ Pro            |   ✅   |    ✅    |   ✅    |      |
 | K10+ Pro Combo                        |   ✅   |    ✅    |   ✅    |      |
 | Floor Cleaning Robot S10              |   ✅   |    ✅    |   ✅    |      |
-| Floor Cleaning Robot S20              |   ❌   |    ❌    |   ❌    |      |
-| Multitasking Household Robot K20+ Pro |   ❌   |    ❌    |   ❌    |      |
+| Floor Cleaning Robot S20              |   ✅   |    ✅    |   ✅    |      |
+| Multitasking Household Robot K20+ Pro |   ✅   |    ✅    |   ✅    |      |
 | Humidifier                            |   ✅   |    ✅    |   ✅    |      |
 | Evaporative Humidifier                |   ✅   |    ✅    |   ✅    |      |
 | Evaporative Humidifier (Auto-refill)  |   ✅   |    ✅    |   ✅    |      |
@@ -97,13 +97,13 @@ $ go get github.com/yasu89/switch-bot-api-go
 | Roller Shade                          |   ✅   |    ✅    |   ✅    |      |
 | Relay Switch 1PM                      |   ✅   |    ✅    |   ✅    |      |
 | Relay Switch 1                        |   ✅   |    ✅    |   ✅    |      |
-| Relay Switch 2PM                      |   ❌   |    ❌    |   ❌    |      |
-| Garage Door Opener                    |   ❌   |    ❌    |   ❌    |      |
-| Floor Lamp                            |   ❌   |    ❌    |   ❌    |      |
-| LED Strip Light 3                     |   ❌   |    ❌    |   ❌    |      |
-| Lock Lite                             |   ❌   |    ❌    |   ❌    |      |
-| Video Doorbell                        |   ❌   |    ❌    |   ❌    |      |
-| Keypad Vision                         |   ❌   |    ❌    |   ❌    |      |
+| Relay Switch 2PM                      |   ✅   |    ✅    |   ✅    |      |
+| Garage Door Opener                    |   ✅   |    ✅    |   ✅    |      |
+| Floor Lamp                            |   ✅   |    ✅    |   ✅    |      |
+| LED Strip Light 3                     |   ✅   |    ✅    |   ✅    |      |
+| Lock Lite                             |   ✅   |    ✅    |   ✅    |      |
+| Video Doorbell                        |   ✅   |    ✅    |   ✅    |      |
+| Keypad Vision                         |   ✅   |    ✅    |   ✅    |      |
 
 ### 赤外線リモコン
 

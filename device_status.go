@@ -114,6 +114,39 @@ func (device *Hub2Device) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
+type Hub3DeviceStatusBody struct {
+	CommonDevice
+	Temperature  float64 `json:"temperature"`
+	LightLevel   int     `json:"lightLevel"`
+	Version      string  `json:"version"`
+	Humidity     int     `json:"humidity"`
+	MoveDetected bool    `json:"moveDetected"`
+	Online       string  `json:"online"`
+}
+
+type Hub3DeviceStatusResponse struct {
+	CommonResponse
+	Body *Hub3DeviceStatusBody `json:"body"`
+}
+
+func (device *Hub3Device) GetStatus() (*Hub3DeviceStatusResponse, error) {
+	response := &Hub3DeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *Hub3Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
 type MeterDeviceStatusBody struct {
 	CommonDevice
 	Temperature float64 `json:"temperature"`
@@ -202,6 +235,37 @@ func (device *LockDevice) GetStatus() (*LockDeviceStatusResponse, error) {
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
 func (device *LockDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
+type LockLiteDeviceStatusBody struct {
+	CommonDevice
+	Battery   int    `json:"battery"`
+	Version   string `json:"version"`
+	LockState string `json:"lockState"`
+	Calibrate bool   `json:"calibrate"`
+}
+
+type LockLiteDeviceStatusResponse struct {
+	CommonResponse
+	Body *LockLiteDeviceStatusBody `json:"body"`
+}
+
+func (device *LockLiteDevice) GetStatus() (*LockLiteDeviceStatusResponse, error) {
+	response := &LockLiteDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *LockLiteDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err
@@ -453,7 +517,7 @@ func (device *StripLightDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
-type ColorBulbDeviceStatusBody struct {
+type ColorLightDeviceStatusBody struct {
 	CommonDevice
 	Power            string `json:"power"`
 	Brightness       int    `json:"brightness"`
@@ -462,13 +526,13 @@ type ColorBulbDeviceStatusBody struct {
 	ColorTemperature int    `json:"colorTemperature"`
 }
 
-type ColorBulbDeviceStatusResponse struct {
+type ColorLightDeviceStatusResponse struct {
 	CommonResponse
-	Body *ColorBulbDeviceStatusBody `json:"body"`
+	Body *ColorLightDeviceStatusBody `json:"body"`
 }
 
-func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, error) {
-	response := &ColorBulbDeviceStatusResponse{}
+func (device *ColorLightDevice) GetStatus() (*ColorLightDeviceStatusResponse, error) {
+	response := &ColorLightDeviceStatusResponse{}
 	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
 	if err != nil {
 		return nil, err
@@ -477,7 +541,7 @@ func (device *ColorBulbDevice) GetStatus() (*ColorBulbDeviceStatusResponse, erro
 }
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
-func (device *ColorBulbDevice) GetAnyStatusBody() (any, error) {
+func (device *ColorLightDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err
@@ -515,7 +579,7 @@ func (device *RobotVacuumCleanerDevice) GetAnyStatusBody() (any, error) {
 	return status.Body, nil
 }
 
-type RobotVacuumCleanerS10DeviceStatusBody struct {
+type RobotVacuumCleanerSDeviceStatusBody struct {
 	CommonDevice
 	WorkingStatus    string `json:"workingStatus"`
 	OnlineStatus     string `json:"onlineStatus"`
@@ -524,13 +588,13 @@ type RobotVacuumCleanerS10DeviceStatusBody struct {
 	TaskType         string `json:"taskType"`
 }
 
-type RobotVacuumCleanerS10DeviceStatusResponse struct {
+type RobotVacuumCleanerSDeviceStatusResponse struct {
 	CommonResponse
-	Body *RobotVacuumCleanerS10DeviceStatusBody `json:"body"`
+	Body *RobotVacuumCleanerSDeviceStatusBody `json:"body"`
 }
 
-func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10DeviceStatusResponse, error) {
-	response := &RobotVacuumCleanerS10DeviceStatusResponse{}
+func (device *RobotVacuumCleanerSDevice) GetStatus() (*RobotVacuumCleanerSDeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerSDeviceStatusResponse{}
 	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
 	if err != nil {
 		return nil, err
@@ -539,7 +603,41 @@ func (device *RobotVacuumCleanerS10Device) GetStatus() (*RobotVacuumCleanerS10De
 }
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
-func (device *RobotVacuumCleanerS10Device) GetAnyStatusBody() (any, error) {
+func (device *RobotVacuumCleanerSDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
+// RobotVacuumCleanerComboDeviceStatusBody represents the status body of a Robot Vacuum Cleaner Combo device
+type RobotVacuumCleanerComboDeviceStatusBody struct {
+	CommonDevice
+	WorkingStatus string `json:"workingStatus"`
+	OnlineStatus  string `json:"onlineStatus"`
+	Battery       int    `json:"battery"`
+	TaskType      string `json:"taskType"`
+}
+
+// RobotVacuumCleanerComboDeviceStatusResponse represents the status response for a Robot Vacuum Cleaner Combo device
+type RobotVacuumCleanerComboDeviceStatusResponse struct {
+	CommonResponse
+	Body *RobotVacuumCleanerComboDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the status of the RobotVacuumCleanerComboDevice
+func (device *RobotVacuumCleanerComboDevice) GetStatus() (*RobotVacuumCleanerComboDeviceStatusResponse, error) {
+	response := &RobotVacuumCleanerComboDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RobotVacuumCleanerComboDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err
@@ -842,6 +940,117 @@ func (device *RelaySwitch1Device) GetStatus() (*RelaySwitch1DeviceStatusResponse
 
 // GetAnyStatusBody returns the status of the device as a value of type `any`
 func (device *RelaySwitch1Device) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
+// RelaySwitch2PMDeviceStatusBody represents the status of a Relay Switch 2PM device
+type RelaySwitch2PMDeviceStatusBody struct {
+	CommonDevice
+	Online                 bool   `json:"online"`
+	Switch1Status          int    `json:"switch1Status"`
+	Switch2Status          int    `json:"switch2Status"`
+	Switch1Voltage         int    `json:"switch1voltage"`
+	Switch2Voltage         int    `json:"switch2voltage"`
+	Version                string `json:"version"`
+	Switch1Power           int    `json:"switch1power"`
+	Switch2Power           int    `json:"switch2power"`
+	Switch1UsedElectricity int    `json:"switch1usedElectricity"`
+	Switch2UsedElectricity int    `json:"switch2usedElectricity"`
+	Switch1ElectricCurrent int    `json:"switch1electricCurrent"`
+	Switch2ElectricCurrent int    `json:"switch2electricCurrent"`
+	Calibrate              bool   `json:"calibrate"`
+	Position               int    `json:"position"`
+	IsStuck                string `json:"isStuck"`
+}
+
+// RelaySwitch2PMDeviceStatusResponse represents the response from getting the status of a Relay Switch 2PM device
+type RelaySwitch2PMDeviceStatusResponse struct {
+	CommonResponse
+	Body *RelaySwitch2PMDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the current status of the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) GetStatus() (*RelaySwitch2PMDeviceStatusResponse, error) {
+	response := &RelaySwitch2PMDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *RelaySwitch2PMDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
+// VideoDoorbellDeviceStatusBody represents the status body of a Video Doorbell device
+type VideoDoorbellDeviceStatusBody struct {
+	CommonDevice
+	Online  bool   `json:"online"`
+	Battery int    `json:"battery"`
+	Version string `json:"version"`
+}
+
+// VideoDoorbellDeviceStatusResponse represents the status response for a Video Doorbell device
+type VideoDoorbellDeviceStatusResponse struct {
+	CommonResponse
+	Body *VideoDoorbellDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the current status of the VideoDoorbellDevice
+func (device *VideoDoorbellDevice) GetStatus() (*VideoDoorbellDeviceStatusResponse, error) {
+	response := &VideoDoorbellDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *VideoDoorbellDevice) GetAnyStatusBody() (any, error) {
+	status, err := device.GetStatus()
+	if err != nil {
+		return nil, err
+	}
+	return status.Body, nil
+}
+
+// GarageDoorOpenerDeviceStatusBody represents the status of a Garage Door Opener device
+type GarageDoorOpenerDeviceStatusBody struct {
+	CommonDevice
+	DoorStatus int    `json:"doorStatus"`
+	Online     bool   `json:"online"`
+	Version    string `json:"version"`
+}
+
+// GarageDoorOpenerDeviceStatusResponse represents the response from getting the status of a Garage Door Opener device
+type GarageDoorOpenerDeviceStatusResponse struct {
+	CommonResponse
+	Body *GarageDoorOpenerDeviceStatusBody `json:"body"`
+}
+
+// GetStatus retrieves the current status of the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) GetStatus() (*GarageDoorOpenerDeviceStatusResponse, error) {
+	response := &GarageDoorOpenerDeviceStatusResponse{}
+	err := device.Client.GetRequest("/devices/"+device.DeviceID+"/status", GetDeviceStatusResponseParser(response))
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetAnyStatusBody returns the status of the device as a value of type `any`
+func (device *GarageDoorOpenerDevice) GetAnyStatusBody() (any, error) {
 	status, err := device.GetStatus()
 	if err != nil {
 		return nil, err

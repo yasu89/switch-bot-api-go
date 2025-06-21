@@ -57,6 +57,10 @@ type Hub2Device struct {
 	CommonDeviceListItem
 }
 
+type Hub3Device struct {
+	CommonDeviceListItem
+}
+
 type MeterDevice struct {
 	CommonDeviceListItem
 }
@@ -66,6 +70,14 @@ type MeterProCo2Device struct {
 }
 
 type LockDevice struct {
+	CommonDeviceListItem
+	Group          bool     `json:"group"`
+	Master         bool     `json:"master"`
+	GroupName      string   `json:"groupName"`
+	LockDevicesIds []string `json:"lockDevicesIds"`
+}
+
+type LockLiteDevice struct {
 	CommonDeviceListItem
 	Group          bool     `json:"group"`
 	Master         bool     `json:"master"`
@@ -121,7 +133,7 @@ type StripLightDevice struct {
 	CommonDeviceListItem
 }
 
-type ColorBulbDevice struct {
+type ColorLightDevice struct {
 	CommonDeviceListItem
 }
 
@@ -129,7 +141,11 @@ type RobotVacuumCleanerDevice struct {
 	CommonDeviceListItem
 }
 
-type RobotVacuumCleanerS10Device struct {
+type RobotVacuumCleanerSDevice struct {
+	CommonDeviceListItem
+}
+
+type RobotVacuumCleanerComboDevice struct {
 	CommonDeviceListItem
 }
 
@@ -186,6 +202,21 @@ type RelaySwitch1PMDevice struct {
 }
 
 type RelaySwitch1Device struct {
+	CommonDeviceListItem
+}
+
+// RelaySwitch2PMDevice represents a SwitchBot Relay Switch 2PM device
+type RelaySwitch2PMDevice struct {
+	CommonDeviceListItem
+}
+
+// GarageDoorOpenerDevice represents a SwitchBot Garage Door Opener device
+type GarageDoorOpenerDevice struct {
+	CommonDeviceListItem
+}
+
+// VideoDoorbellDevice represents a SwitchBot Video Doorbell device
+type VideoDoorbellDevice struct {
 	CommonDeviceListItem
 }
 
@@ -317,16 +348,22 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Hub 2":
 				parsed = &Hub2Device{}
 				parsed.(*Hub2Device).Client = client
+			case "Hub 3":
+				parsed = &Hub3Device{}
+				parsed.(*Hub3Device).Client = client
 			case "Meter", "MeterPlus", "WoIOSensor", "MeterPro":
 				parsed = &MeterDevice{}
 				parsed.(*MeterDevice).Client = client
 			case "MeterPro(CO2)":
 				parsed = &MeterProCo2Device{}
 				parsed.(*MeterProCo2Device).Client = client
-			case "Smart Lock", "Smart Lock Pro":
+			case "Smart Lock", "Smart Lock Pro", "Smart Lock Ultra":
 				parsed = &LockDevice{}
 				parsed.(*LockDevice).Client = client
-			case "Keypad", "Keypad Touch":
+			case "Smart Lock Lite":
+				parsed = &LockLiteDevice{}
+				parsed.(*LockLiteDevice).Client = client
+			case "Keypad", "Keypad Touch", "Keypad Vision":
 				parsed = &KeypadDevice{}
 				parsed.(*KeypadDevice).Client = client
 			case "Remote":
@@ -353,15 +390,18 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Strip Light":
 				parsed = &StripLightDevice{}
 				parsed.(*StripLightDevice).Client = client
-			case "Color Bulb":
-				parsed = &ColorBulbDevice{}
-				parsed.(*ColorBulbDevice).Client = client
-			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro", "Robot Vacuum Cleaner K10+ Pro Combo":
+			case "Color Bulb", "Floor Lamp", "Strip Light 3":
+				parsed = &ColorLightDevice{}
+				parsed.(*ColorLightDevice).Client = client
+			case "Robot Vacuum Cleaner S1", "Robot Vacuum Cleaner S1 Plus", "K10+", "K10+ Pro":
 				parsed = &RobotVacuumCleanerDevice{}
 				parsed.(*RobotVacuumCleanerDevice).Client = client
-			case "Robot Vacuum Cleaner S10":
-				parsed = &RobotVacuumCleanerS10Device{}
-				parsed.(*RobotVacuumCleanerS10Device).Client = client
+			case "Robot Vacuum Cleaner K10+ Pro Combo", "Robot Vacuum Cleaner K20 Plus Pro":
+				parsed = &RobotVacuumCleanerComboDevice{}
+				parsed.(*RobotVacuumCleanerComboDevice).Client = client
+			case "Robot Vacuum Cleaner S10", "Robot Vacuum Cleaner S20":
+				parsed = &RobotVacuumCleanerSDevice{}
+				parsed.(*RobotVacuumCleanerSDevice).Client = client
 			case "Humidifier":
 				parsed = &HumidifierDevice{}
 				parsed.(*HumidifierDevice).Client = client
@@ -395,6 +435,12 @@ func GetDevicesResponseParser(response *GetDevicesResponse) ResponseParser {
 			case "Relay Switch 1":
 				parsed = &RelaySwitch1Device{}
 				parsed.(*RelaySwitch1Device).Client = client
+			case "Relay Switch 2PM":
+				parsed = &RelaySwitch2PMDevice{}
+				parsed.(*RelaySwitch2PMDevice).Client = client
+			case "Video Doorbell":
+				parsed = &VideoDoorbellDevice{}
+				parsed.(*VideoDoorbellDevice).Client = client
 			default:
 				parsed = &CommonDeviceListItem{}
 				parsed.(*CommonDeviceListItem).Client = client

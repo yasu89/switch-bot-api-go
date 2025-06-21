@@ -1,12 +1,13 @@
 package switchbot_test
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/yasu89/switch-bot-api-go"
-	"github.com/yasu89/switch-bot-api-go/helpers"
 	"image/color"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	switchbot "github.com/yasu89/switch-bot-api-go"
+	"github.com/yasu89/switch-bot-api-go/helpers"
 )
 
 func TestBotDevice(t *testing.T) {
@@ -213,6 +214,48 @@ func TestLockDevice(t *testing.T) {
 	}
 }
 
+func TestLockLiteDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.LockLiteDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "Lock",
+			expectedBody: `{"commandType": "command","command": "lock","parameter": "default"}`,
+			method:       func(device *switchbot.LockLiteDevice) (*switchbot.CommonResponse, error) { return device.Lock() },
+		},
+		{
+			name:         "Unlock",
+			expectedBody: `{"commandType": "command","command": "unlock","parameter": "default"}`,
+			method:       func(device *switchbot.LockLiteDevice) (*switchbot.CommonResponse, error) { return device.Unlock() },
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.LockLiteDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
 func TestCeilingLightDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string
@@ -320,30 +363,30 @@ func TestStripLightDevice(t *testing.T) {
 	}
 }
 
-func TestColorBulbDevice(t *testing.T) {
+func TestColorLightDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
-		method       func(*switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error)
+		method       func(*switchbot.ColorLightDevice) (*switchbot.CommonResponse, error)
 	}{
 		{
 			name:         "SetBrightness",
 			expectedBody: `{"commandType": "command","command": "setBrightness","parameter": "55"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetBrightness(55)
 			},
 		},
 		{
 			name:         "SetColor",
 			expectedBody: `{"commandType": "command","command": "setColor","parameter": "255:100:0"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColor(color.RGBA{R: 255, G: 100, B: 0, A: 0})
 			},
 		},
 		{
 			name:         "SetColorTemperature",
 			expectedBody: `{"commandType": "command","command": "setColorTemperature","parameter": "5000"}`,
-			method: func(device *switchbot.ColorBulbDevice) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.ColorLightDevice) (*switchbot.CommonResponse, error) {
 				return device.SetColorTemperature(5000)
 			},
 		},
@@ -357,7 +400,7 @@ func TestColorBulbDevice(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.ColorBulbDevice{
+			device := &switchbot.ColorLightDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -412,16 +455,16 @@ func TestRobotVacuumCleanerDevice(t *testing.T) {
 	}
 }
 
-func TestRobotVacuumCleanerS10Device(t *testing.T) {
+func TestRobotVacuumCleanerSDevice(t *testing.T) {
 	testDataList := []struct {
 		name         string
 		expectedBody string
-		method       func(*switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error)
+		method       func(*switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error)
 	}{
 		{
 			name:         "StartClean",
 			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"sweep","param":{"fanLevel":1,"waterLevel":2,"times":100}}}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				startFloorCleaningParam, err := switchbot.NewStartFloorCleaningParam(switchbot.FloorCleaningActionSweep, 1, 2, 100)
 				if err != nil {
 					return nil, err
@@ -432,21 +475,21 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 		{
 			name:         "SetVolume",
 			expectedBody: `{"commandType":"command","command":"setVolume","parameter":"30"}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				return device.SetVolume(30)
 			},
 		},
 		{
 			name:         "SelfClean",
 			expectedBody: `{"commandType":"command","command":"selfClean","parameter":"1"}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				return device.SelfClean(switchbot.WashMopSelfCleaningMode)
 			},
 		},
 		{
 			name:         "ChangeParam",
 			expectedBody: `{"commandType":"command","command":"changeParam","parameter":{"fanLevel":2,"waterLevel":1,"times":20000}}`,
-			method: func(device *switchbot.RobotVacuumCleanerS10Device) (*switchbot.CommonResponse, error) {
+			method: func(device *switchbot.RobotVacuumCleanerSDevice) (*switchbot.CommonResponse, error) {
 				floorCleaningParam, err := switchbot.NewFloorCleaningParam(2, 1, 20000)
 				if err != nil {
 					return nil, err
@@ -464,7 +507,7 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 			defer testServer.Close()
 
 			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
-			device := &switchbot.RobotVacuumCleanerS10Device{
+			device := &switchbot.RobotVacuumCleanerSDevice{
 				CommonDeviceListItem: switchbot.CommonDeviceListItem{
 					CommonDevice: switchbot.CommonDevice{
 						DeviceID: "ABCDEF123456",
@@ -475,6 +518,93 @@ func TestRobotVacuumCleanerS10Device(t *testing.T) {
 			response, err := testData.method(device)
 			assert.NoError(t, err)
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func TestRobotVacuumCleanerComboDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "StartClean with sweep action",
+			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"sweep","param":{"fanLevel":2,"times":3600}}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param, err := switchbot.NewStartFloorCleaningComboParam(switchbot.FloorCleaningActionSweepCombo, 2, 3600)
+				if err != nil {
+					return nil, err
+				}
+				return device.StartClean(param)
+			},
+		},
+		{
+			name:         "StartClean with mop action",
+			expectedBody: `{"commandType":"command","command":"startClean","parameter":{"action":"mop","param":{"fanLevel":1,"times":1800}}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param, err := switchbot.NewStartFloorCleaningComboParam(switchbot.FloorCleaningActionMopCombo, 1, 1800)
+				if err != nil {
+					return nil, err
+				}
+				return device.StartClean(param)
+			},
+		},
+		{
+			name:         "Pause",
+			expectedBody: `{"commandType":"command","command":"pause","parameter":"default"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.Pause()
+			},
+		},
+		{
+			name:         "Dock",
+			expectedBody: `{"commandType":"command","command":"dock","parameter":"default"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.Dock()
+			},
+		},
+		{
+			name:         "SetVolume",
+			expectedBody: `{"commandType":"command","command":"setVolume","parameter":"50"}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				return device.SetVolume(50)
+			},
+		},
+		{
+			name:         "ChangeParam",
+			expectedBody: `{"commandType":"command","command":"changeParam","parameter":{"fanLevel":3,"waterLevel":2,"times":7200}}`,
+			method: func(device *switchbot.RobotVacuumCleanerComboDevice) (*switchbot.CommonResponse, error) {
+				param := &switchbot.FloorCleaningParam{
+					FanLevel:   3,
+					WaterLevel: 2,
+					Times:      7200,
+				}
+				return device.ChangeParam(param)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RobotVacuumCleanerComboDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := testData.method(device)
+			assert.NoError(t, err)
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}
@@ -903,6 +1033,194 @@ func TestRelaySwitch1Device(t *testing.T) {
 			response, err := testData.method(device)
 			assert.NoError(t, err)
 			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func TestRelaySwitch2PMDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "TurnOn switch 1",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn(1)
+			},
+		},
+		{
+			name:         "TurnOn switch 2",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn(2)
+			},
+		},
+		{
+			name:         "TurnOff switch 1",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff(1)
+			},
+		},
+		{
+			name:         "TurnOff switch 2",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff(2)
+			},
+		},
+		{
+			name:         "Toggle switch 1",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "1"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.Toggle(1)
+			},
+		},
+		{
+			name:         "Toggle switch 2",
+			expectedBody: `{"commandType": "command","command": "toggle","parameter": "2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.Toggle(2)
+			},
+		},
+		{
+			name:         "SetMode(Toggle) switch 1",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "1,0"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(1, switchbot.RelaySwitchModeToggle)
+			},
+		},
+		{
+			name:         "SetMode(Momentary) switch 1",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "1,3"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(1, switchbot.RelaySwitchModeMomentary)
+			},
+		},
+		{
+			name:         "SetMode(Detached) switch 2",
+			expectedBody: `{"commandType": "command","command": "setMode","parameter": "2,2"}`,
+			method: func(device *switchbot.RelaySwitch2PMDevice) (*switchbot.CommonResponse, error) {
+				return device.SetMode(2, switchbot.RelaySwitchModeDetached)
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.RelaySwitch2PMDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+
+func TestGarageDoorOpenerDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "TurnOn",
+			expectedBody: `{"commandType": "command","command": "turnOn","parameter": "default"}`,
+			method: func(device *switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOn()
+			},
+		},
+		{
+			name:         "TurnOff",
+			expectedBody: `{"commandType": "command","command": "turnOff","parameter": "default"}`,
+			method: func(device *switchbot.GarageDoorOpenerDevice) (*switchbot.CommonResponse, error) {
+				return device.TurnOff()
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.GarageDoorOpenerDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			response, err := testData.method(device)
+			assert.NoError(t, err)
+			assertResponse(t, response)
+			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
+		})
+	}
+}
+func TestVideoDoorbellDevice(t *testing.T) {
+	testDataList := []struct {
+		name         string
+		expectedBody string
+		method       func(*switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error)
+	}{
+		{
+			name:         "EnableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "enableMotionDetection","parameter": "default"}`,
+			method: func(device *switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error) {
+				return device.EnableMotionDetection()
+			},
+		},
+		{
+			name:         "DisableMotionDetection",
+			expectedBody: `{"commandType": "command","command": "disableMotionDetection","parameter": "default"}`,
+			method: func(device *switchbot.VideoDoorbellDevice) (*switchbot.CommonResponse, error) {
+				return device.DisableMotionDetection()
+			},
+		},
+	}
+
+	for _, testData := range testDataList {
+		t.Run(testData.name, func(t *testing.T) {
+			switchBotMock := helpers.NewSwitchBotMock(t)
+			switchBotMock.RegisterCommandMock("ABCDEF123456", testData.expectedBody)
+			testServer := switchBotMock.NewTestServer()
+			defer testServer.Close()
+
+			client := switchbot.NewClient("secret", "token", switchbot.OptionBaseApiURL(testServer.URL))
+			device := &switchbot.VideoDoorbellDevice{
+				CommonDeviceListItem: switchbot.CommonDeviceListItem{
+					CommonDevice: switchbot.CommonDevice{
+						DeviceID: "ABCDEF123456",
+					},
+					Client: client,
+				},
+			}
+
+			_, err := testData.method(device)
+			assert.NoError(t, err)
+
 			switchBotMock.AssertCallCount(http.MethodPost, "/devices/ABCDEF123456/commands", 1)
 		})
 	}

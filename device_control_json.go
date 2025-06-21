@@ -163,6 +163,34 @@ func (device *LockDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(LockDeviceCommandParameter{})
 }
 
+// LockLiteDeviceCommandParameter is a struct that represents the command parameter for the LockLiteDevice
+type LockLiteDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"Lock,Unlock" description:"Lock:rotate to locked position, Unlock:rotate to unlocked position" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the LockLiteDevice
+func (device *LockLiteDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter LockLiteDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "Lock":
+		return device.Lock()
+	case "Unlock":
+		return device.Unlock()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the LockLiteDevice command parameter
+func (device *LockLiteDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(LockLiteDeviceCommandParameter{})
+}
+
 // KeypadDeviceCommandParameter is a struct that represents the command parameter for the KeypadDevice
 type KeypadDeviceCommandParameter struct {
 	Command   string   `json:"command" title:"Command" enum:"CreateKey,DeleteKey" required:"true" description:"CreateKey:create a new passcode, DeleteKey:delete an existing passcode"`
@@ -485,9 +513,9 @@ func (device *StripLightDevice) GetCommandParameterJSONSchema() (string, error) 
 	return reflectJSONSchema(StripLightDeviceCommandParameter{})
 }
 
-// ColorBulbDeviceCommandParameter is a struct that represents the command parameter for the ColorBulbDevice
-type ColorBulbDeviceCommandParameter struct {
-	Command          string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetBrightness,SetColor,SetColorTemperature" description:"TurnOn:turn on the bulb, TurnOff:turn off the bulb, Toggle:toggle the bulb, SetBrightness:set brightness, SetColor:set color, SetColorTemperature:set color temperature" required:"true"`
+// ColorLightDeviceCommandParameter is a struct that represents the command parameter for the ColorLightDevice
+type ColorLightDeviceCommandParameter struct {
+	Command          string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetBrightness,SetColor,SetColorTemperature" description:"TurnOn:turn on the light, TurnOff:turn off the light, Toggle:toggle the light, SetBrightness:set brightness, SetColor:set color, SetColorTemperature:set color temperature" required:"true"`
 	Brightness       int      `json:"brightness" title:"Brightness" minimum:"1" maximum:"100" description:"Brightness level (1-100)"`
 	Red              int      `json:"red" title:"Red" minimum:"0" maximum:"255" description:"Red color value (0-255)"`
 	Green            int      `json:"green" title:"Green" minimum:"0" maximum:"255" description:"Green color value (0-255)"`
@@ -496,35 +524,35 @@ type ColorBulbDeviceCommandParameter struct {
 	_                struct{} `additionalProperties:"false"`
 }
 
-// ColorBulbDeviceCommandSetBrightnessIfExposer represents the SetBrightness command parameters
-type ColorBulbDeviceCommandSetBrightnessIfExposer struct{}
+// ColorLightDeviceCommandSetBrightnessIfExposer represents the SetBrightness command parameters
+type ColorLightDeviceCommandSetBrightnessIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetBrightness
-func (parameter *ColorBulbDeviceCommandSetBrightnessIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetBrightness
+func (parameter *ColorLightDeviceCommandSetBrightnessIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetBrightness" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetBrightness
-func (parameter *ColorBulbDeviceCommandSetBrightnessIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetBrightness
+func (parameter *ColorLightDeviceCommandSetBrightnessIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Brightness int `json:"brightness" required:"true"`
 	}{}
 }
 
-// ColorBulbDeviceCommandSetColorIfExposer represents the SetColor command parameters
-type ColorBulbDeviceCommandSetColorIfExposer struct{}
+// ColorLightDeviceCommandSetColorIfExposer represents the SetColor command parameters
+type ColorLightDeviceCommandSetColorIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetColor
-func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetColor
+func (parameter *ColorLightDeviceCommandSetColorIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetColor" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetColor
-func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetColor
+func (parameter *ColorLightDeviceCommandSetColorIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Red   int `json:"red" required:"true"`
 		Green int `json:"green" required:"true"`
@@ -532,35 +560,35 @@ func (parameter *ColorBulbDeviceCommandSetColorIfExposer) JSONSchemaThen() inter
 	}{}
 }
 
-// ColorBulbDeviceCommandSetColorTemperatureIfExposer represents the SetColorTemperature command parameters
-type ColorBulbDeviceCommandSetColorTemperatureIfExposer struct{}
+// ColorLightDeviceCommandSetColorTemperatureIfExposer represents the SetColorTemperature command parameters
+type ColorLightDeviceCommandSetColorTemperatureIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the ColorBulbDevice command parameter for SetColorTemperature
-func (parameter *ColorBulbDeviceCommandSetColorTemperatureIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the ColorLightDevice command parameter for SetColorTemperature
+func (parameter *ColorLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetColorTemperature" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the ColorBulbDevice command parameter for SetColorTemperature
-func (parameter *ColorBulbDeviceCommandSetColorTemperatureIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the ColorLightDevice command parameter for SetColorTemperature
+func (parameter *ColorLightDeviceCommandSetColorTemperatureIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		ColorTemperature int `json:"colorTemperature" required:"true"`
 	}{}
 }
 
-// JSONSchemaAllOf returns the JSON schema allOf block for the ColorBulbDevice command parameter
-func (parameter *ColorBulbDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+// JSONSchemaAllOf returns the JSON schema allOf block for the ColorLightDevice command parameter
+func (parameter *ColorLightDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		&ColorBulbDeviceCommandSetBrightnessIfExposer{},
-		&ColorBulbDeviceCommandSetColorIfExposer{},
-		&ColorBulbDeviceCommandSetColorTemperatureIfExposer{},
+		&ColorLightDeviceCommandSetBrightnessIfExposer{},
+		&ColorLightDeviceCommandSetColorIfExposer{},
+		&ColorLightDeviceCommandSetColorTemperatureIfExposer{},
 	}
 }
 
-// ExecCommand sends a command to the ColorBulbDevice
-func (device *ColorBulbDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
-	var parameter ColorBulbDeviceCommandParameter
+// ExecCommand sends a command to the ColorLightDevice
+func (device *ColorLightDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter ColorLightDeviceCommandParameter
 	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
@@ -583,9 +611,9 @@ func (device *ColorBulbDevice) ExecCommand(jsonString string) (*CommonResponse, 
 	}
 }
 
-// GetCommandParameterJSONSchema returns the JSON schema for the ColorBulbDevice command parameter
-func (device *ColorBulbDevice) GetCommandParameterJSONSchema() (string, error) {
-	return reflectJSONSchema(ColorBulbDeviceCommandParameter{})
+// GetCommandParameterJSONSchema returns the JSON schema for the ColorLightDevice command parameter
+func (device *ColorLightDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(ColorLightDeviceCommandParameter{})
 }
 
 // RobotVacuumCleanerDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerDevice
@@ -645,8 +673,8 @@ func (device *RobotVacuumCleanerDevice) GetCommandParameterJSONSchema() (string,
 	return reflectJSONSchema(RobotVacuumCleanerDeviceCommandParameter{})
 }
 
-// RobotVacuumCleanerS10DeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerS10Device
-type RobotVacuumCleanerS10DeviceCommandParameter struct {
+// RobotVacuumCleanerSDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerSDevice
+type RobotVacuumCleanerSDeviceCommandParameter struct {
 	Command    string   `json:"command" title:"Command" enum:"StartClean,AddWaterForHumi,Pause,Dock,SetVolume,SelfClean,ChangeParam" description:"StartClean:start cleaning, AddWaterForHumi:refill the humidifier, Pause:pause cleaning, Dock:return to charging dock, SetVolume:set volume level, SelfClean:start self-cleaning, ChangeParam:change cleaning parameters" required:"true"`
 	Action     string   `json:"action" title:"Action" enum:"sweep,sweep_mop" description:"sweep:sweep only, sweep_mop:sweep and mop"`
 	FanLevel   int      `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"4" description:"Fan level (1-4)"`
@@ -657,18 +685,18 @@ type RobotVacuumCleanerS10DeviceCommandParameter struct {
 	_          struct{} `additionalProperties:"false"`
 }
 
-// RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer represents the StartClean command parameters
-type RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandStartCleanIfExposer represents the StartClean command parameters
+type RobotVacuumCleanerSDeviceCommandStartCleanIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for StartClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for StartClean
+func (parameter *RobotVacuumCleanerSDeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"StartClean" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for StartClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for StartClean
+func (parameter *RobotVacuumCleanerSDeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Action     string `json:"action" required:"true"`
 		FanLevel   int    `json:"fanLevel" required:"true"`
@@ -677,52 +705,52 @@ func (parameter *RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer) JSONSche
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer represents the SetVolume command parameters
-type RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer represents the SetVolume command parameters
+type RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SetVolume
-func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for SetVolume
+func (parameter *RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SetVolume" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SetVolume
-func (parameter *RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for SetVolume
+func (parameter *RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Volume int `json:"volume" required:"true"`
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer represents the SelfClean command parameters
-type RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer represents the SelfClean command parameters
+type RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for SelfClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for SelfClean
+func (parameter *RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"SelfClean" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for SelfClean
-func (parameter *RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for SelfClean
+func (parameter *RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		Mode int `json:"mode" required:"true"`
 	}{}
 }
 
-// RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer represents the ChangeParam command parameters
-type RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer struct{}
+// RobotVacuumCleanerSDeviceCommandChangeParamIfExposer represents the ChangeParam command parameters
+type RobotVacuumCleanerSDeviceCommandChangeParamIfExposer struct{}
 
-// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
-func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerSDevice command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerSDeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
 	return struct {
 		Command string `json:"command" const:"ChangeParam" required:"true"`
 	}{}
 }
 
-// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerS10Device command parameter for ChangeParam
-func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerSDevice command parameter for ChangeParam
+func (parameter *RobotVacuumCleanerSDeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
 	return struct {
 		FanLevel   int `json:"fanLevel" required:"true"`
 		WaterLevel int `json:"waterLevel" required:"true"`
@@ -730,19 +758,19 @@ func (parameter *RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer) JSONSch
 	}{}
 }
 
-// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerS10Device command parameter
-func (parameter *RobotVacuumCleanerS10DeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerSDevice command parameter
+func (parameter *RobotVacuumCleanerSDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
 	return []interface{}{
-		&RobotVacuumCleanerS10DeviceCommandStartCleanIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandSetVolumeIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandSelfCleanIfExposer{},
-		&RobotVacuumCleanerS10DeviceCommandChangeParamIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandStartCleanIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandSetVolumeIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandSelfCleanIfExposer{},
+		&RobotVacuumCleanerSDeviceCommandChangeParamIfExposer{},
 	}
 }
 
-// ExecCommand sends a command to the RobotVacuumCleanerS10Device
-func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*CommonResponse, error) {
-	var parameter RobotVacuumCleanerS10DeviceCommandParameter
+// ExecCommand sends a command to the RobotVacuumCleanerSDevice
+func (device *RobotVacuumCleanerSDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerSDeviceCommandParameter
 	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
 		return nil, err
 	}
@@ -775,9 +803,122 @@ func (device *RobotVacuumCleanerS10Device) ExecCommand(jsonString string) (*Comm
 	}
 }
 
-// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerS10Device command parameter
-func (device *RobotVacuumCleanerS10Device) GetCommandParameterJSONSchema() (string, error) {
-	return reflectJSONSchema(RobotVacuumCleanerS10DeviceCommandParameter{})
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerSDevice command parameter
+func (device *RobotVacuumCleanerSDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerSDeviceCommandParameter{})
+}
+
+// RobotVacuumCleanerComboDeviceCommandParameter is a struct that represents the command parameter for the RobotVacuumCleanerComboDevice
+type RobotVacuumCleanerComboDeviceCommandParameter struct {
+	Command    string `json:"command" title:"Command" enum:"startClean,pause,dock,setVolume,changeParam" description:"startClean:start cleaning, pause:pause cleaning, dock:return to charging dock, setVolume:set volume level, changeParam:change cleaning parameters" required:"true"`
+	Action     string `json:"action" title:"Action" enum:"sweep,mop" description:"sweep:sweep only, mop:mop only"`
+	FanLevel   int    `json:"fanLevel" title:"FanLevel" minimum:"1" maximum:"4" description:"Fan level (1-4)"`
+	WaterLevel int    `json:"waterLevel" title:"WaterLevel" minimum:"1" maximum:"2" description:"Water level (1-2)"`
+	Times      int    `json:"times" title:"Times" minimum:"1" maximum:"2639999" description:"the number of cycles"`
+	Volume     int    `json:"volume" title:"Volume" minimum:"0" maximum:"100" description:"Volume level (0-100)"`
+
+	_ struct{} `additionalProperties:"false"`
+}
+
+// RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer represents the startClean command parameters
+type RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for startClean
+func (parameter *RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"startClean" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for startClean
+func (parameter *RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Action   string `json:"action" required:"true"`
+		FanLevel int    `json:"fanLevel" required:"true"`
+		Times    int    `json:"times" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer represents the setVolume command parameters
+type RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for setVolume
+func (parameter *RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"setVolume" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for setVolume
+func (parameter *RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Volume int `json:"volume" required:"true"`
+	}{}
+}
+
+// RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer represents the changeParam command parameters
+type RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RobotVacuumCleanerComboDevice command parameter for changeParam
+func (parameter *RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"changeParam" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RobotVacuumCleanerComboDevice command parameter for changeParam
+func (parameter *RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		FanLevel   int `json:"fanLevel" required:"true"`
+		WaterLevel int `json:"waterLevel" required:"true"`
+		Times      int `json:"times" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RobotVacuumCleanerComboDevice command parameter
+func (parameter *RobotVacuumCleanerComboDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RobotVacuumCleanerComboDeviceCommandStartCleanIfExposer{},
+		&RobotVacuumCleanerComboDeviceCommandSetVolumeIfExposer{},
+		&RobotVacuumCleanerComboDeviceCommandChangeParamIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RobotVacuumCleanerComboDevice
+func (device *RobotVacuumCleanerComboDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RobotVacuumCleanerComboDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "startClean":
+		action := FloorCleaningActionCombo(parameter.Action)
+		startParam, err := NewStartFloorCleaningComboParam(action, parameter.FanLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.StartClean(startParam)
+	case "pause":
+		return device.Pause()
+	case "dock":
+		return device.Dock()
+	case "setVolume":
+		return device.SetVolume(parameter.Volume)
+	case "changeParam":
+		floorParam, err := NewFloorCleaningParam(parameter.FanLevel, parameter.WaterLevel, parameter.Times)
+		if err != nil {
+			return nil, err
+		}
+		return device.ChangeParam(floorParam)
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RobotVacuumCleanerComboDevice command parameter
+func (device *RobotVacuumCleanerComboDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RobotVacuumCleanerComboDeviceCommandParameter{})
 }
 
 // HumidifierDeviceCommandParameter is a struct that represents the command parameter for the HumidifierDevice
@@ -1346,6 +1487,120 @@ func (device *RelaySwitch1PMDevice) ExecCommand(jsonString string) (*CommonRespo
 // GetCommandParameterJSONSchema returns the JSON schema for the RelaySwitch1PMDevice command parameter
 func (device *RelaySwitch1PMDevice) GetCommandParameterJSONSchema() (string, error) {
 	return reflectJSONSchema(RelaySwitch1DeviceCommandParameter{})
+}
+
+// RelaySwitch2PMDeviceCommandParameter is a struct that represents the command parameter for the RelaySwitch2PMDevice
+type RelaySwitch2PMDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff,Toggle,SetMode" description:"TurnOn:turn on the relay switch, TurnOff:turn off the relay switch, Toggle:toggle the relay switch state, SetMode:set the mode of the relay switch" required:"true"`
+	Switch  int      `json:"switch" title:"Switch" minimum:"1" maximum:"2" description:"Switch number (1 or 2)" required:"true"`
+	Mode    int      `json:"mode" title:"Mode" minimum:"0" maximum:"3" description:"Mode (0:toggle mode, 1:edge switch mode, 2:detached switch mode, 3:momentary switch mode)"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// RelaySwitch2PMDeviceCommandSetModeIfExposer represents the SetMode command parameters
+type RelaySwitch2PMDeviceCommandSetModeIfExposer struct{}
+
+// JSONSchemaIf returns the JSON schema if block for the RelaySwitch2PMDevice command parameter for SetMode
+func (parameter *RelaySwitch2PMDeviceCommandSetModeIfExposer) JSONSchemaIf() interface{} {
+	return struct {
+		Command string `json:"command" const:"SetMode" required:"true"`
+	}{}
+}
+
+// JSONSchemaThen returns the JSON schema then block for the RelaySwitch2PMDevice command parameter for SetMode
+func (parameter *RelaySwitch2PMDeviceCommandSetModeIfExposer) JSONSchemaThen() interface{} {
+	return struct {
+		Mode int `json:"mode" required:"true"`
+	}{}
+}
+
+// JSONSchemaAllOf returns the JSON schema allOf block for the RelaySwitch2PMDevice command parameter
+func (parameter *RelaySwitch2PMDeviceCommandParameter) JSONSchemaAllOf() []interface{} {
+	return []interface{}{
+		&RelaySwitch2PMDeviceCommandSetModeIfExposer{},
+	}
+}
+
+// ExecCommand sends a command to the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter RelaySwitch2PMDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn(parameter.Switch)
+	case "TurnOff":
+		return device.TurnOff(parameter.Switch)
+	case "Toggle":
+		return device.Toggle(parameter.Switch)
+	case "SetMode":
+		return device.SetMode(parameter.Switch, RelaySwitchMode(parameter.Mode))
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the RelaySwitch2PMDevice command parameter
+func (device *RelaySwitch2PMDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(RelaySwitch2PMDeviceCommandParameter{})
+}
+
+// GarageDoorOpenerDeviceCommandParameter is a struct that represents the command parameter for the GarageDoorOpenerDevice
+type GarageDoorOpenerDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"TurnOn,TurnOff" description:"TurnOn:open the garage door, TurnOff:close the garage door" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter GarageDoorOpenerDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "TurnOn":
+		return device.TurnOn()
+	case "TurnOff":
+		return device.TurnOff()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the GarageDoorOpenerDevice command parameter
+func (device *GarageDoorOpenerDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(GarageDoorOpenerDeviceCommandParameter{})
+}
+
+// VideoDoorbellDeviceCommandParameter is a struct that represents the command parameter for the VideoDoorbellDevice
+type VideoDoorbellDeviceCommandParameter struct {
+	Command string   `json:"command" title:"Command" enum:"EnableMotionDetection,DisableMotionDetection" description:"EnableMotionDetection:enable motion detection, DisableMotionDetection:disable motion detection" required:"true"`
+	_       struct{} `additionalProperties:"false"`
+}
+
+// ExecCommand sends a command to the VideoDoorbellDevice
+func (device *VideoDoorbellDevice) ExecCommand(jsonString string) (*CommonResponse, error) {
+	var parameter VideoDoorbellDeviceCommandParameter
+	if err := validateAndUnmarshalJSON(device, jsonString, &parameter); err != nil {
+		return nil, err
+	}
+
+	switch parameter.Command {
+	case "EnableMotionDetection":
+		return device.EnableMotionDetection()
+	case "DisableMotionDetection":
+		return device.DisableMotionDetection()
+	default:
+		return nil, fmt.Errorf("invalid Command: %s", parameter.Command)
+	}
+}
+
+// GetCommandParameterJSONSchema returns the JSON schema for the VideoDoorbellDevice command parameter
+func (device *VideoDoorbellDevice) GetCommandParameterJSONSchema() (string, error) {
+	return reflectJSONSchema(&VideoDoorbellDeviceCommandParameter{})
 }
 
 // InfraredRemoteAirConditionerDeviceCommandParameter is a struct that represents the command parameter for the InfraredRemoteAirConditionerDevice

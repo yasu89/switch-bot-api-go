@@ -94,6 +94,16 @@ func (device *LockDevice) Unlock() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "unlock")
 }
 
+// Lock sends a command to lock the LockLiteDevice
+func (device *LockLiteDevice) Lock() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "lock")
+}
+
+// Unlock sends a command to unlock the LockLiteDevice
+func (device *LockLiteDevice) Unlock() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "unlock")
+}
+
 type KeypadKey struct {
 	Name      string `json:"name"`
 	Type      string `json:"type"`
@@ -260,23 +270,23 @@ func (device *StripLightDevice) SetColor(color color.RGBA) (*CommonResponse, err
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// TurnOn sends a command to turn on the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOn() (*CommonResponse, error) {
+// TurnOn sends a command to turn on the ColorLightDevice
+func (device *ColorLightDevice) TurnOn() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")
 }
 
-// TurnOff sends a command to turn off the ColorBulbDevice
-func (device *ColorBulbDevice) TurnOff() (*CommonResponse, error) {
+// TurnOff sends a command to turn off the ColorLightDevice
+func (device *ColorLightDevice) TurnOff() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOff")
 }
 
-// Toggle sends a command to toggle the ColorBulbDevice
-func (device *ColorBulbDevice) Toggle() (*CommonResponse, error) {
+// Toggle sends a command to toggle the ColorLightDevice
+func (device *ColorLightDevice) Toggle() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "toggle")
 }
 
-// SetBrightness sends a command to set the brightness of the ColorBulbDevice
-func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, error) {
+// SetBrightness sends a command to set the brightness of the ColorLightDevice
+func (device *ColorLightDevice) SetBrightness(brightness int) (*CommonResponse, error) {
 	if brightness < 1 || brightness > 100 {
 		return nil, fmt.Errorf("invalid brightness: %d", brightness)
 	}
@@ -288,8 +298,8 @@ func (device *ColorBulbDevice) SetBrightness(brightness int) (*CommonResponse, e
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetColor sends a command to set the color of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
+// SetColor sends a command to set the color of the ColorLightDevice
+func (device *ColorLightDevice) SetColor(color color.RGBA) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "setColor",
@@ -298,8 +308,8 @@ func (device *ColorBulbDevice) SetColor(color color.RGBA) (*CommonResponse, erro
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// SetColorTemperature sends a command to set the color temperature of the ColorBulbDevice
-func (device *ColorBulbDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
+// SetColorTemperature sends a command to set the color temperature of the ColorLightDevice
+func (device *ColorLightDevice) SetColorTemperature(colorTemperature int) (*CommonResponse, error) {
 	if colorTemperature < 2700 || colorTemperature > 6500 {
 		return nil, fmt.Errorf("invalid colorTemperature: %d", colorTemperature)
 	}
@@ -400,8 +410,8 @@ func NewFloorCleaningParam(fanLevel int, waterLevel int, times int) (*FloorClean
 	}, nil
 }
 
-// StartClean sends a command to start cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam *StartFloorCleaningParam) (*CommonResponse, error) {
+// StartClean sends a command to start cleaning the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) StartClean(startFloorCleaningParam *StartFloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "startClean",
@@ -410,23 +420,23 @@ func (device *RobotVacuumCleanerS10Device) StartClean(startFloorCleaningParam *S
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// AddWaterForHumi sends a command to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) AddWaterForHumi() (*CommonResponse, error) {
+// AddWaterForHumi sends a command to refill the mind-blowing Evaporative Humidifier (Auto-refill) in the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) AddWaterForHumi() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "addWaterForHumi")
 }
 
-// Pause sends a command to pause the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) Pause() (*CommonResponse, error) {
+// Pause sends a command to pause the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) Pause() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "pause")
 }
 
-// Dock sends a command to return the RobotVacuumCleanerS10Device to its charging dock.
-func (device *RobotVacuumCleanerS10Device) Dock() (*CommonResponse, error) {
+// Dock sends a command to return the RobotVacuumCleanerSDevice to its charging dock.
+func (device *RobotVacuumCleanerSDevice) Dock() (*CommonResponse, error) {
 	return sendDefaultParameterCommand(device.Client, device.DeviceID, "dock")
 }
 
-// SetVolume sends a command to set the volume of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SetVolume(volume int) (*CommonResponse, error) {
+// SetVolume sends a command to set the volume of the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) SetVolume(volume int) (*CommonResponse, error) {
 	if volume < 0 || volume > 100 {
 		return nil, fmt.Errorf("invalid volume: %d", volume)
 	}
@@ -446,8 +456,8 @@ const (
 	TerminateSelfCleaningMode = SelfCleaningMode(3)
 )
 
-// SelfClean sends a command to start self-cleaning the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*CommonResponse, error) {
+// SelfClean sends a command to start self-cleaning the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) SelfClean(mode SelfCleaningMode) (*CommonResponse, error) {
 	if mode < 1 || mode > 3 {
 		return nil, fmt.Errorf("invalid mode: %d", mode)
 	}
@@ -459,8 +469,111 @@ func (device *RobotVacuumCleanerS10Device) SelfClean(mode SelfCleaningMode) (*Co
 	return device.Client.SendCommand(device.DeviceID, request)
 }
 
-// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerS10Device.
-func (device *RobotVacuumCleanerS10Device) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
+// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerSDevice.
+func (device *RobotVacuumCleanerSDevice) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "changeParam",
+		Parameter:   floorCleaningParam,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// FloorCleaningActionCombo represents the action to be performed in floor cleaning mode for Combo devices.
+type FloorCleaningActionCombo string
+
+const (
+	FloorCleaningActionSweepCombo FloorCleaningActionCombo = "sweep"
+	FloorCleaningActionMopCombo   FloorCleaningActionCombo = "mop"
+)
+
+// FloorCleaningComboParam represents the parameters for floor cleaning mode for Combo devices.
+type FloorCleaningComboParam struct {
+	FanLevel int `json:"fanLevel"`
+	Times    int `json:"times"`
+}
+
+// StartFloorCleaningComboParam represents the parameters for starting floor cleaning mode for Combo devices.
+type StartFloorCleaningComboParam struct {
+	Action FloorCleaningActionCombo `json:"action"`
+	Param  FloorCleaningComboParam  `json:"param"`
+}
+
+// NewFloorCleaningComboParam creates a new FloorCleaningComboParam instance with validation.
+func NewFloorCleaningComboParam(fanLevel int, times int) (*FloorCleaningComboParam, error) {
+	if fanLevel < 1 || fanLevel > 4 {
+		return nil, fmt.Errorf("invalid fanLevel: %d", fanLevel)
+	}
+
+	if times < 1 || times > 2639999 {
+		return nil, fmt.Errorf("invalid times: %d", times)
+	}
+
+	return &FloorCleaningComboParam{
+		FanLevel: fanLevel,
+		Times:    times,
+	}, nil
+}
+
+// NewStartFloorCleaningComboParam creates a new StartFloorCleaningComboParam instance with validation.
+func NewStartFloorCleaningComboParam(action FloorCleaningActionCombo, fanLevel int, times int) (*StartFloorCleaningComboParam, error) {
+	param, err := NewFloorCleaningComboParam(fanLevel, times)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StartFloorCleaningComboParam{
+		Action: action,
+		Param:  *param,
+	}, nil
+}
+
+// StartClean sends a command to start cleaning the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) StartClean(startFloorCleaningParam *StartFloorCleaningComboParam) (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "startClean",
+		Parameter:   startFloorCleaningParam,
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Pause sends a command to pause the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) Pause() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "pause",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// Dock sends a command to return the RobotVacuumCleanerComboDevice to its charging dock.
+func (device *RobotVacuumCleanerComboDevice) Dock() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "dock",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// SetVolume sends a command to set the volume of the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) SetVolume(volume int) (*CommonResponse, error) {
+	if volume < 0 || volume > 100 {
+		return nil, fmt.Errorf("volume must be between 0 and 100")
+	}
+
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setVolume",
+		Parameter:   fmt.Sprintf("%d", volume),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// ChangeParam sends a command to change the cleaning parameters of the RobotVacuumCleanerComboDevice.
+func (device *RobotVacuumCleanerComboDevice) ChangeParam(floorCleaningParam *FloorCleaningParam) (*CommonResponse, error) {
 	request := ControlRequest{
 		CommandType: "command",
 		Command:     "changeParam",
@@ -854,6 +967,99 @@ func (device *RelaySwitch1Device) SetMode(mode RelaySwitchMode) (*CommonResponse
 		CommandType: "command",
 		Command:     "setMode",
 		Parameter:   fmt.Sprintf("%d", mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// TurnOn sends a command to turn on the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) TurnOn(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "turnOn",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// TurnOff sends a command to turn off the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) TurnOff(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "turnOff",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// Toggle sends a command to toggle the specified switch of the RelaySwitch2PMDevice
+// switchNum: 1 for switch 1, 2 for switch 2
+func (device *RelaySwitch2PMDevice) Toggle(switchNum int) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	return device.Client.SendCommand(device.DeviceID, ControlRequest{
+		CommandType: "command",
+		Command:     "toggle",
+		Parameter:   fmt.Sprintf("%d", switchNum),
+	})
+}
+
+// SetMode sends a command to set the mode of the RelaySwitch2PMDevice
+func (device *RelaySwitch2PMDevice) SetMode(switchNum int, mode RelaySwitchMode) (*CommonResponse, error) {
+	if err := validate2PMDeviceSwitchNumber(switchNum); err != nil {
+		return nil, err
+	}
+	if mode < 0 || mode > 3 {
+		return nil, fmt.Errorf("invalid mode: %d, must be between 0 and 3", mode)
+	}
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "setMode",
+		Parameter:   fmt.Sprintf("%d,%d", switchNum, mode),
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// validate2PMDeviceSwitchNumber checks if the switch number is valid (1 or 2)
+func validate2PMDeviceSwitchNumber(switchNumber int) error {
+	if switchNumber < 1 || switchNumber > 2 {
+		return fmt.Errorf("invalid switch number: %d, must be 1 or 2", switchNumber)
+	}
+	return nil
+}
+
+// TurnOn sends a command to turn on the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) TurnOn() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOn")
+}
+
+// TurnOff sends a command to turn off the GarageDoorOpenerDevice
+func (device *GarageDoorOpenerDevice) TurnOff() (*CommonResponse, error) {
+	return sendDefaultParameterCommand(device.Client, device.DeviceID, "turnOff")
+}
+
+// EnableMotionDetection enables motion detection on the Video Doorbell
+func (device *VideoDoorbellDevice) EnableMotionDetection() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "enableMotionDetection",
+		Parameter:   "default",
+	}
+	return device.Client.SendCommand(device.DeviceID, request)
+}
+
+// DisableMotionDetection disables motion detection on the Video Doorbell
+func (device *VideoDoorbellDevice) DisableMotionDetection() (*CommonResponse, error) {
+	request := ControlRequest{
+		CommandType: "command",
+		Command:     "disableMotionDetection",
+		Parameter:   "default",
 	}
 	return device.Client.SendCommand(device.DeviceID, request)
 }
